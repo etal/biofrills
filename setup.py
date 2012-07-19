@@ -1,13 +1,20 @@
 #!/usr/bin/env python
 
+setup_args = {}
+
 try:
     from setuptools import setup
     from setuptools.extension import Extension
+    setup_args.update(install_requires=[
+        'Cython >= 0.11',
+        'numpy >= 1.5.1',
+        #'scipy >= 0.6',
+    ])
 except ImportEror:
     from distutils.core import setup
     from distutils.extension import Extension
 
-setup_args = dict(
+setup_args.update(
     name='biofrills',
     version='0.0.0-dev',
     description='Bio scripts, parsers and utilities',

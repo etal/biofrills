@@ -116,9 +116,8 @@ def score_pairwise(aseq, bseq):
     return score
 
 # Speed boost from Cython
-from cpairutils import *
-#try:
-#    from cpairutils import *
-#except ImportError:
-#    pass
+try:
+    from cpairutils import *
+except ImportError:
+    pass
 

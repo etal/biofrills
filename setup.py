@@ -10,7 +10,7 @@ try:
         'numpy >= 1.5.1',
         #'scipy >= 0.6',
     ])
-except ImportEror:
+except ImportError:
     from distutils.core import setup
     from distutils.extension import Extension
 
@@ -26,11 +26,12 @@ setup_args.update(
 )
 
 try:
+    from os.path import dirname
     from Cython.Distutils import build_ext
     setup_args.update(
         cmdclass={'build_ext': build_ext},
         ext_modules=[
-            Extension('biofrills.cpairutils', ['biofrills/cpairutils.pyx']),
+            Extension('biofrills.cpairutils', [dirname(__file__) + '/biofrills/cpairutils.pyx']),
         ],
     )
 except ImportError:

@@ -31,7 +31,9 @@ try:
     setup_args.update(
         cmdclass={'build_ext': build_ext},
         ext_modules=[
-            Extension('biofrills.cpairutils', [dirname(__file__) + '/biofrills/cpairutils.pyx']),
+            Extension('biofrills.cpairutils',
+                      [(dirname(__file__) or '.') +
+                       '/biofrills/cpairutils.pyx']),
         ],
     )
 except ImportError:

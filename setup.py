@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 
+"""Bioinformatics utilities for sequence analysis."""
+
 setup_args = {}
 
 try:
     from setuptools import setup
     from setuptools.extension import Extension
-    setup_args.update(install_requires=[
-        'Cython >= 0.11',
-        'numpy >= 1.5.1',
-        #'scipy >= 0.6',
-    ])
+    # Dependencies for easy_install:
+    setup_args.update(
+        install_requires=[
+            'Biopython >= 1.59',
+            'Cython >= 0.11',
+        ])
 except ImportError:
     from distutils.core import setup
     from distutils.extension import Extension
@@ -17,7 +20,7 @@ except ImportError:
 setup_args.update(
     name='biofrills',
     version='0.0.0-dev',
-    description='Bio scripts, parsers and utilities',
+    description=__doc__,
     author='Eric Talevich',
     author_email='etal@uga.edu',
     url='http://etalog.blogspot.com/',

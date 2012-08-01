@@ -1,0 +1,24 @@
+# Generated directories
+build
+dist
+.DS_Store
+.directory
+
+# Compiled Python and Cython files
+*.pyc
+*.pyo
+*.so
+
+# Backup files from some editors
+*~
+*.swp
+*.bak
+.idea
+*.iml
+
+# Patches and any original files created by patch command
+*.diff
+*.patch
+*.orig
+*.rej
+

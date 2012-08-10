@@ -2,6 +2,11 @@
 
 """Bioinformatics utilities for sequence analysis."""
 
+from glob import glob
+from os.path import dirname
+
+DIR = (dirname(__file__) or '.') + '/'
+
 setup_args = {}
 
 try:
@@ -23,20 +28,18 @@ setup_args.update(
     description=__doc__,
     author='Eric Talevich',
     author_email='etal@uga.edu',
-    url='http://etalog.blogspot.com/',
-    packages=['biofrills',
-             ],
+    url='http://github.com/etal/biofrills',
+    packages=['biofrills'],
+    #scripts=glob(DIR + 'scripts/*')
 )
 
 try:
-    from os.path import dirname
     from Cython.Distutils import build_ext
     setup_args.update(
         cmdclass={'build_ext': build_ext},
         ext_modules=[
             Extension('biofrills.cpairutils',
-                      [(dirname(__file__) or '.') +
-                       '/biofrills/cpairutils.pyx']),
+                      [DIR + 'biofrills/cpairutils.pyx']),
         ],
     )
 except ImportError:

@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+# TODO - move the calculation to module (take input stream, return freqs)
+
+import fileinput
+from collections import Counter
+
+# Count character types
+counts = Counter()
+for line in fileinput.input():
+    if line.startswith('>') or not line.strip():
+        continue
+    counts.update(Counter(line.strip()))
+
+# Convert counts to frequencies
+scale = 1.0 / sum(counts.values())
+freqs = dict((char, cnt * scale)
+             for char, cnt in counts.iteritems())
+
+# Print a nice table
+for char, frq in sorted(freqs.iteritems()):
+    print '%s: %f' % (char, frq)
+

@@ -1,0 +1,116 @@
+#!/usr/bin/env python
+
+"""Remove duplicate sequences from a FASTA or CMA file.
+
+For CMA, the filename must be given and end with ".cma".
+
+Usage:
+    seq-purge [-h|-i|-s|-a|-b] seqfile
+    cat seqfile | seq-purge [-h|-i|-s|-a|-b]
+
+Options for how "duplicate" is determined:
+    -h      Same header (sequence identifier and description)
+    -i      Same identifiers (first header token)
+    -s      Same sequences
+    -a      Same headers and sequences ("all")
+    -b      Same identifiers and sequences ("both")
+    -c      One sequence contains another ("contains")
+"""
+import sys
+import logging
+#from esbglib.sugar import log_config; log_config()
+
+from Bio import SeqIO
+
+
+identifiers = {
+        'h': lambda rec: (rec.id, rec.description),
+        'i': lambda rec: rec.id,
+        's': lambda rec: str(rec.seq),
+        'a': lambda rec: (rec.id, rec.description, str(rec.seq)),
+        'b': lambda rec: (rec.id, str(rec.seq)),
+        }
+
+identifiers_cma = {
+        'h': lambda rec: (rec['id'], rec['description']),
+        'i': lambda rec: rec['id'],
+        's': lambda rec: rec['seq'],
+        'a': lambda rec: (rec['id'], rec['description'], rec['seq']),
+        'b': lambda rec: (rec['id'], rec['seq']),
+        }
+
+
+def purger(seqrecs, identify):
+    """Filter out duplicate SeqRecords.
+
+    Duplicates are defined according to mode (default: all fields the same).
+    """
+    seen = set()
+    counter = 0
+    for rec in seqrecs:
+        try:
+            this = identify(rec)
+        except Exception, exc:
+            print rec
+            raise exc
+        if this not in seen:
+            seen.add(this)
+            yield rec
+        else:
+            counter += 1
+    logging.info("Purged %d sequence%s", counter, '' if counter == 1 else 's')
+
+
+def container(seqrecs, is_cma):
+    """Filter out SeqRecords that are completely contained by another."""
+    seen = set()
+    counter = 0
+    if is_cma:
+        getseq = lambda rec: rec['seq']
+    else:
+        getseq = lambda rec: rec.seq
+    for rec in sorted(seqrecs, key=lambda r: len(getseq(r)), reverse=True):
+        recseq = getseq(rec)
+        for seq in seen:
+            if recseq in seq:
+                counter += 1
+                break
+        else:
+            seen.add(recseq)
+            yield rec
+    logging.info("Purged %d sequence%s", counter, '' if counter == 1 else 's')
+
+
+if __name__ == '__main__':
+    if len(sys.argv) == 2:
+        infile = sys.stdin
+    elif len(sys.argv) == 3:
+        infile = sys.argv[2]
+    else:
+        sys.exit("Wrong number of arguments (%d)\n\n%s"
+                % (len(sys.argv)-1, __doc__))
+
+    opt = sys.argv[1]
+    if not (len(opt) == 2 and opt[0] == '-' and opt[1] in 'hisabc'):
+        sys.exit("Invalid option '%s'\n\n%s" % (opt, __doc__))
+
+    if isinstance(infile, basestring) and infile.endswith('.cma'):
+        # CMA file
+        from biocma import cma
+        block = cma.read(infile)
+        if opt == '-c':
+            block['sequences'] = list(container(block['sequences'], True))
+        else:
+            block['sequences'] = list(purger(block['sequences'],
+                                             identifiers_cma[opt[1]]))
+        cma.write(block, sys.stdout)
+    else:
+        # Assume FASTA
+        inseqs = SeqIO.parse(infile, 'fasta')
+        if opt == '-c':
+            results = container(inseqs, False)
+        else:
+            results = purger(inseqs, identifiers[opt[1]])
+        SeqIO.write(results,
+                    sys.stdout, 'fasta')
+

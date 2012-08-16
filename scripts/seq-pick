@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+
+"""Pick a subset of sequences from a larger sequence set.
+
+Methods for selection:
+    - random (-r)
+    - first (-f)
+    - longest (-l)
+    - shortest (-s)
+"""
+
+import random
+import sys
+
+from Bio import SeqIO
+
+
+try:
+    option, N, infname = sys.argv[1], int(sys.argv[2]), sys.argv[3]
+except:
+    sys.exit(__doc__)
+
+index = SeqIO.index(infname, 'fasta')
+
+
+def get_random():
+    return random.sample(index, N)
+
+
+def get_first():
+    accs = []
+    with open(infname) as infile:
+        for line in infile:
+            if line.startswith('>'):
+                accs.append(line.split(None, 1)[0][1:])
+                if len(accs) == N:
+                    return accs
+
+def get_by_length(sort_reverse):
+    seqlens = []
+    for rec in SeqIO.parse(infname, 'fasta'):
+        seqlens.append((len(rec.seq), rec.id))
+    seqlens.sort(reverse=sort_reverse)
+    return [acc for l, acc in seqlens[:N]]
+
+
+if option in ('-r', '--random'):
+    accs = get_random()
+elif option in ('-f', '--first'):
+    accs = get_first()
+elif option in ('-l', '--longest'):
+    accs = get_by_length(True)
+elif option in ('-s', '--shortest'):
+    accs = get_by_length(False)
+
+for acc in accs:
+    block = index.get_raw(acc)
+    sys.stdout.write(block)
+

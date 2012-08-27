@@ -116,7 +116,7 @@ def score_pairwise(aseq, bseq):
     return score
 
 
-def identity_raw(aseq, bseq):
+def identity_abs(aseq, bseq):
     """Compute absolute identity (# matching sites) between sequence strings."""
     assert len(aseq) == len(bseq)
     return sum(a == b
@@ -126,7 +126,7 @@ def identity_raw(aseq, bseq):
 
 def identity_avg(aseq, bseq):
     """Compute absolute identity (# matching sites) between sequence strings."""
-    match = identity(aseq, bseq)
+    match = identity_abs(aseq, bseq)
     alen = len(aseq.replace('-', '').replace('.', ''))
     blen = len(bseq.replace('-', '').replace('.', ''))
     avg_len = 0.5 * (alen + blen)

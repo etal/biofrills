@@ -5,6 +5,7 @@ from collections import Counter, defaultdict
 
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
+from Bio import AlignIO
 
 
 def aa_frequencies(aln, gap_chars='-.', weights=None):
@@ -131,4 +132,20 @@ def sequence_weights(aln, scaling='none'):
     else:
         raise ValueError("Unknown scaling scheme '%s'" % scaling)
     return [scale * wt for wt in seq_weights]
+
+
+def to_graph(alnfname, weight_func):
+    """Create a NetworkX graph from a sequence alignment.
+
+    Nodes are string sequence IDs; edge weights are the output of weight_func
+    between each pair, by default the absolute identity (# identical chars).
+    """
+    import networkx
+    G = networkx.Graph()
+    aln = AlignIO.read(alnfname, 'fasta')
+    for i, arec in enumerate(aln):
+        for brec in aln[i+1:]:
+            ident = weight_func(str(arec.seq), str(brec.seq))
+            G.add_edge(arec.id, brec.id, weight=ident)
+    return G
 

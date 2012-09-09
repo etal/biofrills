@@ -1,0 +1,141 @@
+#!/usr/bin/env python2.7
+
+"""Show the difference in sequences between two FASTA or CMA files.
+
+For CMA, the filename must be given and end with ".cma".
+
+Usage:
+    seq-diff [-h|-i|-s|-a|-b] seqfile
+    cat seqfile | seq-diff [-h|-i|-s|-a|-b]
+
+Options for how "duplicate" is determined:
+    -h      Same header (sequence identifier and description)
+    -i      Same identifiers (first header token)
+    -s      Same sequences
+    -a      Same headers and sequences ("all")
+    -b      Same identifiers and sequences ("both")
+"""
+
+from Bio import SeqIO
+
+from biocma import cma
+
+
+def differ(infile1, infile2, key_func):
+    """Diff between two sets of SeqRecords.
+
+    Equivalents are defined according to mode (default: all fields the same).
+    """
+    # For each sequence file, create a dictionary mapping the 'key' (id,
+    # description and/or sequence) to the full record.
+    #   * SeqIO.to_dict raises an exception if records aren't unique
+    seqrecs1 = SeqIO.to_dict(SeqIO.parse(infile1, 'fasta'), key_func)
+    seqrecs2 = SeqIO.to_dict(SeqIO.parse(infile2, 'fasta'), key_func)
+    # Use set subtraction to find the diff
+    keys1 = set(seqrecs1.keys())
+    keys2 = set(seqrecs2.keys())
+    gain_recs = [seqrecs2[key] for key in sorted(keys2 - keys1)]
+    loss_recs = [seqrecs1[key] for key in sorted(keys1 - keys2)]
+    return gain_recs, loss_recs
+
+
+def differ_cma(infile1, infile2, key_func):
+    """Like differ(), but for CMA files."""
+    # NB: only handles the first block of the CMA file
+    block1 = cma.read(infile1)
+    block2 = cma.read(infile2)
+
+    seqs1 = dict((key_func(seq), seq) for seq in block1['sequences'])
+    assert len(seqs1) == len(block1['sequences']), (
+            str(len(block1['sequences']) - len(seqs1))
+            + " duplicated keys in file 1")
+
+    seqs2 = dict((key_func(seq), seq) for seq in block2['sequences'])
+    assert len(seqs2) == len(block2['sequences']), (
+            str(len(block2['sequences']) - len(seqs2))
+            + " duplicated keys in file 2")
+
+    # Use set subtraction to find the diff
+    keys1 = set(seqs1.keys())
+    keys2 = set(seqs2.keys())
+    gain_recs = [seqs2[key] for key in sorted(keys2 - keys1)]
+    loss_recs = [seqs1[key] for key in sorted(keys1 - keys2)]
+
+    # 
+    block2['sequences'] = gain_recs
+    block1['sequences'] = loss_recs
+    return block2, block1
+
+
+if __name__ == '__main__':
+    # import argparse
+    # AP = argparse.ArgumentParser()
+    # AP.add_argument('infile1',
+    #         )
+    # AP.add_argument('infile2',
+    #         )
+        # Output options:
+        #     -o -> write seq sets of added, subtracted files
+        #         set1_set2_gain.seq, set1_set2_loss.seq
+        #     stream only -> subtraction only (like seqintersect)
+        #         cat set1 | seqdiff set2 > in_set1_but_not_set2
+    # AP.add_argument('-o',
+            ### ENH: 0 or 2 options
+            # help="""Write files of gained and lost sequences.
+
+            # Names: <set1>_<set2>_gain.<ext>, <set1>_<set2>_loss.<ext>
+            # """
+            # )
+    ### Key function -- mutually exclusive? merge these? [e.g. -ids]
+    # AP.add_argument('-h',
+    #         help='Same header (sequence identifier and description)')
+    # AP.add_argument('-i', 
+    #         help='Same identifiers (first header token)')
+    # AP.add_argument('-s',
+    #         help='Same sequences')
+    # AP.add_argument('-a',
+    #         help='Same headers and sequences ("all")')
+    # AP.add_argument('-b',
+    #         help='Same identifiers and sequences ("both")')
+
+    # ---
+    import sys
+
+    if len(sys.argv) == 3:
+        infile1 = sys.stdin
+        infile2 = sys.argv[2]
+    elif len(sys.argv) == 4:
+        infile1 = sys.argv[2]
+        infile2 = sys.argv[3]
+    else:
+        sys.exit("Wrong number of arguments (%d)\n\n%s"
+                % (len(sys.argv)-1, __doc__))
+
+    opt = sys.argv[1]
+    if not (len(opt) == 2 and opt[0] == '-' and opt[1] in 'hisab'):
+        sys.exit("Invalid option '%s'\n\n%s" % (opt, __doc__))
+    opt = opt[1]
+
+    if isinstance(infile2, basestring) and infile2.endswith('.cma'):
+        identifiers_cma = {
+                'h': lambda rec: (rec['id'], rec['description']),
+                'i': lambda rec: rec['id'],
+                's': lambda rec: rec['seq'],
+                'a': lambda rec: (rec['id'], rec['description'], rec['seq']),
+                'b': lambda rec: (rec['id'], rec['seq']),
+                }
+        gain, loss = differ_cma(infile1, infile2, identifiers_cma[opt])
+        # XXX For now: just write the subtraction to stdout
+        cma.write(loss, sys.stdout)
+    else:
+        identifiers = {
+                'h': lambda rec: (rec.id, rec.description),
+                'i': lambda rec: rec.id,
+                's': lambda rec: str(rec.seq),
+                'a': lambda rec: (rec.id, rec.description, str(rec.seq)),
+                'b': lambda rec: (rec.id, str(rec.seq)),
+                }
+        gain, loss = differ(infile1, infile2, identifiers[opt])
+        # XXX For now: just write the subtraction to stdout
+        SeqIO.write(loss, sys.stdout, 'fasta')
+

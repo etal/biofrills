@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+"""Extract the sequences found in both given FASTA files.
+
+Shared sequences are written to standard output, taking sequences from the
+second file.
+
+Usage:
+    seqintersect.py query.fa reference.fa > output.fa
+    cat query.fa | seqintersect.py reference.fa > output.fa
+
+"""
+import sys
+
+from Bio import SeqIO
+
+from biofrills import sequtils
+from esbglib.sugar import log_config; log_config()
+
+
+if __name__ == '__main__':
+
+    if '--cache' in sys.argv:
+        do_cache = True
+        sys.argv.remove('--cache')
+    elif '-c' in sys.argv:
+        do_cache = True
+        sys.argv.remove('-c')
+    else:
+        do_cache = False
+
+    if len(sys.argv) == 2:
+        qfile = sys.stdin
+        reffile = sys.argv[1]
+        do_close_qfile = False
+    elif len(sys.argv) == 3:
+        qfile = open(sys.argv[1])
+        reffile = sys.argv[2]
+        do_close_qfile = True
+    else:
+        sys.exit(__doc__)
+
+    try:
+        accs = sequtils.clean_accessions(SeqIO.parse(qfile, 'fasta'))
+        with open(reffile, 'r') as handle:
+            matches = sequtils.intersect_keys(accs, reffile, cache=do_cache)
+            SeqIO.write(matches, sys.stdout, 'fasta')
+    finally:
+        if do_close_qfile:
+            qfile.close()
+

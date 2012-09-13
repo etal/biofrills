@@ -112,7 +112,8 @@ def sequence_weights(aln, scaling='none'):
     # Sum the contributions from each position along each sequence -> total weight
     for col in zip(*aln):
         wts, nres = col_weight(col)
-        tot_nres += nres
+        assert sum(wts) <= 20
+        tot_nres += min(nres, 20)  # Limited alphabet even for independent seqs
         for idx, wt in enumerate(wts):
             seq_weights[idx] += wt
     # Normalize w/ the given scaling criterion
@@ -143,16 +144,9 @@ def to_graph(alnfname, weight_func):
     import networkx
     G = networkx.Graph()
     aln = AlignIO.read(alnfname, 'fasta')
-    # idents = []   # DBG
     for i, arec in enumerate(aln):
         for brec in aln[i+1:]:
             ident = weight_func(str(arec.seq), str(brec.seq))
-            # idents.append(ident) # DBG
             G.add_edge(arec.id, brec.id, weight=ident)
-    # DBG:
-    # import pylab
-    # pylab.hist(idents)
-    # pylab.show(G)
     return G
-
 

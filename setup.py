@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Bioinformatics utilities for sequence analysis."""
+"""Bioinformatics utilities for molecular sequence analysis."""
 
 from glob import glob
 from os.path import dirname, join
@@ -9,11 +9,20 @@ DIR = (dirname(__file__) or '.')
 
 setup_args = dict(
     name='biofrills',
-    version='0.0.0',
+    version='0.1.0',
     description=__doc__,
     author='Eric Talevich',
     author_email='etal@uga.edu',
     url='http://github.com/etal/biofrills',
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: BSD License',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+    ],
     packages=['biofrills'],
     #scripts=glob(join(DIR, 'scripts', '*'))
 )
@@ -24,7 +33,7 @@ try:
     # Dependencies for easy_install:
     setup_args.update(
         install_requires=[
-            'Biopython >= 1.59',
+            'biopython >= 1.59',
             'Cython >= 0.11',
         ])
 except ImportError:

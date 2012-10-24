@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+"""Translate the input sequences in 6 frames, split by ORFs.
+
+Output: All of the translated ORFs, in FASTA format.
+"""
+
+import argparse
+import sys
+
+from Bio import SeqIO
+
+
+def translate_six_frames(seq, genetic_code=1):
+    """Dictionary of 6-frame translations."""
+    anti = seq.reverse_complement()
+    for i in range(3):
+        yield seq[i:].translate(genetic_code)
+        yield anti[i:].translate(genetic_code)
+
+
+def translate_orfs(record, long_enough):
+    for frame in translate_six_frames(record.seq):
+        for orf in filter(long_enough, map(str, frame.split('*'))):
+            yield orf.strip('X')
+
+
+AP = argparse.ArgumentParser(__doc__)
+AP.add_argument('infile',
+                type=argparse.FileType('r'),
+                default=sys.stdin,
+                help="Input sequence alignment (FASTA format).")
+AP.add_argument('-m', '--minlen',
+                type=int,
+                default=60,
+                help="Weight sequences by similarity.")
+args = AP.parse_args()
+
+def long_enough(seq):
+    return len(seq.replace('X', '')) >= args.minlen
+
+for record in SeqIO.parse(args.infile, 'fasta'):
+    for idx, orf in enumerate(translate_orfs(record, long_enough)):
+        print ">%s-%d" % (record.id, idx + 1)
+        print orf
+

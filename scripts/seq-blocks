@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+"""Restrict an alignment to conserved "blocks"."""
+
+import argparse
+import sys
+from biofrills import consensus, alnutils
+from Bio import AlignIO
+
+def process_args(args):
+    aln = AlignIO.read(args.infile, 'fasta')
+    if args.weight:
+        weights = alnutils.sequence_weights(aln, 'avg1')
+        def pct_nongaps(col):
+            assert len(col) == len(weights)
+            ngaps = sum(wt * (c == '-')
+                        for wt, c in zip(weights, col))
+            return 1 - (ngaps / len(col))
+    else:
+        def pct_nongaps(col):
+            return 1 - (float(col.count('-')) / len(col))
+
+    records = list(aln._records)
+    seqstrs = [str(rec.seq) for rec in records]
+    clean_cols = [col
+                  for col in zip(*seqstrs)
+                  if pct_nongaps(col) >= args.threshold]
+    clean_seqs = [''.join(row) for row in zip(*clean_cols)]
+    for rec, clean_seq in zip(records, clean_seqs):
+        # Quick FASTA output to stdout
+        print ">%s  %s" % (rec.id, rec.description)
+        print clean_seq
+
+
+AP = argparse.ArgumentParser(__doc__)
+AP.add_argument('infile',
+                type=argparse.FileType('r'),
+                default=sys.stdin,
+                help="Input sequence alignment (FASTA format).")
+AP.add_argument('-w', '--weight',
+                action='store_true',
+                help="Weight sequences by similarity.")
+AP.add_argument('-t', '--threshold',
+                type=float,
+                default=0.5,
+                help="""Minimum proportion of non-gap characters to accept a
+                column.""")
+args = AP.parse_args()
+if not (0 < args.threshold <= 1):
+    sys.exit("Non-gap threshold (-t) must be between 0 and 1.")
+process_args(args)

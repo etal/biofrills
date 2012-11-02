@@ -73,6 +73,8 @@ def sequence_weights(aln, scaling='none'):
         - 'max1': Weights are all scaled so the max is 1.0.
         - 'avg1': Average (mean) weight is 1.0.
         - 'andy': Average (mean) weight is 0.5, ceiling is 1.0.
+        - 'none': Weights are scaled to sum to the effective number of
+                  independent sequences.
 
     Method: At each column position, award each different residue an equal
     share of the weight, and then divide that weight equally among the

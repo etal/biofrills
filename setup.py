@@ -33,7 +33,7 @@ try:
     # Dependencies for easy_install:
     setup_args.update(
         install_requires=[
-            'biopython >= 1.59',
+            'biopython >= 1.58',
             'Cython >= 0.11',
         ])
 except ImportError:

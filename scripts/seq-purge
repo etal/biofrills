@@ -58,7 +58,8 @@ def purger(seqrecs, identify):
             yield rec
         else:
             counter += 1
-    logging.info("Purged %d sequence%s", counter, '' if counter == 1 else 's')
+    print >>sys.stderr, "Purged %d sequence%s" % (counter,
+                                                  '' if counter == 1 else 's')
 
 
 def container(seqrecs, is_cma):
@@ -71,14 +72,32 @@ def container(seqrecs, is_cma):
         getseq = lambda rec: rec.seq
     for rec in sorted(seqrecs, key=lambda r: len(getseq(r)), reverse=True):
         recseq = getseq(rec)
-        for seq in seen:
-            if recseq in seq:
+        if 'X' in recseq:
+            # Ignore ambiguous chars by checking each unambigous segment
+            for segment in recseq.split('X'):
+                for longseq in seen:
+                    if segment in longseq:
+                        # Check the next segment
+                        break
+                else:
+                    # No match -- recseq is novel
+                    seen.add(recseq)
+                    yield rec
+                    break
+            else:
+                # All fragments have been "seen"
                 counter += 1
                 break
         else:
-            seen.add(recseq)
-            yield rec
-    logging.info("Purged %d sequence%s", counter, '' if counter == 1 else 's')
+            for seq in seen:
+                if recseq in seq:
+                    counter += 1
+                    break
+            else:
+                seen.add(recseq)
+                yield rec
+    print >>sys.stderr, "Purged %d sequence%s" % (counter,
+                                                  '' if counter == 1 else 's')
 
 
 if __name__ == '__main__':

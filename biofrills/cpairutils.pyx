@@ -118,3 +118,14 @@ cpdef float score_pairwise(aseq, bseq):
 
     return score
 
+
+def identity_abs(aseq, bseq):
+    """Compute absolute identity (# matching sites) between sequence strings."""
+    assert len(aseq) == len(bseq)
+    GAP_CHARS = frozenset('-.')
+    cdef int tot = 0
+    for a, b in zip(aseq, bseq):
+        if not (a in GAP_CHARS and b in GAP_CHARS) \
+           and a == b:
+            tot += 1
+

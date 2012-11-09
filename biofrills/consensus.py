@@ -7,7 +7,7 @@ from collections import Counter, defaultdict
 from biofrills import alnutils, sequtils
 
 
-def consensus(aln, trim_ends=True, simple=False, weights=None):
+def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True):
     """Get the consensus of an alignment, as a string.
 
     Emit gap characters for majority-gap columns; apply various strategies to
@@ -16,16 +16,25 @@ def consensus(aln, trim_ends=True, simple=False, weights=None):
     Parameters
     ----------
 
-    trim_ends : bool
-        If False, stretch the consensus sequence to include the N- and C-tails
-        of the alignment, even if those flanking columns are mostly gap
-        characters. This avoids terminal gaps in the consensus (needed for
-        MAPGAPS).
     simple : bool
         If True, use simple plurality to determine the consensus amino acid
         type, without weighting sequences for similarity. Otherwise, weight
         sequences for similarity and use relative entropy to choose the
         consensus amino acid type.
+    weights : dict or None
+        Sequence weights. If given, used to calculate amino acid frequencies;
+        otherwise calculated within this function (i.e. this is a way to speed
+        up the function if sequence weights have already been calculated).
+        Ignored in 'simple' mode.
+    trim_ends : bool
+        If False, stretch the consensus sequence to include the N- and C-tails
+        of the alignment, even if those flanking columns are mostly gap
+        characters. This avoids terminal gaps in the consensus (needed for
+        MAPGAPS).
+    gap_threshold : float
+        If the proportion of gap characters in a column is greater than or equal
+        to this value (after sequence weighting, if applicable), then the
+        consensus character emitted will be a gap instead of an amino acid type.
 
     """
     # Choose your algorithms!
@@ -33,7 +42,7 @@ def consensus(aln, trim_ends=True, simple=False, weights=None):
         # Use the simple, unweighted algorithm
         col_consensus = make_simple_col_consensus(alnutils.aa_frequencies(aln))
         def is_majority_gap(col):
-            return (float(col.count('-')) / len(col) >= 0.5)
+            return (float(col.count('-')) / len(col) >= gap_threshold)
         # ENH (alternatively/additionally): does any aa occur more than once?
         # ENH: choose gap-decisionmaking separately from col_consensus
     else:
@@ -49,7 +58,7 @@ def consensus(aln, trim_ends=True, simple=False, weights=None):
             for wt, char in zip(seq_weights, col):
                 if char == '-':
                     gap_count += wt
-            return (gap_count / sum(seq_weights) >= 0.5)
+            return (gap_count / sum(seq_weights) >= gap_threshold)
 
     # Traverse the alignment, handling gaps etc.
     def col_wise_consensus(columns):

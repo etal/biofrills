@@ -8,7 +8,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio import AlignIO
 
 
-def aa_frequencies(aln, weights=None, gap_chars='-.'):
+def aa_counts(aln, weights=None, gap_chars='-.'):
     """Calculate the amino acid frequencies in a set of SeqRecords.
 
     Weights for each sequence in the alignment can be given as a list/tuple,
@@ -17,10 +17,10 @@ def aa_frequencies(aln, weights=None, gap_chars='-.'):
     sequence_weights here.
     """
     if weights is None:
-        aa_counts = Counter()
+        counts = Counter()
         for rec in aln:
             seq_counts = Counter(str(rec.seq))
-            aa_counts.update(seq_counts)
+            counts.update(seq_counts)
     else:
         if weights == True:
             # For convenience
@@ -29,18 +29,38 @@ def aa_frequencies(aln, weights=None, gap_chars='-.'):
             assert len(weights) == len(aln), (
                 "Length mismatch: weights = %d, alignment = %d"
                 % (len(weights), len(aln)))
-        aa_counts = defaultdict(float)
+        counts = defaultdict(float)
         for col in zip(*aln):
             for aa, wt in zip(col, weights):
-                aa_counts[aa] += wt
+                counts[aa] += wt
 
     # Don't count gaps
     for gap_char in gap_chars:
-        if gap_char in aa_counts:
-            del aa_counts[gap_char]
+        if gap_char in counts:
+            del counts[gap_char]
+    return counts
+
+
+def aa_frequencies(aln, weights=None, gap_chars='-.'):
+    counts = aa_counts(aln, weights, gap_chars)
     # Reduce to frequencies
     scale = 1.0 / sum(aa_counts.values())
-    return dict((aa, cnt * scale) for aa, cnt in aa_counts.iteritems())
+    return dict((aa, cnt * scale) for aa, cnt in counts.iteritems())
+
+
+def col_counts(col, weights=None, gap_chars='-.'):
+    cnt = defaultdict(float)
+    for aa, wt in zip(col, weights):
+        if aa not in '.-X':
+            cnt[aa] += wt
+    return cnt
+
+
+def col_frequencies(col, weights=None, gap_chars='-.'):
+    counts = col_counts(aln, weights, gap_chars)
+    # Reduce to frequencies
+    scale = 1.0 / sum(counts.values())
+    return dict((aa, cnt * scale) for aa, cnt in counts.iteritems())
 
 
 def remove_empty_cols(records):

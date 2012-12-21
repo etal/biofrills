@@ -44,7 +44,7 @@ def aa_counts(aln, weights=None, gap_chars='-.'):
 def aa_frequencies(aln, weights=None, gap_chars='-.'):
     counts = aa_counts(aln, weights, gap_chars)
     # Reduce to frequencies
-    scale = 1.0 / sum(aa_counts.values())
+    scale = 1.0 / sum(counts.values())
     return dict((aa, cnt * scale) for aa, cnt in counts.iteritems())
 
 
@@ -156,6 +156,8 @@ def sequence_weights(aln, scaling='none', gap_chars='-.'):
         tot_nres += expectk[nres] if nres < len(expectk) else 20
         for idx, wt in enumerate(wts):
             seq_weights[idx] += wt
+    # if tot_nres == 0:
+    #     raise ValueError("Alignment has no meaningful columns to weight")
     # Normalize w/ the given scaling criterion
     if scaling == 'none':
         avg_seq_len = tot_nres / len(aln)

@@ -6,8 +6,8 @@ Shared sequences are written to standard output, taking sequences from the
 second file.
 
 Usage:
-    seqintersect.py query.fa reference.fa > output.fa
-    cat query.fa | seqintersect.py reference.fa > output.fa
+    seq-intersect query.fa reference.fa > output.fa
+    cat query.fa | seq-intersect reference.fa > output.fa
 
 """
 import sys

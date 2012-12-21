@@ -2,11 +2,15 @@
 
 """Show the difference in sequences between two FASTA or CMA files.
 
-For CMA, the filename must be given and end with ".cma".
-
 Usage:
-    seq-diff [-h|-i|-s|-a|-b] seqfile
+    seq-diff [-h|-i|-s|-a|-b] seqfile1 seqfile2
     cat seqfile | seq-diff [-h|-i|-s|-a|-b]
+
+Difference is actually the subtraction ``seqfile1 - seqfile2``, i.e. sequences
+that appear in seqfile1 but not seqfile2. To get the sequences that are unique
+to seqfile2, swap the arguments.
+
+For CMA, the filename must be given and end with ".cma".
 
 Options for how "duplicate" is determined:
     -h      Same header (sequence identifier and description)

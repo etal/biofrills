@@ -1,11 +1,13 @@
 """Utilities for manipulating multiple sequence alignments.
 """
-import logging
+# import logging
 from collections import Counter, defaultdict
+from copy import deepcopy
 
+from Bio import AlignIO
+from Bio.Align import MultipleSeqAlignment
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
-from Bio import AlignIO
 
 
 def aa_counts(aln, weights=None, gap_chars='-.'):
@@ -42,22 +44,57 @@ def aa_counts(aln, weights=None, gap_chars='-.'):
 
 
 def aa_frequencies(aln, weights=None, gap_chars='-.'):
+    """Frequency of each residue type in an alignment.
+
+    Alignment is a MultipleSeqAlignment or iterable of SeqRecords.
+    """
     counts = aa_counts(aln, weights, gap_chars)
     # Reduce to frequencies
     scale = 1.0 / sum(counts.values())
     return dict((aa, cnt * scale) for aa, cnt in counts.iteritems())
 
 
+def blocks(aln, threshold=0.5, weights=None):
+    """Remove gappy columns from an alignment."""
+    assert len(aln)
+    if weights == False:
+        def pct_nongaps(col):
+            return 1 - (float(col.count('-')) / len(col))
+    else:
+        if weights in (None, True):
+            weights = sequence_weights(aln, 'avg1')
+        def pct_nongaps(col):
+            assert len(col) == len(weights)
+            ngaps = sum(wt * (c == '-')
+                        for wt, c in zip(weights, col))
+            return 1 - (ngaps / len(col))
+
+    seqstrs = [str(rec.seq) for rec in aln]
+    clean_cols = [col for col in zip(*seqstrs)
+                  if pct_nongaps(col) >= threshold]
+    alphabet = aln[0].seq.alphabet
+    clean_seqs = [Seq(''.join(row), alphabet)
+                  for row in zip(*clean_cols)]
+    clean_recs = []
+    for rec, seq in zip(aln, clean_seqs):
+        newrec = deepcopy(rec)
+        newrec.seq = seq
+        clean_recs.append(newrec)
+    return MultipleSeqAlignment(clean_recs, alphabet=alphabet)
+
+
 def col_counts(col, weights=None, gap_chars='-.'):
+    """Absolute counts of each residue type in a single column."""
     cnt = defaultdict(float)
     for aa, wt in zip(col, weights):
-        if aa not in '.-X':
+        if aa not in gap_chars:
             cnt[aa] += wt
     return cnt
 
 
 def col_frequencies(col, weights=None, gap_chars='-.'):
-    counts = col_counts(aln, weights, gap_chars)
+    """Frequencies of each residue type (totaling 1.0) in a single column."""
+    counts = col_counts(col, weights, gap_chars)
     # Reduce to frequencies
     scale = 1.0 / sum(counts.values())
     return dict((aa, cnt * scale) for aa, cnt in counts.iteritems())
@@ -133,7 +170,7 @@ def sequence_weights(aln, scaling='none', gap_chars='-.'):
         sequences contributes a score of 1/rs to each of the s sequences.
         """
         # Skip columns of all or mostly gaps (i.e. rare inserts)
-        min_nongap = max(2, .2*len(col))
+        min_nongap = max(2, .2*len(column))
         if len([c for c in column if c not in gap_chars]) < min_nongap:
             return ([0] * len(column), 0)
         # Count the number of occurrences of each residue type
@@ -149,7 +186,8 @@ def sequence_weights(aln, scaling='none', gap_chars='-.'):
 
     seq_weights = [0] * len(aln)
     tot_nres = 0.0  # Expected no. different types in independent seqs
-    # Sum the contributions from each position along each sequence -> total weight
+    # Sum the contributions from each position along each sequence
+    # -> total weight
     for col in zip(*aln):
         wts, nres = col_weight(col)
         assert sum(wts) <= 20

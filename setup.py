@@ -23,7 +23,7 @@ setup_args = dict(
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
     ],
-    packages=['biofrills'],
+    packages=['biofrills', 'biofrills.stats'],
     #scripts=glob(join(DIR, 'scripts', '*'))
 )
 

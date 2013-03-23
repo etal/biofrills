@@ -3,6 +3,7 @@
 from cStringIO import StringIO
 
 import weblogolib
+from corebio.seq import unambiguous_protein_alphabet
 
 
 def read_logodata(handle):
@@ -10,7 +11,8 @@ def read_logodata(handle):
 
     Returns a list of tuples: (posn, letter_counts, entropy, weight)
     """
-    seqs = weblogolib.read_seq_data(handle)
+    seqs = weblogolib.read_seq_data(handle,
+                                    alphabet=unambiguous_protein_alphabet)
     ldata = weblogolib.LogoData.from_seqs(seqs)
     letters = ldata.alphabet.letters()
     counts = ldata.counts.array

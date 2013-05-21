@@ -1,6 +1,6 @@
 """Utilities for manipulating multiple sequence alignments.
 """
-# import logging
+
 from collections import Counter, defaultdict
 from copy import deepcopy
 

@@ -1,4 +1,4 @@
-"""Python implementation of chisqprob, to avoid SciPy dependency on GAE.
+"""Python implementation of chisqprob, to avoid SciPy dependency.
 
 Adapted from SciPy: scipy/special/cephes/{chdtr,igam}.c
 """

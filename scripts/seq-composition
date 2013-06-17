@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+"""Print the frequencies of each letter in a sequence set."""
 # TODO - move the calculation to module (take input stream, return freqs)
 
 import fileinput

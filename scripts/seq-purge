@@ -17,8 +17,6 @@ Options for how "duplicate" is determined:
     -c      One sequence contains another ("contains")
 """
 import sys
-import logging
-#from esbglib.sugar import log_config; log_config()
 
 from Bio import SeqIO
 
@@ -69,7 +67,7 @@ def container(seqrecs, is_cma):
     if is_cma:
         getseq = lambda rec: rec['seq']
     else:
-        getseq = lambda rec: rec.seq
+        getseq = lambda rec: str(rec.seq)
     for rec in sorted(seqrecs, key=lambda r: len(getseq(r)), reverse=True):
         recseq = getseq(rec)
         if 'X' in recseq:

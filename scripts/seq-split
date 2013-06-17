@@ -1,0 +1,96 @@
+#!/usr/bin/python
+
+"""Split a FASTA file into multiple parts.
+
+According to:
+    -b: # bytes per chunk (approx.)
+    -s: # records per chunk
+    -nb: produce # similar-sized chunks, in terms of bytes
+    -ns: produce # similar-sized chunks, in terms of records
+
+Usage:
+    seq-split [-b|-s|-nb|-ns] <size> <fname> [<fname2> ...]
+
+"""
+
+import itertools
+
+from Bio import SeqIO
+
+
+def sizeof(record):
+    """Record size in bytes.
+
+    = # chars in FASTA header + sequence, including newlines.
+
+    Discards the description.
+    """
+    return len(record.id) + len(record.seq) + 3
+
+
+def split_bytes(fname, byte_limit):
+    """Split the sequence set into chunks of about ``byte_limit`` bytes."""
+    # savage hack! wish 'nonlocal' worked here.
+    def byte_grouper(record, curr_bytes=[0]):
+        size = sizeof(record)
+        curr_bytes[0] += size
+        # NB: keys are non-sequential if byte_limit is smaller than a record
+        return curr_bytes[0] / byte_limit 
+    return itertools.groupby(SeqIO.parse(fname, 'fasta'), byte_grouper)
+
+
+def split_count(fname, count_limit):
+    """Split the sequence set into chunks of <= ``count_limit`` sequences."""
+    # savage hack! wish enumerate didn't just make things worse.
+    def count_grouper(record, curr_seqs=[-1]):
+        curr_seqs[0] += 1
+        return curr_seqs[0] / count_limit
+    return itertools.groupby(SeqIO.parse(fname, 'fasta'), count_grouper)
+
+
+def split_n_bytes(fname, num_chunks):
+    import os
+    tot_bytes = os.stat(fname).st_size
+    return split_bytes(fname, tot_bytes / num_chunks)
+
+
+def split_n_count(fname, num_chunks):
+    import subprocess
+    cnt = subprocess.Popen(['grep', '-c', r'^>', fname],
+            stdout=subprocess.PIPE)
+    tot_recs = int(cnt.stdout.readline())
+    chunk_size, remainder = divmod(tot_recs, num_chunks)
+    if remainder:
+        chunk_size += 1
+    return split_count(fname, chunk_size)
+
+
+def write_chunk(fname, suffix, records):
+    out_fname = "%s.%d" % (fname, suffix)
+    with open(out_fname, 'w+') as outfile:
+        outfile.writelines((">%s\n%s\n" % (r.id, r.seq)) for r in records)
+    print "Wrote", out_fname
+
+
+if __name__ == '__main__':
+    import sys
+
+    chunk_func = {
+            '-b': split_bytes,
+            '-s': split_count,
+            '-nb': split_n_bytes,
+            '-ns': split_n_count,
+            }
+
+    try:
+        opt, value, fnames = sys.argv[1], sys.argv[2], sys.argv[3:]
+        assert opt[0] == '-'
+        assert opt in chunk_func
+        value = int(float(value)) if 'e' in value else int(value)
+    except Exception:
+        sys.exit(__doc__)
+
+    for fname in fnames:
+        for key, chunk in chunk_func[opt](fname, value):
+            write_chunk(fname, key, chunk)
+

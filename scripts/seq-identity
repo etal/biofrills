@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+
+"""Calculate sequence identity percentages across an alignment.
+
+Per OrthoMCL:
+percent_match = number of matched characters (in the shorter sequence)
+                / length of the shorter sequence
+
+If a multiple sequence alignment is given, print a grid of pairwise identities.
+"""
+
+import sys
+from Bio import AlignIO
+
+
+def ungap_len(seq):
+    return len(seq) - seq.count('-') - seq.count('.')
+
+
+def pct_identity(aseq, bseq):
+    assert len(aseq) == len(bseq)
+    shorter_len = min(ungap_len(aseq), ungap_len(bseq))
+    ident = sum(a == b for a, b in zip(aseq, bseq) if a not in '-.')
+    return 100.0 * ident / shorter_len
+
+
+infname = sys.argv[1]
+fmt = (sys.argv[2] if len(sys.argv) == 3 else 'fasta')
+
+records = list(AlignIO.read(infname, fmt))
+label_width = max(len(rec.id) for rec in records)
+
+identities = []
+for i, record in enumerate(records):
+    aseq = str(record.seq)
+    print record.id.ljust(label_width) + '\t',
+    for j in range(i):
+        bseq = str(records[j].seq)
+        pct_id = pct_identity(aseq, bseq)
+        print '%2.2f\t' % pct_id,
+        identities.append(pct_id)
+    print '\n',
+
+# Column labels
+print ' ' * label_width + '\t' + ' '.join(
+    [rec.id[:7].ljust(7) for rec in records])
+
+print
+print " Min: %2.2f  ~  Mean: %2.2f  ~  Max: %2.2f" % (
+    min(identities), sum(identities)/len(identities), max(identities))

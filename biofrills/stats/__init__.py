@@ -21,5 +21,3 @@ def uniqueof20(k, rep=10000):
 # Silhouette (to validate clusters -- use in Fammer?):
 # https://en.wikipedia.org/wiki/Silhouette_%28clustering%29
 
-# Pure-Py chisq implementation (see blast-cap)?
-

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+"""Find and print the sequences with identical IDs."""
+
 import sys
 
 from Bio import SeqIO

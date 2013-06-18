@@ -17,6 +17,15 @@ setup.py script::
     python setup.py build
     python setup.py install
 
+Stable releases are uploaded to PyPI as well, so you can install BioFrills with
+Python package managers::
+
+    pip install biofrills
+
+Or::
+
+    easy_install biofrills
+
 Some scripts that I find useful are in the scripts/ directory. By default these
 are not installed, but you can include them by uncommenting the line in setup.py
 that starts with ``scripts=glob``...

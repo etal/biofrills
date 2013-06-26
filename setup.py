@@ -9,7 +9,7 @@ DIR = (dirname(__file__) or '.')
 
 setup_args = dict(
     name='biofrills',
-    version='0.2.0',
+    version='0.3-dev',
     description=__doc__,
     author='Eric Talevich',
     author_email='eric.talevich@gmail.com',

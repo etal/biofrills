@@ -40,6 +40,8 @@ def logo_heights(aln):
     """
     Return a list of dicts: character to proportional height.
     """
+    return NotImplemented
+
 
 def letter_scales(counts):
     """Convert letter counts to frequencies, sorted increasing.""" 

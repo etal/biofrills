@@ -85,7 +85,6 @@ def container(seqrecs, is_cma):
             else:
                 # All fragments have been "seen"
                 counter += 1
-                break
         else:
             for seq in seen:
                 if recseq in seq:

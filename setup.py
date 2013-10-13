@@ -7,7 +7,7 @@ from os.path import join, isfile
 
 setup_args = dict(
     name='biofrills',
-    version='0.3.1',
+    version='0.3.1+',
     description=__doc__,
     author='Eric Talevich',
     author_email='eric.talevich@gmail.com',
@@ -22,7 +22,7 @@ setup_args = dict(
         'Topic :: Scientific/Engineering :: Bio-Informatics',
     ],
     packages=['biofrills', 'biofrills.stats'],
-    #scripts=glob(join('scripts', '*'))
+    scripts=glob(join('scripts', '*'))
 )
 
 try:

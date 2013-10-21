@@ -14,11 +14,12 @@ import sys
 
 from Bio import SeqIO
 
-from biofrills import sequtils
-from esbglib.sugar import log_config; log_config()
+from biofrills import cmdutils, sequtils
+cmdutils.log_config()
 
 
 if __name__ == '__main__':
+    # TODO - argparse
 
     if '--cache' in sys.argv:
         do_cache = True
@@ -28,6 +29,12 @@ if __name__ == '__main__':
         sys.argv.remove('-c')
     else:
         do_cache = False
+
+    if '-r' in sys.argv:
+        do_clean_acc = True
+        sys.argv.remove('-r')
+    else:
+        do_clean_acc = False
 
     if len(sys.argv) == 2:
         qfile = sys.stdin
@@ -41,9 +48,10 @@ if __name__ == '__main__':
         sys.exit(__doc__)
 
     try:
-        accs = sequtils.clean_accessions(SeqIO.parse(qfile, 'fasta'))
+        accs = (record.id for record in SeqIO.parse(qfile, 'fasta'))
         with open(reffile, 'r') as handle:
-            matches = sequtils.intersect_keys(accs, reffile, cache=do_cache)
+            matches = sequtils.intersect_keys(accs, reffile, cache=do_cache,
+                                              clean_accs=do_clean_acc)
             SeqIO.write(matches, sys.stdout, 'fasta')
     finally:
         if do_close_qfile:

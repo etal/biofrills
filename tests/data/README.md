@@ -135,7 +135,7 @@ Standard error has the scratch directory, the repository root, the biocma extrac
 
 - **Consensus ties.**
   Where several residues tie, the original code takes whichever comes first in Python 2's dictionary iteration order, which follows string hashes rather than any documented rule.
-  The port replaces this with an explicit tie-breaking rule, so consensus strings may differ where ties occur; `tie-batch.json` exists to measure that difference.
+  The current code breaks such ties by an explicit rule instead, so consensus strings may differ where ties occur; the cases that changed are listed under "Deliberate differences" below, and `tie-batch.json` exists to measure that difference.
   The same dictionary-order dependence affects the ordering of tied clustering coefficients in `seq-pick -c` and the medoids that `seq-pick -k` derives from them.
 - **Summation order of weighted frequencies.**
   `aa_frequencies` normalizes by `sum(counts.values())`, a floating-point sum taken in dictionary order.
@@ -183,3 +183,15 @@ Unmodified sources at commit `36684bb` produce an empty list.
   The other `trim_ends=False` cases of that file already ended in `Q-`, because the `Q` column was not a majority-gap column at their threshold.
   Cases with `trim_ends=True` are unchanged, because consensus holds nothing back in that mode.
   The three MAPGAPS alignments are unchanged as well: in them no residue-less column follows held-back C-terminal residues.
+- **Tie-breaking rule** (23 cases).
+  The entropy algorithm chooses the residue with the largest relative-entropy term and, among residues whose terms are exactly equal, the alphabetically first.
+  The simple algorithm keeps its two heuristics, preferring the residue that most often follows the previous consensus residue and then the residue least frequent in the whole alignment, and adds alphabetical order as the final key.
+  Both rules order tied residues totally, so the choice among them no longer depends on dictionary iteration order: under Python 2.7 with `PYTHONHASHSEED` set to 1, 2 and 3, the previous code changed 5, 86 and 5 recorded cases relative to the default ordering, and the current code changes none.
+  The weighted background frequencies of the entropy algorithm are still normalized by a sum taken in dictionary order (see "Summation order of weighted frequencies" above); that can move a term by about one unit in the last place, but no recorded case has two distinct terms that close.
+  Every exact tie of the entropy term in the fixtures is between residues with equal column and background frequencies, so no intermediate key, such as background frequency, could separate them.
+  No case of the three MAPGAPS alignments changes; the 23 that do are these:
+  - `synth-ties.aln.json`, all 18 entropy cases: column 8 holds `W`, `W`, `Y`, `Y`, and the consensus there changes from `Y` to `W`.
+  - `tie-batch.json` alignment `t045`, both entropy cases: `D` and `E` tie in column 8, which changes from `E` to `D`.
+  - `tie-batch.json` alignment `t157`, both simple cases: four residues tie in column 6, which changes from `E` to `D`; column 7 then changes from `D` to `A`, because the first heuristic follows the new residue in column 6.
+  - `tie-batch.json` alignment `t081`, simple algorithm with `trim_ends=False`: three residues tie in column 4, which changes from `E` to `D`.
+    With `trim_ends=True` the majority-gap column 3 does not reach the algorithm, so the first heuristic conditions on a different preceding column and settles the tie as before.

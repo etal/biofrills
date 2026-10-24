@@ -11,7 +11,11 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
     """Get the consensus of an alignment, as a string.
 
     Emit gap characters for majority-gap columns; apply various strategies to
-    choose the consensus amino acid type for the remaining columns.
+    choose the consensus amino acid type for the remaining columns. Ties
+    between amino acid types are broken by explicit rules, ending in
+    alphabetical order, so the choice among tied types does not depend on the
+    order in which residue types were counted; see make_entropy_col_consensus
+    and make_simple_col_consensus.
 
     Parameters
     ----------
@@ -160,12 +164,16 @@ def make_entropy_col_consensus(bg_freqs):
 
     where f_ij = column aa frequency, b_j = background aa frequency.
 
+    Exact ties go to the alphabetically first residue type, so the choice
+    among them does not depend on the order in which residue types were
+    counted.
+
     Source: http://bioinformatics.oxfordjournals.org/content/24/18/1987.long
     """
     def col_consensus(col):
         col_freqs = sequtils.aa_frequencies(col)
         entroper = entropy_func(col_freqs, bg_freqs)
-        return max(col_freqs.keys(), key=entroper)
+        return min(col_freqs, key=lambda aa: (-entroper(aa), aa))
     return col_consensus
 
 
@@ -176,11 +184,13 @@ def make_entropy_col_consensus(bg_freqs):
 def make_simple_col_consensus(bg_freqs):
     """Consensus by simple plurality, unweighted.
 
-    Resolves ties by two heuristics:
+    Resolves ties by three rules, in order:
 
     1. Prefer the aa that follows the preceding consensus aa type most often
        in the original sequences.
-    2. Finally, prefer the less-common aa type.
+    2. Prefer the less-common aa type.
+    3. Finally, prefer the alphabetically first aa type, so that the result
+       never depends on the order in which residue types were counted.
     """
     # Hack: use default kwargs to persist across iterations
     def col_consensus(col, prev_col=[], prev_char=[]):
@@ -188,10 +198,9 @@ def make_simple_col_consensus(bg_freqs):
         aa_counts = sequtils.aa_frequencies(col)
         assert aa_counts, "Column is all gaps! That's not allowed."
         # Take the most common residue(s)
-        best_char, best_score = max(aa_counts.iteritems(),
-                                    key=lambda kv: kv[1])
-        # Resolve ties
+        best_score = max(aa_counts.values())
         ties = [aa for aa in aa_counts if aa_counts[aa] == best_score]
+        # Resolve ties
         if len(ties) > 1:
             # Breaker #1: most common after the prev. consensus char
             # Resolve a tied col by restricting to rows where the preceding
@@ -206,12 +215,10 @@ def make_simple_col_consensus(bg_freqs):
                 if ties_next:
                     ties = ties_next
             if len(ties) > 1:
-                # Breaker #2: lowest overall residue frequency
-                ties.sort(key=lambda aa: bg_freqs[aa])
-            best_char = ties[0]
-        else:
-            assert best_char == ties[0], \
-                    'WTF %s != %s[0]' % (best_char, ties)
+                # Breaker #2: lowest overall residue frequency;
+                # breaker #3: alphabetical order
+                ties.sort(key=lambda aa: (bg_freqs[aa], aa))
+        best_char = ties[0]
         # Save values for tie-breaker #1
         prev_col[:] = col
         prev_char[:] = best_char

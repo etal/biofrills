@@ -209,6 +209,463 @@
     14,
     15
    ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 0,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 1,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 2,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 3,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 4,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 5,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 6,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 7,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 8,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 9,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 10,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 11,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 12,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 13,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 14,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 15,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 16,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/synth-ties.aln.json",
+   "section": "consensus",
+   "case": 17,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "value": "AAKICEHY"
+   },
+   "current": {
+    "value": "AAKICEHW"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/tie-batch.json",
+   "section": "consensus",
+   "alignment": "t045",
+   "case": 0,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true
+   },
+   "recorded": {
+    "value": "--ADACEECEA"
+   },
+   "current": {
+    "value": "--ADACEDCEA"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/tie-batch.json",
+   "section": "consensus",
+   "alignment": "t045",
+   "case": 1,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false
+   },
+   "recorded": {
+    "value": "GGADACEECEA"
+   },
+   "current": {
+    "value": "GGADACEDCEA"
+   },
+   "columns": [
+    8
+   ]
+  },
+  {
+   "file": "library/tie-batch.json",
+   "section": "consensus",
+   "alignment": "t081",
+   "case": 3,
+   "kwargs": {
+    "simple": true,
+    "trim_ends": false
+   },
+   "recorded": {
+    "value": "GC-EEACGACEAGD"
+   },
+   "current": {
+    "value": "GC-DEACGACEAGD"
+   },
+   "columns": [
+    4
+   ]
+  },
+  {
+   "file": "library/tie-batch.json",
+   "section": "consensus",
+   "alignment": "t157",
+   "case": 2,
+   "kwargs": {
+    "simple": true,
+    "trim_ends": true
+   },
+   "recorded": {
+    "value": "CDAAGEDAEADA"
+   },
+   "current": {
+    "value": "CDAAGDAAEADA"
+   },
+   "columns": [
+    6,
+    7
+   ]
+  },
+  {
+   "file": "library/tie-batch.json",
+   "section": "consensus",
+   "alignment": "t157",
+   "case": 3,
+   "kwargs": {
+    "simple": true,
+    "trim_ends": false
+   },
+   "recorded": {
+    "value": "CDAAGEDAEADA"
+   },
+   "current": {
+    "value": "CDAAGDAAEADA"
+   },
+   "columns": [
+    6,
+    7
+   ]
   }
  ]
 }

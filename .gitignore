@@ -4,10 +4,9 @@ dist
 .DS_Store
 .directory
 
-# Compiled Python and Cython files
+# Compiled Python files
 *.pyc
 *.pyo
-*.so
 
 # Backup files from some editors
 *~

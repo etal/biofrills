@@ -131,11 +131,3 @@ def identity_avg(aseq, bseq):
     blen = len(bseq.replace('-', '').replace('.', ''))
     avg_len = 0.5 * (alen + blen)
     return match / avg_len
-
-
-# Speed boost from Cython
-try:
-    from cpairutils import *
-except ImportError:
-    pass
-

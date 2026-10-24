@@ -5,8 +5,8 @@
 For CMA, the filename must be given and end with ".cma".
 
 Usage:
-    seq-purge [-h|-i|-s|-a|-b] seqfile
-    cat seqfile | seq-purge [-h|-i|-s|-a|-b]
+    seq-purge [-h|-i|-s|-a|-b|-c] seqfile
+    cat seqfile | seq-purge [-h|-i|-s|-a|-b|-c]
 
 Options for how "duplicate" is determined:
     -h      Same header (sequence identifier and description)

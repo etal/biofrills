@@ -1,9 +1,9 @@
 """Utilities for sequence logos.
 """
-from cStringIO import StringIO
+from io import StringIO
 
-import weblogolib
-from corebio.seq import unambiguous_protein_alphabet
+import weblogo
+from weblogo.seq import unambiguous_protein_alphabet
 
 
 def read_logodata(handle):
@@ -11,9 +11,9 @@ def read_logodata(handle):
 
     Returns a list of tuples: (posn, letter_counts, entropy, weight)
     """
-    seqs = weblogolib.read_seq_data(handle,
-                                    alphabet=unambiguous_protein_alphabet)
-    ldata = weblogolib.LogoData.from_seqs(seqs)
+    seqs = weblogo.read_seq_data(handle,
+                                 alphabet=unambiguous_protein_alphabet)
+    ldata = weblogo.LogoData.from_seqs(seqs)
     letters = ldata.alphabet.letters()
     counts = ldata.counts.array
     logodata = []
@@ -30,17 +30,10 @@ def aln2logodata(aln):
 
     Returns a list of tuples: (posn, letter_counts, entropy, weight)
     """
-    handle = StringIO(aln.format('fasta'))
+    handle = StringIO(format(aln, 'fasta'))
     logodata = read_logodata(handle)
     handle.close()
     return logodata
-
-
-def logo_heights(aln):
-    """
-    Return a list of dicts: character to proportional height.
-    """
-    return NotImplemented
 
 
 def letter_scales(counts):
@@ -50,7 +43,7 @@ def letter_scales(counts):
     except ZeroDivisionError:
         # This logo is all gaps, nothing can be done
         return []
-    freqs = [(aa, cnt*scale) for aa, cnt in counts.iteritems() if cnt]
+    freqs = [(aa, cnt*scale) for aa, cnt in counts.items() if cnt]
     freqs.sort(key=lambda pair: pair[1])
     return freqs
 

@@ -88,9 +88,9 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
                     maybe_right_tail.append('-')
                 continue
             if any(c.islower() for c in col):
-                logging.warn('Mixed lowercase and uppercase letters in a '
+                logging.warning('Mixed lowercase and uppercase letters in a '
                         'column: ' + ''.join(col))
-                col = map(str.upper, col)
+                col = tuple(map(str.upper, col))
 
             # Gap chars
             is_gap = is_majority_gap(col)
@@ -245,7 +245,7 @@ def supported(aln):
         """Calculate the consensus chars for an iterable of columns."""
         for col in columns:
             if (# Majority gap chars
-                (col.count('-') >= len(col)/2) or
+                (col.count('-') >= len(col) // 2) or
                 # Lowercase cols mean "don't include in consensus"
                 all(c.islower() for c in col if c not in '.-')
                 ):
@@ -253,16 +253,16 @@ def supported(aln):
                 continue
             # Validation - copied from consensus() above
             if any(c.islower() for c in col):
-                logging.warn('Mixed lowercase and uppercase letters in a '
+                logging.warning('Mixed lowercase and uppercase letters in a '
                         'column: ' + ''.join(col))
-                col = map(str.upper, col)
+                col = tuple(map(str.upper, col))
             # Calculate the consensus character
             most_common = Counter(
                     [c for c in col if c not in '-']
                     ).most_common()
             if not most_common:
                 # XXX ever reached?
-                logging.warn("Column is all gaps! How did that happen?")
+                logging.warning("Column is all gaps! How did that happen?")
             if most_common[0][1] == 1:
                 # No char has frequency > 1; no consensus char
                 yield '-'

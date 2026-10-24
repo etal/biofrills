@@ -51,7 +51,7 @@ def aa_frequencies(aln, weights=None, gap_chars='-.'):
     counts = aa_counts(aln, weights, gap_chars)
     # Reduce to frequencies
     scale = 1.0 / sum(counts.values())
-    return dict((aa, cnt * scale) for aa, cnt in counts.iteritems())
+    return dict((aa, cnt * scale) for aa, cnt in counts.items())
 
 
 def blocks(aln, threshold=0.5, weights=None):
@@ -72,15 +72,14 @@ def blocks(aln, threshold=0.5, weights=None):
     seqstrs = [str(rec.seq) for rec in aln]
     clean_cols = [col for col in zip(*seqstrs)
                   if pct_nongaps(col) >= threshold]
-    alphabet = aln[0].seq.alphabet
-    clean_seqs = [Seq(''.join(row), alphabet)
+    clean_seqs = [Seq(''.join(row))
                   for row in zip(*clean_cols)]
     clean_recs = []
     for rec, seq in zip(aln, clean_seqs):
         newrec = deepcopy(rec)
         newrec.seq = seq
         clean_recs.append(newrec)
-    return MultipleSeqAlignment(clean_recs, alphabet=alphabet)
+    return MultipleSeqAlignment(clean_recs)
 
 
 def col_counts(col, weights=None, gap_chars='-.'):
@@ -97,7 +96,7 @@ def col_frequencies(col, weights=None, gap_chars='-.'):
     counts = col_counts(col, weights, gap_chars)
     # Reduce to frequencies
     scale = 1.0 / sum(counts.values())
-    return dict((aa, cnt * scale) for aa, cnt in counts.iteritems())
+    return dict((aa, cnt * scale) for aa, cnt in counts.items())
 
 
 def remove_empty_cols(records):
@@ -111,7 +110,7 @@ def remove_empty_cols(records):
     clean_seqs = [''.join(row)
                   for row in zip(*clean_cols)]
     for rec, clean_seq in zip(records, clean_seqs):
-        yield SeqRecord(Seq(clean_seq, rec.seq.alphabet), id=rec.id,
+        yield SeqRecord(Seq(clean_seq), id=rec.id,
                         name=rec.name, description=rec.description,
                         dbxrefs=rec.dbxrefs, features=rec.features,
                         annotations=rec.annotations,
@@ -180,7 +179,7 @@ def sequence_weights(aln, scaling='none', gap_chars='-.'):
         # r = nb. residue types, s = count of a particular residue type
         n_residues = len(counts)    # r
         freqs = dict((aa, 1.0 / (n_residues * count))
-                     for aa, count in counts.iteritems())
+                     for aa, count in counts.items())
         weights = [freqs[aa] for aa in column]
         return (weights, n_residues)
 

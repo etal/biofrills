@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Replay recorded reference cases against the current biofrills code.
 
 Every consensus case recorded under py27/ (the ``consensus`` section of each
@@ -9,23 +9,18 @@ this script.  README.md beside it explains each difference.
 
 Outcomes are compared as the capture records them: a value exactly, an
 exception by its type only, since the message text is the interpreter's.
-The script itself runs under Python 2.7 and Python 3, but until the library
-is ported only Python 2.7 runs the consensus code; under Python 3 every case
-currently raises an exception, and all but those whose recorded outcome is
-the same exception are listed.
+The script requires Python 3.12 or later, whose built-in sum() the two
+t101 entries depend on; the repository's default pixi environment provides
+a suitable interpreter.
 
-Usage, from the repository root (the py27-oracle environment is osx-64 only;
-on Linux, use the conda environment that README.md describes):
+Usage, from the repository root:
 
-    pixi run -e py27-oracle python tests/data/replay.py
+    pixi run python tests/data/replay.py
 """
-from __future__ import print_function
 
-import io
 import json
 import os
 import sys
-from collections import OrderedDict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
@@ -59,10 +54,9 @@ def build_weights(aln, spec):
 def outcome(func, *args, **kwargs):
     """Call func; return {"value": result} or {"error": {"type": ...}}."""
     try:
-        return OrderedDict([('value', func(*args, **kwargs))])
+        return {'value': func(*args, **kwargs)}
     except Exception as exc:
-        return OrderedDict([('error', OrderedDict([
-            ('type', type(exc).__name__)]))])
+        return {'error': {'type': type(exc).__name__}}
 
 
 def comparable(result):
@@ -76,8 +70,7 @@ def changed_columns(recorded, current):
     """1-based columns at which two equal-length strings differ."""
     old = recorded.get('value')
     new = current.get('value')
-    strings = (str, type(u''))
-    if not (isinstance(old, strings) and isinstance(new, strings)) \
+    if not (isinstance(old, str) and isinstance(new, str)) \
             or len(old) != len(new):
         return None
     return [i + 1 for i, (a, b) in enumerate(zip(old, new)) if a != b]
@@ -85,7 +78,7 @@ def changed_columns(recorded, current):
 
 def difference(case, recorded, current):
     """One differences.json entry."""
-    entry = OrderedDict(case)
+    entry = dict(case)
     entry['recorded'] = comparable(recorded)
     entry['current'] = current
     entry['columns'] = changed_columns(recorded, current)
@@ -94,22 +87,20 @@ def difference(case, recorded, current):
 
 def replay_library(fname):
     """Differences in the consensus section of one library/<input>.json."""
-    with io.open(os.path.join(FIXTURES, fname), encoding='ascii') as handle:
-        data = json.load(handle, object_pairs_hook=OrderedDict)
+    with open(os.path.join(FIXTURES, fname), encoding='ascii') as handle:
+        data = json.load(handle)
     aln = AlignIO.read(os.path.join(HERE, data['input']), 'fasta')
     found = []
     for index, case in enumerate(data['consensus']):
-        kwargs = dict((str(k), v) for k, v in case['kwargs'].items())
-
-        def call(spec=case['weights'], kwargs=kwargs):
+        def call(spec=case['weights'], kwargs=case['kwargs']):
             return consensus.consensus(
                 aln, weights=build_weights(aln, spec), **kwargs)
         current = outcome(call)
         if current != comparable(case['result']):
             found.append(difference(
-                [('file', 'library/' + fname), ('section', 'consensus'),
-                 ('case', index), ('weights', case['weights']),
-                 ('kwargs', case['kwargs'])],
+                {'file': 'library/' + fname, 'section': 'consensus',
+                 'case': index, 'weights': case['weights'],
+                 'kwargs': case['kwargs']},
                 case['result'], current))
     return found
 
@@ -117,23 +108,22 @@ def replay_library(fname):
 def replay_tie_batch():
     """Differences in library/tie-batch.json."""
     fname = 'tie-batch.json'
-    with io.open(os.path.join(FIXTURES, fname), encoding='ascii') as handle:
-        data = json.load(handle, object_pairs_hook=OrderedDict)
-    groups = OrderedDict()
+    with open(os.path.join(FIXTURES, fname), encoding='ascii') as handle:
+        data = json.load(handle)
+    groups = {}
     for rec in SeqIO.parse(os.path.join(HERE, data['input']), 'fasta'):
         groups.setdefault(rec.id.split('_')[0], []).append(rec)
     found = []
     for alignment in data['alignments']:
         aln = MultipleSeqAlignment(groups[alignment['id']])
         for index, kw in enumerate(data['consensus_kwargs']):
-            kwargs = dict((str(k), v) for k, v in kw.items())
-            current = outcome(consensus.consensus, aln, **kwargs)
+            current = outcome(consensus.consensus, aln, **kw)
             recorded = alignment['consensus'][index]
             if current != comparable(recorded):
                 found.append(difference(
-                    [('file', 'library/' + fname), ('section', 'consensus'),
-                     ('alignment', alignment['id']), ('case', index),
-                     ('kwargs', kw)],
+                    {'file': 'library/' + fname, 'section': 'consensus',
+                     'alignment': alignment['id'], 'case': index,
+                     'kwargs': kw},
                     recorded, current))
     return found
 
@@ -145,10 +135,10 @@ def main():
         if fname.endswith('.aln.json'):
             found.extend(replay_library(fname))
     found.extend(replay_tie_batch())
-    text = json.dumps(OrderedDict([('differences', found)]), indent=1,
+    text = json.dumps({'differences': found}, indent=1,
                       separators=(',', ': '), ensure_ascii=True)
-    with io.open(OUT, 'w', encoding='ascii', newline='\n') as handle:
-        handle.write(u'%s\n' % text)
+    with open(OUT, 'w', encoding='ascii', newline='\n') as handle:
+        handle.write('%s\n' % text)
     print('%d differing cases written to %s' % (len(found), OUT))
 
 

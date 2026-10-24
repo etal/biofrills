@@ -133,12 +133,3 @@ def _igam(a, x):
         ans += c
         if c / ans <= MACHEP:
             return ans * ax / a
-
-
-# --- Speed ---
-
-try:
-    from scipy.stats import chisqprob
-except ImportError:
-    pass
-

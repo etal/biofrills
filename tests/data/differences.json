@@ -630,6 +630,44 @@
   {
    "file": "library/tie-batch.json",
    "section": "consensus",
+   "alignment": "t101",
+   "case": 0,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true
+   },
+   "recorded": {
+    "value": "DAG---E"
+   },
+   "current": {
+    "value": "DAG-C-E"
+   },
+   "columns": [
+    5
+   ]
+  },
+  {
+   "file": "library/tie-batch.json",
+   "section": "consensus",
+   "alignment": "t101",
+   "case": 1,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false
+   },
+   "recorded": {
+    "value": "DAG---E"
+   },
+   "current": {
+    "value": "DAG-C-E"
+   },
+   "columns": [
+    5
+   ]
+  },
+  {
+   "file": "library/tie-batch.json",
+   "section": "consensus",
    "alignment": "t157",
    "case": 2,
    "kwargs": {

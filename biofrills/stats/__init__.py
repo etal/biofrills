@@ -1,6 +1,3 @@
-
-from __future__ import division
-
 import random
 
 def uniqueof20(k, rep=10000):

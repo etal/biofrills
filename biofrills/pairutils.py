@@ -76,7 +76,7 @@ blosum62 = {
 
 # Make the matrix complete/symmetrical by filling in missing values
 # (to avoid double-checking in score_pairwise)
-for key, val in blosum62.items():
+for key, val in list(blosum62.items()):
     blosum62[key[::-1]] = val
 
 

@@ -1,7 +1,7 @@
 # Reference outputs from the Python 2 code base
 
 The files under `py27/` record what biofrills computed on Python 2.7, before the port to Python 3.
-They are the reference against which the port is checked: a ported function should reproduce these values, or the difference should be explained by a documented, deliberate change.
+They are the reference against which the port is checked: a ported function should reproduce these values, or the difference should be explained in this file.
 
 ## Producing versions
 
@@ -135,13 +135,25 @@ Standard error has the scratch directory, the repository root, the biocma extrac
 
 - **Consensus ties.**
   Where several residues tie, the original code takes whichever comes first in Python 2's dictionary iteration order, which follows string hashes rather than any documented rule.
-  The current code breaks such ties by an explicit rule instead, so consensus strings may differ where ties occur; the cases that changed are listed under "Deliberate differences" below, and `tie-batch.json` exists to measure that difference.
+  The current code breaks such ties by an explicit rule instead, so consensus strings may differ where ties occur; the cases that changed are listed under "Differences in consensus output" below, and `tie-batch.json` exists to measure that difference.
   The same dictionary-order dependence affects the ordering of tied clustering coefficients in `seq-pick -c` and the medoids that `seq-pick -k` derives from them.
 - **Summation order of weighted frequencies.**
-  `aa_frequencies` normalizes by `sum(counts.values())`, a floating-point sum taken in dictionary order.
-  With non-integer weights (`true` and `"seqweights"`), summing the same counts in another order changes the normalizer in its last bits, so a port that iterates in insertion order differs from these fixtures by about one unit in the last place in many frequencies.
-  For example, the `"seqweights"` normalizer for `cdc2-domain.aln.fasta` is `1451.1196865831323` in hash order and `1451.1196865831325` summed in sorted key order.
+  `aa_frequencies` normalizes by `sum(counts.values())`, a floating-point sum taken in dictionary order, which is string-hash order on Python 2 and insertion order on Python 3.
+  With non-integer weights (`true` and `"seqweights"`), summing the same counts in another order changes the normalizer in its last place, and every frequency with it.
+  For example, the `"seqweights"` normalizer for `cdc2-domain.aln.fasta` is `1451.1196865831323` in hash order and `1451.1196865831325` in insertion order, which is also the correctly rounded sum.
+  Under Python 3 this moves 80 weighted frequencies of `cdc2-domain.aln.json` and 32 of `synth-x.aln.json`, by at most 2 units in the last place; the weighted frequencies of the other inputs, and all counts, are unchanged.
   Compare these values with a relative tolerance on the order of `1e-15`, not with equality; with integer weights the sums are exact and equality holds.
+- **Compensated summation.**
+  Since Python 3.12, the built-in `sum` of floating-point numbers compensates for rounding error (Neumaier's algorithm), where Python 2 added the terms one at a time.
+  `sequence_weights` divides by `sum(seq_weights)` under the scalings `sum1`, `avg1` and `andy`, so these weights differ from the fixtures by at most 3 units in the last place: 35 values in `scttlre-domain.aln.json`, 8 in `synth-x.aln.json`, and 185 in 39 of the 200 alignments of `tie-batch.json`.
+  The largest relative difference is `4.2e-16`, so the tolerance given above for weighted frequencies covers these values too.
+  The scalings `none` and `max1` take no such sum and match the fixtures exactly.
+  The same sum is the denominator of the weighted gap fraction in `consensus`, where it changes one column of one alignment; see "Differences in consensus output" below.
+- **Platform math library.**
+  `chisqprob` calls `math.lgamma`, whose result depends on the platform's C math library.
+  The fixtures were captured on x86_64 macOS under Rosetta 2, where Python 3.12 reproduces every `chisqprob` value exactly.
+  On arm64 macOS, `math.lgamma(5.0)` is `3.1780538303479444` rather than `3.178053830347945`, and 10 of the 273 recorded values, all with `df` 2.5, 10 or 100, differ from the fixture by up to 246 units in the last place, a relative difference of at most `2.9e-14`.
+  These values need a relative tolerance of about `1e-13`, larger than the one given above for summation.
 - **Exception messages.**
   The exception type is the reference; the message text is the interpreter's.
   For example, Python 2 reports integer division by zero as `integer division or modulo by zero` and Python 3 as `division by zero`.
@@ -151,7 +163,7 @@ Standard error has the scratch directory, the repository root, the biocma extrac
   The fixtures record the original behavior, defects included.
   For example, `seq-sort -l` is accepted but ignored, so `seq-sort.l` and `seq-sort.default` are identical, and `seq-diff -s` stops with a `ValueError` traceback because `cdc2-domain.fasta` contains one sequence twice.
   A port that fixes such a defect differs from the fixture by design, and the test should state the expected difference.
-  For the consensus cases, the expected differences are recorded in `differences.json`, described under "Deliberate differences" below.
+  For the consensus cases, the expected differences are recorded in `differences.json`, described under "Differences in consensus output" below.
 - **Biopython output.**
   `seq-convert`, `seq-extract`, `seq-purge`, `seq-sort`, `seq-intersect` and `seq-diff` write records through Biopython's writers, and `seq-dupes` through `SeqRecord.format`, so their output also depends on the Biopython version.
   The BiopythonWarning about partial codons in the `seq-orfs` cases is another example.
@@ -161,21 +173,20 @@ Standard error has the scratch directory, the repository root, the biocma extrac
   `logoutils` requires WebLogo, whose computations are its own rather than biofrills'.
   The on-disk index cache of `seq-intersect -c` is a side effect rather than an output.
 
-## Deliberate differences
+## Differences in consensus output
 
 `replay.py` calls every recorded consensus case again with the current sources of this repository and writes each case whose outcome differs from the recorded one to `differences.json`.
 An entry identifies the case as the fixture does: the fixture file relative to `py27/`, the section, the case index, the `weights` name for a `library/<input>.json` case or the alignment for a `tie-batch.json` case, and the keyword arguments.
 It then gives the recorded outcome, the current outcome, and the 1-based columns at which the two consensus strings differ.
-Every entry is deliberate and is explained below; a test of the current code expects the fixture value except where `differences.json` records another.
+Every entry is explained below: the first two kinds are deliberate changes of behavior, and the third follows from the port to Python 3.
+A test of the current code expects the fixture value except where `differences.json` records another.
 After a change that moves a recorded output, regenerate the file from the repository root and explain the new entries here:
 
 ```sh
-pixi run -e py27-oracle python tests/data/replay.py
+pixi run python tests/data/replay.py
 ```
 
-The `py27-oracle` environment is osx-64 only; on Linux, run the script with the interpreter of the conda environment described under "Regenerating".
-The consensus code runs only under Python 2.7 until the library is ported; under Python 3 the script runs, but every consensus case currently raises an exception, and all but those whose recorded outcome is the same exception are listed.
-Unmodified sources at commit `36684bb` produce an empty list.
+Before the port, the unmodified sources at commit `36684bb` produced an empty list under Python 2.7.
 
 - **Column order with `trim_ends=False`** (10 cases, all in `synth-edge.aln.json`).
   A column with no residue to report, either all gaps or all lowercase insert residues, yielded its gap immediately, ahead of any C-terminal residues that `consensus` was still holding back, so the string left column order.
@@ -195,3 +206,11 @@ Unmodified sources at commit `36684bb` produce an empty list.
   - `tie-batch.json` alignment `t157`, both simple cases: four residues tie in column 6, which changes from `E` to `D`; column 7 then changes from `D` to `A`, because the first heuristic follows the new residue in column 6.
   - `tie-batch.json` alignment `t081`, simple algorithm with `trim_ends=False`: three residues tie in column 4, which changes from `E` to `D`.
     With `trim_ends=True` the majority-gap column 3 does not reach the algorithm, so the first heuristic conditions on a different preceding column and settles the tie as before.
+- **Compensated summation at an exact threshold** (2 cases, both in `tie-batch.json`).
+  In alignment `t101`, both entropy cases (`simple` false, with `trim_ends` true and false) change at column 5 from a gap to `C`.
+  That column holds two gaps, a `C` and an `A`, and its weighted gap fraction is exactly one half: in exact arithmetic the `avg1` weights of the four rows are 20/21, 22/21, 20/21 and 22/21.
+  At `gap_threshold` 0.5 the documented rule, a gap where the fraction is greater than or equal to the threshold, makes the column a gap.
+  In floating point, however, the two weights of 20/21 differ by one unit in the last place, so the computed fraction lies on either side of 0.5 depending on how `sum(seq_weights)` is rounded.
+  Python 2's term-by-term sum gives `3.999999999999999` and a fraction of exactly `0.5`; the compensated sum of Python 3.12 and later gives the correctly rounded `3.9999999999999996` and a fraction of `0.49999999999999994`.
+  The recorded gap therefore depends on the rounding of the sum, and summing with `math.fsum` gives the same result as the built-in `sum`.
+  The simple cases of `t101` are unchanged, because their unweighted gap fraction, 2/4, is exact, and no case of the three MAPGAPS alignments changes.

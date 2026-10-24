@@ -40,7 +40,7 @@ def intersect_keys(keys, reffile, cache=False, clean_accs=False):
         refcache = reffile + '.sqlite'
         if os.path.exists(refcache):
             if os.stat(refcache).st_mtime < os.stat(reffile).st_mtime:
-                logging.warn("Outdated cache; rebuilding index")
+                logging.warning("Outdated cache; rebuilding index")
             else:
                 try:
                     index = (SeqIO.index_db(refcache,
@@ -49,7 +49,7 @@ def intersect_keys(keys, reffile, cache=False, clean_accs=False):
                              else SeqIO.index_db(refcache))
 
                 except Exception:
-                    logging.warn("Skipping corrupted cache; rebuilding index")
+                    logging.warning("Skipping corrupted cache; rebuilding index")
                     index = None
     else:
         refcache = ':memory:'
@@ -82,5 +82,5 @@ def aa_frequencies(seq, gap_chars='-.'):
             del aa_counts[gap_char]
     # Reduce to frequencies
     scale = 1.0 / sum(aa_counts.values())
-    return dict((aa, cnt * scale) for aa, cnt in aa_counts.iteritems())
+    return dict((aa, cnt * scale) for aa, cnt in aa_counts.items())
 

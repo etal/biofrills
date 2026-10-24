@@ -151,6 +151,7 @@ Standard error has the scratch directory, the repository root, the biocma extrac
   The fixtures record the original behavior, defects included.
   For example, `seq-sort -l` is accepted but ignored, so `seq-sort.l` and `seq-sort.default` are identical, and `seq-diff -s` stops with a `ValueError` traceback because `cdc2-domain.fasta` contains one sequence twice.
   A port that fixes such a defect differs from the fixture by design, and the test should state the expected difference.
+  For the consensus cases, the expected differences are recorded in `differences.json`, described under "Deliberate differences" below.
 - **Biopython output.**
   `seq-convert`, `seq-extract`, `seq-purge`, `seq-sort`, `seq-intersect` and `seq-diff` write records through Biopython's writers, and `seq-dupes` through `SeqRecord.format`, so their output also depends on the Biopython version.
   The BiopythonWarning about partial codons in the `seq-orfs` cases is another example.
@@ -159,3 +160,26 @@ Standard error has the scratch directory, the repository root, the biocma extrac
   `seq-pick -r` and `stats.uniqueof20` sample at random.
   `logoutils` requires WebLogo, whose computations are its own rather than biofrills'.
   The on-disk index cache of `seq-intersect -c` is a side effect rather than an output.
+
+## Deliberate differences
+
+`replay.py` calls every recorded consensus case again with the current sources of this repository and writes each case whose outcome differs from the recorded one to `differences.json`.
+An entry identifies the case as the fixture does: the fixture file relative to `py27/`, the section, the case index, the `weights` name for a `library/<input>.json` case or the alignment for a `tie-batch.json` case, and the keyword arguments.
+It then gives the recorded outcome, the current outcome, and the 1-based columns at which the two consensus strings differ.
+Every entry is deliberate and is explained below; a test of the current code expects the fixture value except where `differences.json` records another.
+After a change that moves a recorded output, regenerate the file from the repository root and explain the new entries here:
+
+```sh
+pixi run -e py27-oracle python tests/data/replay.py
+```
+
+The `py27-oracle` environment is osx-64 only; on Linux, run the script with the interpreter of the conda environment described under "Regenerating".
+The consensus code runs only under Python 2.7 until the library is ported; under Python 3 the script runs, but every consensus case currently raises an exception, and all but those whose recorded outcome is the same exception are listed.
+Unmodified sources at commit `36684bb` produce an empty list.
+
+- **Column order with `trim_ends=False`** (10 cases, all in `synth-edge.aln.json`).
+  A column with no residue to report, either all gaps or all lowercase insert residues, yielded its gap immediately, ahead of any C-terminal residues that `consensus` was still holding back, so the string left column order.
+  In `synth-edge.aln.json`, column 14 holds a single `Q` and column 15 is all gaps; the recorded `...YRGH-Q` becomes `...YRGHQ-`, which keeps each character at its own column, as callers that pair the consensus with alignment columns assume.
+  The other `trim_ends=False` cases of that file already ended in `Q-`, because the `Q` column was not a majority-gap column at their threshold.
+  Cases with `trim_ends=True` are unchanged, because consensus holds nothing back in that mode.
+  The three MAPGAPS alignments are unchanged as well: in them no residue-less column follows held-back C-terminal residues.

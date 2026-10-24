@@ -1,0 +1,214 @@
+{
+ "differences": [
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "consensus",
+   "case": 3,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "value": "-AMKV-LA-YRGH-Q"
+   },
+   "current": {
+    "value": "-AMKV-LA-YRGHQ-"
+   },
+   "columns": [
+    14,
+    15
+   ]
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "consensus",
+   "case": 4,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "value": "-AMKVILA-YRGH-Q"
+   },
+   "current": {
+    "value": "-AMKVILA-YRGHQ-"
+   },
+   "columns": [
+    14,
+    15
+   ]
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "consensus",
+   "case": 9,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "value": "-AMKV-LA-YRGH-Q"
+   },
+   "current": {
+    "value": "-AMKV-LA-YRGHQ-"
+   },
+   "columns": [
+    14,
+    15
+   ]
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "consensus",
+   "case": 10,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "value": "-AMKVILA-YRGH-Q"
+   },
+   "current": {
+    "value": "-AMKVILA-YRGHQ-"
+   },
+   "columns": [
+    14,
+    15
+   ]
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "consensus",
+   "case": 15,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "value": "-AMKV-LA-YRGH-Q"
+   },
+   "current": {
+    "value": "-AMKV-LA-YRGHQ-"
+   },
+   "columns": [
+    14,
+    15
+   ]
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "consensus",
+   "case": 16,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "value": "-AMKV-LA-YRGH-Q"
+   },
+   "current": {
+    "value": "-AMKV-LA-YRGHQ-"
+   },
+   "columns": [
+    14,
+    15
+   ]
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "consensus",
+   "case": 17,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "value": "-AMKVILA-YRGH-Q"
+   },
+   "current": {
+    "value": "-AMKVILA-YRGHQ-"
+   },
+   "columns": [
+    14,
+    15
+   ]
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "consensus",
+   "case": 21,
+   "weights": null,
+   "kwargs": {
+    "simple": true,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "value": "-AMKV-LA-YRGH-Q"
+   },
+   "current": {
+    "value": "-AMKV-LA-YRGHQ-"
+   },
+   "columns": [
+    14,
+    15
+   ]
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "consensus",
+   "case": 22,
+   "weights": null,
+   "kwargs": {
+    "simple": true,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "value": "-AMKV-LA-YRGH-Q"
+   },
+   "current": {
+    "value": "-AMKV-LA-YRGHQ-"
+   },
+   "columns": [
+    14,
+    15
+   ]
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "consensus",
+   "case": 23,
+   "weights": null,
+   "kwargs": {
+    "simple": true,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "value": "-AMKVILA-YRGH-Q"
+   },
+   "current": {
+    "value": "-AMKVILA-YRGHQ-"
+   },
+   "columns": [
+    14,
+    15
+   ]
+  }
+ ]
+}

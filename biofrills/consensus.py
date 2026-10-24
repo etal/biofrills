@@ -30,7 +30,10 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
         If False, stretch the consensus sequence to include the N- and C-tails
         of the alignment, even if those flanking columns are mostly gap
         characters. This avoids terminal gaps in the consensus (needed for
-        MAPGAPS).
+        MAPGAPS). A column with no residue to report, either all gaps or all
+        lowercase insert residues, still yields a gap character: the
+        consensus has exactly one character per alignment column, in column
+        order.
     gap_threshold : float
         If the proportion of gap characters in a column is greater than or equal
         to this value (after sequence weighting, if applicable), then the
@@ -63,16 +66,22 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
     # Traverse the alignment, handling gaps etc.
     def col_wise_consensus(columns):
         """Calculate the consensus chars for an iterable of columns."""
-        if not trim_ends:
-            # Track if we're in the N-term or C-term end of the sequence
-            in_left_end = True
-            maybe_right_tail = []
+        # Track if we're in the N-term or C-term end of the sequence; these
+        # change only when trim_ends is False
+        in_left_end = True
+        maybe_right_tail = []
         # prev_col = None
         # prev_char = None
         for col in columns:
-            # Lowercase cols mean explicitly, "don't include in consensus"
+            # Lowercase cols mean explicitly, "don't include in consensus";
+            # a column of only gap characters has no residue to report either.
+            # Its gap goes behind any C-terminal residues already buffered, so
+            # that the consensus stays aligned with the columns.
             if all(c.islower() for c in col if c not in '.-'):
-                yield '-'
+                if trim_ends or in_left_end:
+                    yield '-'
+                else:
+                    maybe_right_tail.append('-')
                 continue
             if any(c.islower() for c in col):
                 logging.warn('Mixed lowercase and uppercase letters in a '
@@ -89,7 +98,8 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
                         in_left_end = False
                     is_gap = False
 
-            # When to yield a gap here:
+            # When to yield a gap for a column with a residue to report (a
+            # column without one is handled above):
             #   -----------     ---------   ------  ----------
             #   in_left_end     trim_ends   is_gap  yield gap?
             #   -----------     ---------   ------  ----------

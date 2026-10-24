@@ -1,10 +1,10 @@
 #!/usr/bin/env python2.7
 """Capture reference outputs of the Python 2 biofrills code base.
 
-This script must run under Python 2.7 with Biopython 1.76, with biofrills/
-and scripts/ unmodified since the commit recorded in py27/versions.json; see
-README.md beside it for the environment.  It writes JSON files under
-tests/data/py27/:
+This script must run under Python 2.7 with Biopython 1.76, with biofrills/,
+scripts/ and setup.py unmodified since the commit recorded in
+py27/versions.json; see README.md beside it for the environment.  It writes
+JSON files under tests/data/py27/:
 
 * library/<input>.json -- library functions applied to each aligned input,
 * library/tie-batch.json -- consensus of many small tie-heavy alignments,

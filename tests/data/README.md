@@ -32,12 +32,18 @@ CONDA_SUBDIR=osx-64 conda create -p /tmp/bf-py27 --override-channels -c conda-fo
 ```
 
 On Linux, the same command without `CONDA_SUBDIR` gives a native linux-64 environment.
-Then, from the repository root, with the biofrills sources unchanged since the commit named above:
+Later commits port and change the biofrills sources, so the capture runs in a checkout whose sources are unchanged since commit `36684bb`, such as commit `615d27c`, which added this directory.
+A worktree beside this repository keeps the default locations of the `biocma` and `cladecompare` repositories valid:
 
 ```sh
+git worktree add ../biofrills-py27 615d27c
+cd ../biofrills-py27
 python3 tests/data/make_inputs.py          # optional: rewrites inputs/
 /tmp/bf-py27/bin/python tests/data/capture_py27.py
 ```
+
+In the worktree, `git status --short tests/data/py27` then lists every fixture file the capture changed; it lists none when the capture reproduces the committed files.
+A capture on another platform or with another Python 2.7 release also changes `versions.json`, which records both.
 
 `make_inputs.py` reads the test files of the `cladecompare` and `biocma` repositories beside this one (or as given by `--cladecompare` and `--biocma`) and writes the committed files under `inputs/`; rerunning it reproduces them byte for byte.
 `capture_py27.py` extracts biocma at commit `eac0c57` from the `biocma` repository beside this one (or from `$BIOCMA_REPO`) into a scratch directory, then deletes and rewrites `py27/`.

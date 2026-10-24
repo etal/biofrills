@@ -1,12 +1,16 @@
 # Generated directories
 build
 dist
+*.egg-info/
+.venv/
+.pytest_cache/
 .DS_Store
 .directory
 
 # Compiled Python files
 *.pyc
 *.pyo
+__pycache__/
 
 # Backup files from some editors
 *~

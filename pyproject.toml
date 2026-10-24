@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "biofrills"
+dynamic = ["version"]
+description = "Bioinformatics utilities for molecular sequence analysis."
+readme = "README.rst"
+requires-python = ">=3.12"
+license = "BSD-2-Clause"
+license-files = ["LICENSE"]
+authors = [
+    {name = "Eric Talevich", email = "me+code@etal.mozmail.com"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    "biopython>=1.86",
+]
+
+[project.optional-dependencies]
+graph = ["networkx>=3.2.1"]
+logo = ["weblogo>=3.9.0"]
+
+[project.urls]
+homepage = "https://github.com/etal/biofrills"
+
+[tool.setuptools.packages.find]
+include = ["biofrills", "biofrills.*"]
+namespaces = false
+
+[tool.setuptools.dynamic]
+version = {attr = "biofrills.__version__"}

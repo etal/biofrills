@@ -24,7 +24,25 @@ The Cython `score_pairwise` declares its accumulator and return value as single-
 
 ## Regenerating
 
-conda-forge publishes no Python 2.7 build for osx-arm64, but its osx-64 build runs under Rosetta:
+Later commits port and change the biofrills sources, so the capture runs in a checkout whose sources are unchanged since commit `36684bb`, such as commit `615d27c`, which added this directory.
+A worktree beside this repository keeps the default locations of the `biocma` and `cladecompare` repositories valid:
+
+```sh
+git worktree add ../biofrills-py27 615d27c
+python3 ../biofrills-py27/tests/data/make_inputs.py   # optional: rewrites the worktree's inputs/
+```
+
+The `py27-oracle` pixi environment defined in `pyproject.toml` pins the producing versions listed above.
+It is built for osx-64, as the capture was, and runs under Rosetta on Apple silicon; it is not available on Linux.
+From this repository, the following command runs the worktree's copy of `capture_py27.py`:
+
+```sh
+pixi run -e py27-oracle capture
+```
+
+Pixi warns that the environment requires an x86_64 processor; with the committed `pixi.lock` the installed packages run under Rosetta regardless.
+
+Without pixi, or on Linux, conda can build an equivalent environment; conda-forge publishes no Python 2.7 build for osx-arm64, but its osx-64 build runs under Rosetta:
 
 ```sh
 CONDA_SUBDIR=osx-64 conda create -p /tmp/bf-py27 --override-channels -c conda-forge \
@@ -32,14 +50,10 @@ CONDA_SUBDIR=osx-64 conda create -p /tmp/bf-py27 --override-channels -c conda-fo
 ```
 
 On Linux, the same command without `CONDA_SUBDIR` gives a native linux-64 environment.
-Later commits port and change the biofrills sources, so the capture runs in a checkout whose sources are unchanged since commit `36684bb`, such as commit `615d27c`, which added this directory.
-A worktree beside this repository keeps the default locations of the `biocma` and `cladecompare` repositories valid:
+Then run the worktree's copy of the capture with that environment's interpreter:
 
 ```sh
-git worktree add ../biofrills-py27 615d27c
-cd ../biofrills-py27
-python3 tests/data/make_inputs.py          # optional: rewrites inputs/
-/tmp/bf-py27/bin/python tests/data/capture_py27.py
+/tmp/bf-py27/bin/python ../biofrills-py27/tests/data/capture_py27.py
 ```
 
 In the worktree, `git status --short tests/data/py27` then lists every fixture file the capture changed; it lists none when the capture reproduces the committed files.

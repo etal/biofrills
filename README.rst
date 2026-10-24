@@ -19,3 +19,28 @@ This version is not yet released, and its port from Python 2 is in progress:
 the library modules and the command-line utilities in scripts/ are still
 written for Python 2. The latest release on PyPI, 0.3.1, requires Python 2.7.
 The scripts are not installed with the package.
+
+Development
+-----------
+
+Two development workflows are defined in ``pyproject.toml``, and both lock
+files are committed. With uv_, which installs the dependencies from PyPI::
+
+    uv sync --all-extras
+    uv run pytest
+
+With pixi_, which installs them from conda-forge::
+
+    pixi run test            # newest Python in the lock file
+    pixi run -e py312 test   # Python 3.12, the oldest supported version
+
+Only weblogo comes from PyPI there, with three of its dependencies, because
+conda-forge lacks a recent enough build of it.
+
+The test suite is not yet written, so ``pytest`` currently collects no tests
+and exits with status 5. The ``py27-oracle`` pixi environment regenerates the
+Python 2.7 reference outputs from a worktree of the pre-port sources, as
+described in ``tests/data/README.md``.
+
+.. _uv: https://docs.astral.sh/uv/
+.. _pixi: https://pixi.prefix.dev/

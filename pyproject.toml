@@ -34,9 +34,66 @@ logo = ["weblogo>=3.9.0"]
 [project.urls]
 homepage = "https://github.com/etal/biofrills"
 
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "ruff>=0.17.2",
+    "scipy>=1.16.3",
+]
+
 [tool.setuptools.packages.find]
 include = ["biofrills", "biofrills.*"]
 namespaces = false
 
 [tool.setuptools.dynamic]
 version = {attr = "biofrills.__version__"}
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "linux-64"]
+
+[tool.pixi.pypi-dependencies]
+biofrills = {path = ".", editable = true}
+
+# Conda-forge builds of the dependencies declared above, here and in the graph
+# and dev features, carry no versions: the floors in [project] and
+# [dependency-groups] still apply. The py312 and py27-oracle features pin
+# versions of their own. weblogo has no conda entry on purpose: conda-forge's
+# newest build, 3.7.12, is below its floor, so it comes from PyPI.
+[tool.pixi.dependencies]
+biopython = "*"
+
+[tool.pixi.feature.graph.dependencies]
+networkx = "*"
+
+[tool.pixi.feature.dev]
+# Keeps osx-64, which only py27-oracle needs, out of the Python 3 environments.
+platforms = ["osx-arm64", "linux-64"]
+
+[tool.pixi.feature.dev.dependencies]
+pytest = "*"
+ruff = "*"
+scipy = "*"
+
+[tool.pixi.feature.dev.tasks]
+test = "pytest"
+
+[tool.pixi.feature.py312.dependencies]
+python = "3.12.*"
+
+[tool.pixi.feature.py27-oracle]
+platforms = ["osx-64"]
+
+[tool.pixi.feature.py27-oracle.dependencies]
+python = "2.7.*"
+biopython = "1.76.*"
+numpy = "1.16.*"
+networkx = "2.2.*"
+
+[tool.pixi.feature.py27-oracle.tasks]
+capture = "python ../biofrills-py27/tests/data/capture_py27.py"
+
+[tool.pixi.environments]
+default = {features = ["dev", "graph", "logo"]}
+py312 = {features = ["dev", "graph", "logo", "py312"]}
+py27-oracle = {features = ["py27-oracle"], no-default-feature = true}

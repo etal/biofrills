@@ -1,0 +1,11 @@
+{
+ "script": "seq-blocks",
+ "argv": [
+  "synth-edge.aln.fasta"
+ ],
+ "stdin": null,
+ "returncode": 0,
+ "stdout": ">s1 s1 first sequence\nMKVLA.YRGH\n>s2 s2\nMKVLA.FRGH\n>s3 s3\n-KVL-.YKGH\n>s4 s4\nMRVLA.YRGN\n>s5 s5\n-KVLS.YRG-\n",
+ "stderr": "",
+ "written_files": {}
+}

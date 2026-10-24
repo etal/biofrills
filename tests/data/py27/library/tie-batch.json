@@ -1,0 +1,5253 @@
+{
+ "input": "inputs/tie-batch.fasta",
+ "sequence_weights_kwargs": {
+  "scaling": "avg1"
+ },
+ "consensus_kwargs": [
+  {
+   "simple": false,
+   "trim_ends": true
+  },
+  {
+   "simple": false,
+   "trim_ends": false
+  },
+  {
+   "simple": true,
+   "trim_ends": true
+  },
+  {
+   "simple": true,
+   "trim_ends": false
+  }
+ ],
+ "alignments": [
+  {
+   "id": "t000",
+   "sequence_weights": {
+    "value": [
+     1.1450617283950617,
+     0.9444444444444445,
+     1.152777777777778,
+     0.8209876543209876,
+     0.9367283950617283
+    ]
+   },
+   "consensus": [
+    {
+     "value": "-DACGCCEDE"
+    },
+    {
+     "value": "CDACGCCEDE"
+    },
+    {
+     "value": "-DACGCCADE"
+    },
+    {
+     "value": "CDACGCCADE"
+    }
+   ]
+  },
+  {
+   "id": "t001",
+   "sequence_weights": {
+    "value": [
+     1.0583333333333331,
+     0.8430555555555553,
+     0.9680555555555553,
+     1.1624999999999999,
+     0.9680555555555553
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AGEAACEGCC"
+    },
+    {
+     "value": "AGEAACEGCC"
+    },
+    {
+     "value": "AGEAACEGCC"
+    },
+    {
+     "value": "AGEAACEGCC"
+    }
+   ]
+  },
+  {
+   "id": "t002",
+   "sequence_weights": {
+    "value": [
+     0.9374999999999998,
+     1.125,
+     0.9374999999999998
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GCEGCEDE"
+    },
+    {
+     "value": "GCEGCEDE"
+    },
+    {
+     "value": "GCAADCDE"
+    },
+    {
+     "value": "GCAADCDE"
+    }
+   ]
+  },
+  {
+   "id": "t003",
+   "sequence_weights": {
+    "value": [
+     1.0791666666666668,
+     1.1016025641025642,
+     1.2451923076923077,
+     0.7852564102564101,
+     0.9131410256410256,
+     0.9804487179487178,
+     0.8951923076923076
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EAAGEDCDCDAAD"
+    },
+    {
+     "value": "EAAGEDCDCDAAD"
+    },
+    {
+     "value": "AAAGAAADCDAAD"
+    },
+    {
+     "value": "AAAGAAADCDAAD"
+    }
+   ]
+  },
+  {
+   "id": "t004",
+   "sequence_weights": {
+    "value": [
+     1.0681818181818181,
+     0.9318181818181817,
+     1.0
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AC-GDEEGCAEG"
+    },
+    {
+     "value": "AC-GDEEGCAEG"
+    },
+    {
+     "value": "AG-GAEEGCAEG"
+    },
+    {
+     "value": "AG-GAEEGCAEG"
+    }
+   ]
+  },
+  {
+   "id": "t005",
+   "sequence_weights": {
+    "value": [
+     1.09375,
+     1.0665277777777777,
+     0.9294444444444445,
+     0.86625,
+     0.9974999999999999,
+     1.0062499999999999,
+     1.0402777777777779
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ECAEGEEGDA"
+    },
+    {
+     "value": "ECAEGEEGDA"
+    },
+    {
+     "value": "ECACCEEADA"
+    },
+    {
+     "value": "ECACCEEADA"
+    }
+   ]
+  },
+  {
+   "id": "t006",
+   "sequence_weights": {
+    "value": [
+     1.0,
+     0.9318181818181819,
+     1.0681818181818181
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DDC-GACACCCE"
+    },
+    {
+     "value": "DDC-GACACCCE"
+    },
+    {
+     "value": "DDA-GAEACACA"
+    },
+    {
+     "value": "DDA-GAEACACA"
+    }
+   ]
+  },
+  {
+   "id": "t007",
+   "sequence_weights": {
+    "value": [
+     1.0952380952380951,
+     0.7976190476190477,
+     0.7023809523809523,
+     1.107142857142857,
+     1.0357142857142856,
+     1.2619047619047619
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GAGDEDC"
+    },
+    {
+     "value": "GAGDEDC"
+    },
+    {
+     "value": "GAGAEDD"
+    },
+    {
+     "value": "GAGAEDD"
+    }
+   ]
+  },
+  {
+   "id": "t008",
+   "sequence_weights": {
+    "value": [
+     0.7592592592592594,
+     1.1481481481481484,
+     0.9907407407407409,
+     0.9074074074074076,
+     1.1296296296296298,
+     1.064814814814815
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CADAAAGDC"
+    },
+    {
+     "value": "CADAAAGDC"
+    },
+    {
+     "value": "-AAAAAGDC"
+    },
+    {
+     "value": "CAAAAAGDC"
+    }
+   ]
+  },
+  {
+   "id": "t009",
+   "sequence_weights": {
+    "value": [
+     0.875,
+     1.2395833333333333,
+     1.0169444444444444,
+     0.9741666666666665,
+     1.0723611111111109,
+     0.9245833333333332,
+     0.8973611111111109
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CAGACCDEGD"
+    },
+    {
+     "value": "CAGACCDEGD"
+    },
+    {
+     "value": "CAGAAGDEGA"
+    },
+    {
+     "value": "CAGAAGDEGA"
+    }
+   ]
+  },
+  {
+   "id": "t010",
+   "sequence_weights": {
+    "value": [
+     0.8833333333333333,
+     1.0696969696969696,
+     1.0833333333333333,
+     1.190909090909091,
+     0.8924242424242423,
+     0.8803030303030303
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CEACDGCGAEE"
+    },
+    {
+     "value": "CEACDGCGAEE"
+    },
+    {
+     "value": "AAACDACGAAA"
+    },
+    {
+     "value": "AAACDACGAAA"
+    }
+   ]
+  },
+  {
+   "id": "t011",
+   "sequence_weights": {
+    "value": [
+     1.261645299145299,
+     0.9625,
+     0.8391025641025641,
+     1.059722222222222,
+     0.9101495726495727,
+     0.8839743589743592,
+     1.0829059829059828
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AEEDECCDAAAGG"
+    },
+    {
+     "value": "AEEDECCDAAAGG"
+    },
+    {
+     "value": "AEGDACCDAAADC"
+    },
+    {
+     "value": "AEGDACCDAAADC"
+    }
+   ]
+  },
+  {
+   "id": "t012",
+   "sequence_weights": {
+    "value": [
+     0.8458333333333334,
+     1.1342592592592593,
+     0.8847222222222222,
+     0.900925925925926,
+     1.3611111111111112,
+     0.9430555555555555,
+     0.9300925925925926
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GDGCCADGA"
+    },
+    {
+     "value": "GDGCCADGA"
+    },
+    {
+     "value": "GDGCCADGG"
+    },
+    {
+     "value": "GDGCCADGG"
+    }
+   ]
+  },
+  {
+   "id": "t013",
+   "sequence_weights": {
+    "value": [
+     0.9807692307692308,
+     0.9230769230769231,
+     1.0961538461538463
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DACDCDGEGCEEA"
+    },
+    {
+     "value": "DACDCDGEGCEEA"
+    },
+    {
+     "value": "DACDAGAAGCCAA"
+    },
+    {
+     "value": "DACDAGAAGCCAA"
+    }
+   ]
+  },
+  {
+   "id": "t014",
+   "sequence_weights": {
+    "value": [
+     0.9630952380952381,
+     0.8023809523809522,
+     1.1857142857142857,
+     1.1011904761904758,
+     1.0369047619047618,
+     0.9107142857142856
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DDDCCEDECECAAA"
+    },
+    {
+     "value": "DDDCCEDECECAAA"
+    },
+    {
+     "value": "DADCAGAEAAAAA-"
+    },
+    {
+     "value": "DADCAGAEAAAAAA"
+    }
+   ]
+  },
+  {
+   "id": "t015",
+   "sequence_weights": {
+    "value": [
+     1.1197916666666667,
+     0.8680555555555557,
+     0.920138888888889,
+     1.0069444444444444,
+     1.0850694444444444
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DGCCEAAA"
+    },
+    {
+     "value": "DGCCEAAA"
+    },
+    {
+     "value": "DGCCAAAA"
+    },
+    {
+     "value": "DGCCAAAA"
+    }
+   ]
+  },
+  {
+   "id": "t016",
+   "sequence_weights": {
+    "value": [
+     0.9791666666666667,
+     0.9791666666666667,
+     1.0416666666666665
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EDEA--GDAEEEDG"
+    },
+    {
+     "value": "EDEA--GDAEEEDG"
+    },
+    {
+     "value": "CDAA--GDAECCDA"
+    },
+    {
+     "value": "CDAA--GDAECCDA"
+    }
+   ]
+  },
+  {
+   "id": "t017",
+   "sequence_weights": {
+    "value": [
+     1.03125,
+     1.125,
+     0.84375
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ECAGAAGE"
+    },
+    {
+     "value": "ECAGAAGE"
+    },
+    {
+     "value": "CCAGAAGE"
+    },
+    {
+     "value": "CCAGAAGE"
+    }
+   ]
+  },
+  {
+   "id": "t018",
+   "sequence_weights": {
+    "value": [
+     1.0555555555555554,
+     1.1388888888888888,
+     0.8240740740740741,
+     1.1185185185185185,
+     0.8907407407407408,
+     0.9722222222222223
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADCGDEAGC"
+    },
+    {
+     "value": "ADCGDEAGC"
+    },
+    {
+     "value": "ADEGDAAGE"
+    },
+    {
+     "value": "ADEGDAAGE"
+    }
+   ]
+  },
+  {
+   "id": "t019",
+   "sequence_weights": {
+    "value": [
+     1.2249999999999999,
+     1.1083333333333334,
+     1.2930555555555556,
+     0.8361111111111111,
+     0.7194444444444446,
+     0.8652777777777778,
+     0.952777777777778
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EDAGDC"
+    },
+    {
+     "value": "EDAGDC"
+    },
+    {
+     "value": "EAADDC"
+    },
+    {
+     "value": "EAADDC"
+    }
+   ]
+  },
+  {
+   "id": "t020",
+   "sequence_weights": {
+    "value": [
+     0.8571428571428571,
+     1.0476190476190474,
+     0.9523809523809522,
+     1.1428571428571426
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CDGA-ED"
+    },
+    {
+     "value": "CDGA-ED"
+    },
+    {
+     "value": "CAAA-AD"
+    },
+    {
+     "value": "CAAA-AD"
+    }
+   ]
+  },
+  {
+   "id": "t021",
+   "sequence_weights": {
+    "value": [
+     1.1680555555555556,
+     1.0791666666666666,
+     1.0097222222222222,
+     0.7652777777777777,
+     0.8777777777777778,
+     1.1
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AAACEDDCAGDG"
+    },
+    {
+     "value": "AAACEDDCAGDG"
+    },
+    {
+     "value": "AAACCDAA-GDC"
+    },
+    {
+     "value": "AAACCDAA-CDC"
+    }
+   ]
+  },
+  {
+   "id": "t022",
+   "sequence_weights": {
+    "value": [
+     1.0,
+     0.9166666666666666,
+     1.0833333333333335,
+     1.0
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AADG-CAG"
+    },
+    {
+     "value": "AADG-CAG"
+    },
+    {
+     "value": "AAGC-CAE"
+    },
+    {
+     "value": "AAGC-CAE"
+    }
+   ]
+  },
+  {
+   "id": "t023",
+   "sequence_weights": {
+    "value": [
+     1.273809523809524,
+     0.8273809523809524,
+     0.8670634920634922,
+     0.9563492063492065,
+     1.0753968253968256
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EAGECCA"
+    },
+    {
+     "value": "EAGECCA"
+    },
+    {
+     "value": "EAGECEA"
+    },
+    {
+     "value": "EAGECEA"
+    }
+   ]
+  },
+  {
+   "id": "t024",
+   "sequence_weights": {
+    "value": [
+     1.2000000000000002,
+     1.0,
+     0.8666666666666668,
+     0.9333333333333332
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ECACADECG-E"
+    },
+    {
+     "value": "ECACADECG-E"
+    },
+    {
+     "value": "ECA-ADGCG-E"
+    },
+    {
+     "value": "ECA-ADGCG-C"
+    }
+   ]
+  },
+  {
+   "id": "t025",
+   "sequence_weights": {
+    "value": [
+     1.125,
+     0.8749999999999999,
+     0.9999999999999999
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GCEEGA"
+    },
+    {
+     "value": "GCEEGA"
+    },
+    {
+     "value": "DDEEGA"
+    },
+    {
+     "value": "DDEEGA"
+    }
+   ]
+  },
+  {
+   "id": "t026",
+   "sequence_weights": {
+    "value": [
+     1.1498015873015874,
+     0.9365079365079365,
+     0.9117063492063492,
+     1.0009920634920637,
+     1.0009920634920637
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DCGEAAECCAGGEG"
+    },
+    {
+     "value": "DCGEAAECCAGGEG"
+    },
+    {
+     "value": "DCCEAAECCACGEG"
+    },
+    {
+     "value": "DCCEAAECCACGEG"
+    }
+   ]
+  },
+  {
+   "id": "t027",
+   "sequence_weights": {
+    "value": [
+     1.0930555555555554,
+     0.9958333333333333,
+     0.8222222222222223,
+     1.0305555555555557,
+     1.0583333333333333
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EACEDGGCGA"
+    },
+    {
+     "value": "EACEDGGCGA"
+    },
+    {
+     "value": "EACEAAAAGA"
+    },
+    {
+     "value": "EACEAAAAGA"
+    }
+   ]
+  },
+  {
+   "id": "t028",
+   "sequence_weights": {
+    "value": [
+     1.037037037037037,
+     0.9629629629629628,
+     0.8148148148148149,
+     1.1851851851851853
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DACCCGEAD"
+    },
+    {
+     "value": "DACCCGEAD"
+    },
+    {
+     "value": "DACCCAAAD"
+    },
+    {
+     "value": "DACCCAAAD"
+    }
+   ]
+  },
+  {
+   "id": "t029",
+   "sequence_weights": {
+    "value": [
+     1.166666666666667,
+     1.0250000000000001,
+     1.2250000000000003,
+     0.9333333333333336,
+     0.9750000000000003,
+     0.8750000000000002,
+     0.8000000000000002
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DCGCECC"
+    },
+    {
+     "value": "DCGCECC"
+    },
+    {
+     "value": "DCACDDC"
+    },
+    {
+     "value": "DCACDDC"
+    }
+   ]
+  },
+  {
+   "id": "t030",
+   "sequence_weights": {
+    "value": [
+     0.9722222222222221,
+     0.9722222222222221,
+     1.0555555555555554
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AECCEDGAE"
+    },
+    {
+     "value": "AECCEDGAE"
+    },
+    {
+     "value": "AECAEDGAE"
+    },
+    {
+     "value": "AECAEDGAE"
+    }
+   ]
+  },
+  {
+   "id": "t031",
+   "sequence_weights": {
+    "value": [
+     1.0180555555555555,
+     1.1,
+     0.9222222222222223,
+     1.0222222222222224,
+     0.7763888888888891,
+     1.0555555555555556,
+     1.1055555555555556
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GDDACEAAEGAACC"
+    },
+    {
+     "value": "GDDACEAAEGAACC"
+    },
+    {
+     "value": "GADACEAAEAAAAC"
+    },
+    {
+     "value": "GADACEAAEAAAAC"
+    }
+   ]
+  },
+  {
+   "id": "t032",
+   "sequence_weights": {
+    "value": [
+     0.9523809523809524,
+     1.0,
+     1.0000000000000002,
+     1.0476190476190477
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DAAGEADCADED-D"
+    },
+    {
+     "value": "DAAGEADCADED-D"
+    },
+    {
+     "value": "CAAG-ACCAGED-D"
+    },
+    {
+     "value": "CAAG-ACCAGED-D"
+    }
+   ]
+  },
+  {
+   "id": "t033",
+   "sequence_weights": {
+    "value": [
+     0.888888888888889,
+     1.0,
+     0.888888888888889,
+     1.2222222222222223
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AACEGC"
+    },
+    {
+     "value": "AACEGC"
+    },
+    {
+     "value": "AADEGC"
+    },
+    {
+     "value": "AADEGC"
+    }
+   ]
+  },
+  {
+   "id": "t034",
+   "sequence_weights": {
+    "value": [
+     1.092948717948718,
+     0.9594017094017095,
+     0.9754273504273506,
+     0.9754273504273505,
+     0.9967948717948719
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AGCEADGAADCAC"
+    },
+    {
+     "value": "AGCEADGAADCAC"
+    },
+    {
+     "value": "AGEEADGAADCAD"
+    },
+    {
+     "value": "AGEEADGAADCAD"
+    }
+   ]
+  },
+  {
+   "id": "t035",
+   "sequence_weights": {
+    "value": [
+     1.09375,
+     1.0520833333333333,
+     1.0104166666666667,
+     0.9583333333333335,
+     0.9583333333333333,
+     0.9270833333333334
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AEADEDGE"
+    },
+    {
+     "value": "AEADEDGE"
+    },
+    {
+     "value": "AAAGEDGA"
+    },
+    {
+     "value": "AAAGEDGA"
+    }
+   ]
+  },
+  {
+   "id": "t036",
+   "sequence_weights": {
+    "value": [
+     1.2833333333333332,
+     1.001388888888889,
+     0.9236111111111113,
+     1.05,
+     0.7388888888888889,
+     1.1472222222222221,
+     0.8555555555555555
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DCACCE"
+    },
+    {
+     "value": "DCACCE"
+    },
+    {
+     "value": "DCACCE"
+    },
+    {
+     "value": "DCACCE"
+    }
+   ]
+  },
+  {
+   "id": "t037",
+   "sequence_weights": {
+    "value": [
+     1.0625,
+     0.875,
+     1.0625
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADEGEDAA"
+    },
+    {
+     "value": "ADEGEDAA"
+    },
+    {
+     "value": "ADGGEDAA"
+    },
+    {
+     "value": "ADGGEDAA"
+    }
+   ]
+  },
+  {
+   "id": "t038",
+   "sequence_weights": {
+    "value": [
+     0.9722222222222221,
+     1.0833333333333335,
+     0.9722222222222223,
+     0.972222222222222
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AGCCEDDD-EGD"
+    },
+    {
+     "value": "AGCCEDDD-EGD"
+    },
+    {
+     "value": "AGCEEDEA-EGA"
+    },
+    {
+     "value": "AGCEEDEA-EGA"
+    }
+   ]
+  },
+  {
+   "id": "t039",
+   "sequence_weights": {
+    "value": [
+     1.0416666666666665,
+     1.5833333333333333,
+     0.7666666666666667,
+     0.7583333333333333,
+     0.95,
+     1.1416666666666666,
+     0.7583333333333333
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GEAAAAC"
+    },
+    {
+     "value": "GEAAAAC"
+    },
+    {
+     "value": "GEAAAAC"
+    },
+    {
+     "value": "GEAAAAC"
+    }
+   ]
+  },
+  {
+   "id": "t040",
+   "sequence_weights": {
+    "value": [
+     1.0,
+     1.09375,
+     0.90625
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DAEGDCAD"
+    },
+    {
+     "value": "DAEGDCAD"
+    },
+    {
+     "value": "CAAGDCAC"
+    },
+    {
+     "value": "CAAGDCAC"
+    }
+   ]
+  },
+  {
+   "id": "t041",
+   "sequence_weights": {
+    "value": [
+     1.0999999999999999,
+     0.909090909090909,
+     0.9333333333333332,
+     0.9742424242424244,
+     1.1363636363636365,
+     0.9469696969696969
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AADAAGCEGCC"
+    },
+    {
+     "value": "AADAAGCEGCC"
+    },
+    {
+     "value": "AADAAGCAGAC"
+    },
+    {
+     "value": "AADAAGCAGAC"
+    }
+   ]
+  },
+  {
+   "id": "t042",
+   "sequence_weights": {
+    "value": [
+     0.9780092592592592,
+     0.8159722222222223,
+     1.111111111111111,
+     1.1226851851851851,
+     0.9722222222222222
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EGDCAEDEAGAC"
+    },
+    {
+     "value": "EGDCAEDEAGAC"
+    },
+    {
+     "value": "EGDAAEDAAGAC"
+    },
+    {
+     "value": "EGDAAEDAAGAC"
+    }
+   ]
+  },
+  {
+   "id": "t043",
+   "sequence_weights": {
+    "value": [
+     0.7562499999999999,
+     0.925,
+     0.9645833333333332,
+     1.1541666666666668,
+     1.0770833333333334,
+     1.1229166666666668
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AGCDCDEG"
+    },
+    {
+     "value": "AGCDCDEG"
+    },
+    {
+     "value": "A-CAADEA"
+    },
+    {
+     "value": "A-CAADEA"
+    }
+   ]
+  },
+  {
+   "id": "t044",
+   "sequence_weights": {
+    "value": [
+     0.8583333333333335,
+     1.116666666666667,
+     0.9333333333333335,
+     1.1083333333333336,
+     1.0333333333333337,
+     1.2416666666666667,
+     0.7083333333333334
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ACDGCEG"
+    },
+    {
+     "value": "ACDGCEG"
+    },
+    {
+     "value": "ACDGCEG"
+    },
+    {
+     "value": "ACDGCEG"
+    }
+   ]
+  },
+  {
+   "id": "t045",
+   "sequence_weights": {
+    "value": [
+     0.9444444444444443,
+     1.0277777777777777,
+     1.0277777777777777
+    ]
+   },
+   "consensus": [
+    {
+     "value": "--ADACEECEA"
+    },
+    {
+     "value": "GGADACEECEA"
+    },
+    {
+     "value": "--AGACEGAEA"
+    },
+    {
+     "value": "GGAGACEGAEA"
+    }
+   ]
+  },
+  {
+   "id": "t046",
+   "sequence_weights": {
+    "value": [
+     1.064285714285714,
+     0.938095238095238,
+     0.938095238095238,
+     1.1345238095238095,
+     0.9619047619047617,
+     0.9630952380952379
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADDACEEAEDGECD"
+    },
+    {
+     "value": "ADDACEEAEDGECD"
+    },
+    {
+     "value": "AADAGEEAEDAEGD"
+    },
+    {
+     "value": "AADAGEEAEDAEGD"
+    }
+   ]
+  },
+  {
+   "id": "t047",
+   "sequence_weights": {
+    "value": [
+     0.8902777777777781,
+     0.9055555555555558,
+     1.1291666666666669,
+     1.0791666666666668,
+     1.0305555555555557,
+     0.9652777777777781
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADDDAGGAECCG"
+    },
+    {
+     "value": "ADDDAGGAECCG"
+    },
+    {
+     "value": "ADEDAGGAECCG"
+    },
+    {
+     "value": "ADEDAGGAECCG"
+    }
+   ]
+  },
+  {
+   "id": "t048",
+   "sequence_weights": {
+    "value": [
+     1.0694444444444446,
+     1.0636574074074077,
+     0.9247685185185184,
+     1.0173611111111112,
+     0.9247685185185184
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CDCA-AAEAGED"
+    },
+    {
+     "value": "CDCA-AAEAGED"
+    },
+    {
+     "value": "CACA-AAEAGCD"
+    },
+    {
+     "value": "CACA-AAEAGCD"
+    }
+   ]
+  },
+  {
+   "id": "t049",
+   "sequence_weights": {
+    "value": [
+     0.8095238095238095,
+     1.0952380952380953,
+     0.9047619047619049,
+     1.1904761904761905
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GGEDAAE"
+    },
+    {
+     "value": "GGEDAAE"
+    },
+    {
+     "value": "GAEDAAC"
+    },
+    {
+     "value": "GAEDAAC"
+    }
+   ]
+  },
+  {
+   "id": "t050",
+   "sequence_weights": {
+    "value": [
+     0.7947530864197532,
+     0.9490740740740742,
+     1.2654320987654322,
+     0.9645061728395062,
+     1.0262345679012346
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADGGGCCGA"
+    },
+    {
+     "value": "ADGGGCCGA"
+    },
+    {
+     "value": "ADAAGCCGA"
+    },
+    {
+     "value": "ADAAGCCGA"
+    }
+   ]
+  },
+  {
+   "id": "t051",
+   "sequence_weights": {
+    "value": [
+     1.00625,
+     1.0270833333333336,
+     1.1020833333333333,
+     1.08125,
+     0.7145833333333333,
+     1.06875
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AADEAGEG"
+    },
+    {
+     "value": "AADEAGEG"
+    },
+    {
+     "value": "AADEAAEG"
+    },
+    {
+     "value": "AADEAAEG"
+    }
+   ]
+  },
+  {
+   "id": "t052",
+   "sequence_weights": {
+    "value": [
+     1.2891666666666666,
+     1.19,
+     0.801111111111111,
+     0.8886111111111111,
+     0.9858333333333333,
+     1.085,
+     0.7602777777777777
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ACGDCEGAEA"
+    },
+    {
+     "value": "ACGDCEGAEA"
+    },
+    {
+     "value": "ACGACEGAEA"
+    },
+    {
+     "value": "ACGACEGAEA"
+    }
+   ]
+  },
+  {
+   "id": "t053",
+   "sequence_weights": {
+    "value": [
+     1.1098484848484849,
+     1.0467171717171717,
+     1.0656565656565657,
+     0.8383838383838382,
+     0.9393939393939393
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GC-DEAGAECDD"
+    },
+    {
+     "value": "GC-DEAGAECDD"
+    },
+    {
+     "value": "GC-DEACAECDD"
+    },
+    {
+     "value": "GC-DEACAECDD"
+    }
+   ]
+  },
+  {
+   "id": "t054",
+   "sequence_weights": {
+    "value": [
+     1.1500000000000001,
+     0.9666666666666667,
+     1.0283333333333333,
+     0.9666666666666667,
+     0.9216666666666666,
+     0.9666666666666667
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AAEGEGDCAD"
+    },
+    {
+     "value": "AAEGEGDCAD"
+    },
+    {
+     "value": "AAEGAGDAAA"
+    },
+    {
+     "value": "AAEGAGDAAA"
+    }
+   ]
+  },
+  {
+   "id": "t055",
+   "sequence_weights": {
+    "value": [
+     1.0714285714285714,
+     0.9642857142857142,
+     0.9642857142857142
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DEGEADC"
+    },
+    {
+     "value": "DEGEADC"
+    },
+    {
+     "value": "AEGEADC"
+    },
+    {
+     "value": "AEGEADC"
+    }
+   ]
+  },
+  {
+   "id": "t056",
+   "sequence_weights": {
+    "value": [
+     0.9722222222222222,
+     0.8712121212121212,
+     0.946969696969697,
+     1.0479797979797978,
+     1.1616161616161618
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADEE-CAAGAG"
+    },
+    {
+     "value": "ADEE-CAAGAG"
+    },
+    {
+     "value": "ADEC-CAAGAG"
+    },
+    {
+     "value": "ADEC-CAAGAG"
+    }
+   ]
+  },
+  {
+   "id": "t057",
+   "sequence_weights": {
+    "value": [
+     1.1271367521367521,
+     1.1004273504273505,
+     0.9348290598290598,
+     0.8814102564102566,
+     0.9561965811965811
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DAEGAAEEGGDCC"
+    },
+    {
+     "value": "DAEGAAEEGGDCC"
+    },
+    {
+     "value": "DAAGAADAGGDGC"
+    },
+    {
+     "value": "DAAGAADAGGDGC"
+    }
+   ]
+  },
+  {
+   "id": "t058",
+   "sequence_weights": {
+    "value": [
+     0.9074074074074074,
+     1.1041666666666667,
+     0.9594907407407408,
+     1.0462962962962965,
+     0.982638888888889
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CGDAEEAAGEG-"
+    },
+    {
+     "value": "CGDAEEAAGEGC"
+    },
+    {
+     "value": "CGAAEDAAGEG-"
+    },
+    {
+     "value": "CGAAEDAAGEGC"
+    }
+   ]
+  },
+  {
+   "id": "t059",
+   "sequence_weights": {
+    "value": [
+     0.8395833333333333,
+     1.2125,
+     1.0374999999999999,
+     0.9124999999999999,
+     1.0458333333333334,
+     0.9520833333333333
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADCGACED"
+    },
+    {
+     "value": "ADCGACED"
+    },
+    {
+     "value": "AAAGACEA"
+    },
+    {
+     "value": "AAAGACEA"
+    }
+   ]
+  },
+  {
+   "id": "t060",
+   "sequence_weights": {
+    "value": [
+     1.0761752136752136,
+     1.071688034188034,
+     0.7942307692307693,
+     1.0163461538461538,
+     1.0694444444444444,
+     0.9198717948717948,
+     1.0522435897435896
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EADCGEGCDECCE"
+    },
+    {
+     "value": "EADCGEGCDECCE"
+    },
+    {
+     "value": "EADCAEGCDECAA"
+    },
+    {
+     "value": "EADCAEGCDECAA"
+    }
+   ]
+  },
+  {
+   "id": "t061",
+   "sequence_weights": {
+    "value": [
+     0.8940972222222222,
+     1.0329861111111112,
+     1.1024305555555556,
+     1.0850694444444444,
+     0.8854166666666665
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADDGEDCG"
+    },
+    {
+     "value": "ADDGEDCG"
+    },
+    {
+     "value": "ADDGADCA"
+    },
+    {
+     "value": "ADDGADCA"
+    }
+   ]
+  },
+  {
+   "id": "t062",
+   "sequence_weights": {
+    "value": [
+     0.9523809523809524,
+     1.0,
+     1.0476190476190477,
+     1.0000000000000002
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EGGAAADGDDCEGC"
+    },
+    {
+     "value": "EGGAAADGDDCEGC"
+    },
+    {
+     "value": "EGCAAADGDCCE-C"
+    },
+    {
+     "value": "EGCAAADGDCCE-C"
+    }
+   ]
+  },
+  {
+   "id": "t063",
+   "sequence_weights": {
+    "value": [
+     0.9875000000000002,
+     1.1125,
+     1.18125,
+     0.8708333333333333,
+     0.9958333333333333,
+     0.8520833333333335
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GGECADDC"
+    },
+    {
+     "value": "GGECADDC"
+    },
+    {
+     "value": "GGEAAAAA"
+    },
+    {
+     "value": "GGEAAAAA"
+    }
+   ]
+  },
+  {
+   "id": "t064",
+   "sequence_weights": {
+    "value": [
+     1.050347222222222,
+     0.8680555555555557,
+     1.0850694444444444,
+     1.0503472222222223,
+     0.9461805555555556
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DGDCAAGE"
+    },
+    {
+     "value": "DGDCAAGE"
+    },
+    {
+     "value": "DGDCADGE"
+    },
+    {
+     "value": "DGDCADGE"
+    }
+   ]
+  },
+  {
+   "id": "t065",
+   "sequence_weights": {
+    "value": [
+     0.8333333333333333,
+     1.0555555555555554,
+     1.1666666666666665,
+     0.9444444444444443
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DGDACC"
+    },
+    {
+     "value": "DGDACC"
+    },
+    {
+     "value": "DGDAAA"
+    },
+    {
+     "value": "DGDAAA"
+    }
+   ]
+  },
+  {
+   "id": "t066",
+   "sequence_weights": {
+    "value": [
+     1.361111111111111,
+     1.1685185185185183,
+     0.9185185185185183,
+     0.8351851851851851,
+     0.974074074074074,
+     0.7425925925925926
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DECEEAGAG"
+    },
+    {
+     "value": "DECEEAGAG"
+    },
+    {
+     "value": "-EAEEAGAA"
+    },
+    {
+     "value": "AEAEEAGAA"
+    }
+   ]
+  },
+  {
+   "id": "t067",
+   "sequence_weights": {
+    "value": [
+     0.941358024691358,
+     0.9645061728395061,
+     0.9259259259259258,
+     1.0108024691358024,
+     1.1574074074074072
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EGAGACCA-"
+    },
+    {
+     "value": "EGAGACCAA"
+    },
+    {
+     "value": "EGAGACDA-"
+    },
+    {
+     "value": "EGAGACDAA"
+    }
+   ]
+  },
+  {
+   "id": "t068",
+   "sequence_weights": {
+    "value": [
+     0.8779914529914531,
+     1.213034188034188,
+     0.8293803418803419,
+     1.0552350427350428,
+     0.959508547008547,
+     1.0559829059829058,
+     1.0088675213675213
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DGECGAACGDCGG"
+    },
+    {
+     "value": "DGECGAACGDCGG"
+    },
+    {
+     "value": "AGECGAACGACAD"
+    },
+    {
+     "value": "AGECGAACGACAD"
+    }
+   ]
+  },
+  {
+   "id": "t069",
+   "sequence_weights": {
+    "value": [
+     1.023809523809524,
+     1.0833333333333335,
+     1.0595238095238095,
+     1.130952380952381,
+     0.9285714285714286,
+     0.7738095238095238
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ACGDGEA"
+    },
+    {
+     "value": "ACGDGEA"
+    },
+    {
+     "value": "ACGDGEA"
+    },
+    {
+     "value": "ACGDGEA"
+    }
+   ]
+  },
+  {
+   "id": "t070",
+   "sequence_weights": {
+    "value": [
+     1.111111111111111,
+     0.8888888888888888,
+     1.0,
+     0.9999999999999998
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DDDACG"
+    },
+    {
+     "value": "DDDACG"
+    },
+    {
+     "value": "DADAAG"
+    },
+    {
+     "value": "DADAAG"
+    }
+   ]
+  },
+  {
+   "id": "t071",
+   "sequence_weights": {
+    "value": [
+     1.1462962962962964,
+     0.8851851851851851,
+     1.2555555555555555,
+     0.8759259259259259,
+     0.9685185185185184,
+     0.8685185185185185
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GECAEAAAD"
+    },
+    {
+     "value": "GECAEAAAD"
+    },
+    {
+     "value": "GECAEAAAC"
+    },
+    {
+     "value": "GECAEAAAC"
+    }
+   ]
+  },
+  {
+   "id": "t072",
+   "sequence_weights": {
+    "value": [
+     1.1442307692307692,
+     0.8585470085470086,
+     1.0791666666666664,
+     0.7934829059829062,
+     1.2736111111111112,
+     0.8951923076923076,
+     0.9557692307692307
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AGDAAGCEGAECC"
+    },
+    {
+     "value": "AGDAAGCEGAECC"
+    },
+    {
+     "value": "AGDAAGGEGAACC"
+    },
+    {
+     "value": "AGDAAGGEGAACC"
+    }
+   ]
+  },
+  {
+   "id": "t073",
+   "sequence_weights": {
+    "value": [
+     1.0958333333333334,
+     1.0958333333333334,
+     0.74375,
+     1.05625,
+     1.2645833333333334,
+     0.74375
+    ]
+   },
+   "consensus": [
+    {
+     "value": "-CAEDACG"
+    },
+    {
+     "value": "ACAEDACG"
+    },
+    {
+     "value": "-CAAAAAG"
+    },
+    {
+     "value": "AAAAAAAG"
+    }
+   ]
+  },
+  {
+   "id": "t074",
+   "sequence_weights": {
+    "value": [
+     1.1354166666666665,
+     1.1375,
+     1.0312499999999998,
+     0.6645833333333333,
+     1.0916666666666666,
+     1.0833333333333333,
+     0.85625
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GACAAAAEDAAECG"
+    },
+    {
+     "value": "GACAAAAEDAAECG"
+    },
+    {
+     "value": "GACAAAAEGAAECG"
+    },
+    {
+     "value": "GACAAAAEGAAECG"
+    }
+   ]
+  },
+  {
+   "id": "t075",
+   "sequence_weights": {
+    "value": [
+     0.895,
+     1.0299999999999998,
+     1.0599999999999998,
+     1.06,
+     0.97,
+     0.9849999999999999
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EGECDAGDAD"
+    },
+    {
+     "value": "EGECDAGDAD"
+    },
+    {
+     "value": "EGEAAAGDAG"
+    },
+    {
+     "value": "EGEAAAGDAG"
+    }
+   ]
+  },
+  {
+   "id": "t076",
+   "sequence_weights": {
+    "value": [
+     0.9743589743589742,
+     1.1794871794871795,
+     0.9743589743589743,
+     0.8717948717948719
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GACADACGDDACG"
+    },
+    {
+     "value": "GACADACGDDACG"
+    },
+    {
+     "value": "GAGADACGDDADG"
+    },
+    {
+     "value": "GAGADACGDDADG"
+    }
+   ]
+  },
+  {
+   "id": "t077",
+   "sequence_weights": {
+    "value": [
+     0.9333333333333333,
+     0.9287878787878787,
+     1.1454545454545455,
+     0.9409090909090908,
+     1.009090909090909,
+     1.0424242424242423
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADECGGEGAGE"
+    },
+    {
+     "value": "ADECGGEGAGE"
+    },
+    {
+     "value": "ADACGGE-AGE"
+    },
+    {
+     "value": "ADACGGE-AGE"
+    }
+   ]
+  },
+  {
+   "id": "t078",
+   "sequence_weights": {
+    "value": [
+     1.0937499999999998,
+     0.7729166666666667,
+     0.9249999999999999,
+     1.1020833333333333,
+     1.0666666666666664,
+     0.9479166666666666,
+     1.0916666666666666
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AADEEGEGCADCGG"
+    },
+    {
+     "value": "AADEEGEGCADCGG"
+    },
+    {
+     "value": "AADAEGEGCAAAAG"
+    },
+    {
+     "value": "AADAEGEGCAAAAG"
+    }
+   ]
+  },
+  {
+   "id": "t079",
+   "sequence_weights": {
+    "value": [
+     0.8974358974358975,
+     1.0,
+     1.0512820512820513,
+     1.0512820512820513
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DDEDECAADGGGC"
+    },
+    {
+     "value": "DDEDECAADGGGC"
+    },
+    {
+     "value": "DDEDEAAADCGEC"
+    },
+    {
+     "value": "DDEDEAAADCGEC"
+    }
+   ]
+  },
+  {
+   "id": "t080",
+   "sequence_weights": {
+    "value": [
+     1.2251984126984126,
+     1.0615079365079365,
+     1.0813492063492063,
+     0.9176587301587301,
+     0.7142857142857143
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DGAAAAEGCEC-CE"
+    },
+    {
+     "value": "DGAAAAEGCEC-CE"
+    },
+    {
+     "value": "DGAAAAAACEC-CA"
+    },
+    {
+     "value": "DGAAAAAACEC-CA"
+    }
+   ]
+  },
+  {
+   "id": "t081",
+   "sequence_weights": {
+    "value": [
+     0.9743589743589743,
+     0.9230769230769231,
+     1.0256410256410258,
+     1.076923076923077
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GC-EEACGADEAG-"
+    },
+    {
+     "value": "GC-EEACGADEAGD"
+    },
+    {
+     "value": "GC-DEACGACEAG-"
+    },
+    {
+     "value": "GC-EEACGACEAGD"
+    }
+   ]
+  },
+  {
+   "id": "t082",
+   "sequence_weights": {
+    "value": [
+     1.0381944444444444,
+     0.7719907407407408,
+     1.2118055555555558,
+     0.980324074074074,
+     0.9976851851851852
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AAAGEADCCEGG"
+    },
+    {
+     "value": "AAAGEADCCEGG"
+    },
+    {
+     "value": "AAAEEAAACEGG"
+    },
+    {
+     "value": "AAAEEAAACEGG"
+    }
+   ]
+  },
+  {
+   "id": "t083",
+   "sequence_weights": {
+    "value": [
+     0.9916666666666666,
+     0.725925925925926,
+     1.011111111111111,
+     0.9333333333333335,
+     0.8652777777777778,
+     1.176388888888889,
+     1.2962962962962963
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AAAADEGGC"
+    },
+    {
+     "value": "AAAADEGGC"
+    },
+    {
+     "value": "AAAADEGGC"
+    },
+    {
+     "value": "AAAADEGGC"
+    }
+   ]
+  },
+  {
+   "id": "t084",
+   "sequence_weights": {
+    "value": [
+     1.025,
+     0.9937499999999999,
+     0.6583333333333334,
+     0.9624999999999999,
+     1.0145833333333332,
+     1.3458333333333334
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GCAGCDAA"
+    },
+    {
+     "value": "GCAGCDAA"
+    },
+    {
+     "value": "ACACCDAA"
+    },
+    {
+     "value": "ACACCDAA"
+    }
+   ]
+  },
+  {
+   "id": "t085",
+   "sequence_weights": {
+    "value": [
+     1.0170940170940173,
+     0.9583333333333334,
+     1.0384615384615383,
+     1.0811965811965814,
+     0.90491452991453
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EGDAAAGECGDGA"
+    },
+    {
+     "value": "EGDAAAGECGDGA"
+    },
+    {
+     "value": "EADAAAGACGDAA"
+    },
+    {
+     "value": "EADAAAGACGDAA"
+    }
+   ]
+  },
+  {
+   "id": "t086",
+   "sequence_weights": {
+    "value": [
+     0.925,
+     1.0,
+     1.075
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADAADGGEGC"
+    },
+    {
+     "value": "ADAADGGEGC"
+    },
+    {
+     "value": "ADAADGCAGC"
+    },
+    {
+     "value": "ADAADGCAGC"
+    }
+   ]
+  },
+  {
+   "id": "t087",
+   "sequence_weights": {
+    "value": [
+     0.9722222222222221,
+     1.0833333333333333,
+     1.0277777777777777,
+     0.9166666666666666
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AECGADECEACG"
+    },
+    {
+     "value": "AECGADECEACG"
+    },
+    {
+     "value": "AAGGADECAAC-"
+    },
+    {
+     "value": "AAGGADECAACG"
+    }
+   ]
+  },
+  {
+   "id": "t088",
+   "sequence_weights": {
+    "value": [
+     1.0999999999999999,
+     1.0095238095238095,
+     0.9238095238095237,
+     0.8285714285714285,
+     1.0095238095238095,
+     1.1285714285714286
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CDACCGA"
+    },
+    {
+     "value": "CDACCGA"
+    },
+    {
+     "value": "CGAAAGA"
+    },
+    {
+     "value": "CGAAAGA"
+    }
+   ]
+  },
+  {
+   "id": "t089",
+   "sequence_weights": {
+    "value": [
+     0.9091880341880342,
+     0.9305555555555556,
+     1.1282051282051282,
+     1.090811965811966,
+     0.9412393162393162
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CACGDGDAEACAD"
+    },
+    {
+     "value": "CACGDGDAEACAD"
+    },
+    {
+     "value": "CAEGDGDAEACAD"
+    },
+    {
+     "value": "CAEGDGDAEACAD"
+    }
+   ]
+  },
+  {
+   "id": "t090",
+   "sequence_weights": {
+    "value": [
+     0.9216666666666665,
+     1.0316666666666665,
+     0.9966666666666667,
+     1.065,
+     0.855,
+     1.13
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ACADGDAAED"
+    },
+    {
+     "value": "ACADGDAAED"
+    },
+    {
+     "value": "AGAGGGAAED"
+    },
+    {
+     "value": "AGAGGGAAED"
+    }
+   ]
+  },
+  {
+   "id": "t091",
+   "sequence_weights": {
+    "value": [
+     0.9702777777777777,
+     0.954722222222222,
+     0.8438888888888887,
+     0.9624999999999998,
+     1.1744444444444442,
+     1.0655555555555554,
+     1.0286111111111107
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AACAAGGDCE"
+    },
+    {
+     "value": "AACAAGGDCE"
+    },
+    {
+     "value": "AACAAEADCE"
+    },
+    {
+     "value": "AACAAEADCE"
+    }
+   ]
+  },
+  {
+   "id": "t092",
+   "sequence_weights": {
+    "value": [
+     1.2777777777777777,
+     1.0555555555555554,
+     0.9444444444444444,
+     0.7222222222222221
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GDGGAC"
+    },
+    {
+     "value": "GDGGAC"
+    },
+    {
+     "value": "GDG-AC"
+    },
+    {
+     "value": "GDG-AC"
+    }
+   ]
+  },
+  {
+   "id": "t093",
+   "sequence_weights": {
+    "value": [
+     1.0,
+     1.0833333333333335,
+     0.9166666666666666
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CDGAAGEDE"
+    },
+    {
+     "value": "CDGAAGEDE"
+    },
+    {
+     "value": "CDGAAAADA"
+    },
+    {
+     "value": "CDGAAAADA"
+    }
+   ]
+  },
+  {
+   "id": "t094",
+   "sequence_weights": {
+    "value": [
+     0.925,
+     1.0095238095238097,
+     1.0642857142857143,
+     0.8809523809523809,
+     1.069047619047619,
+     1.0511904761904762
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GCDGEADGEAGCAE"
+    },
+    {
+     "value": "GCDGEADGEAGCAE"
+    },
+    {
+     "value": "GCDGEADDE-GCAE"
+    },
+    {
+     "value": "GCDGEADDE-GCAE"
+    }
+   ]
+  },
+  {
+   "id": "t095",
+   "sequence_weights": {
+    "value": [
+     1.0666666666666667,
+     0.9333333333333332,
+     1.0,
+     0.9999999999999999
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADCEEACCGC"
+    },
+    {
+     "value": "ADCEEACCGC"
+    },
+    {
+     "value": "ADCEEACC-D"
+    },
+    {
+     "value": "ADCEEACC-A"
+    }
+   ]
+  },
+  {
+   "id": "t096",
+   "sequence_weights": {
+    "value": [
+     1.0020833333333334,
+     0.7416666666666667,
+     1.0041666666666669,
+     1.0770833333333334,
+     1.0979166666666669,
+     1.0770833333333334
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADCDDGEG"
+    },
+    {
+     "value": "ADCDDGEG"
+    },
+    {
+     "value": "ADA-DGED"
+    },
+    {
+     "value": "ADA-DGED"
+    }
+   ]
+  },
+  {
+   "id": "t097",
+   "sequence_weights": {
+    "value": [
+     1.1624999999999999,
+     1.0499999999999998,
+     0.85,
+     0.8812499999999999,
+     1.20625,
+     0.85
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AEGADEAC"
+    },
+    {
+     "value": "AEGADEAC"
+    },
+    {
+     "value": "AEAADEAE"
+    },
+    {
+     "value": "AEAADEAE"
+    }
+   ]
+  },
+  {
+   "id": "t098",
+   "sequence_weights": {
+    "value": [
+     1.0303030303030303,
+     0.9090909090909092,
+     0.9090909090909092,
+     1.1515151515151516
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CEEGDAG-EGAC"
+    },
+    {
+     "value": "CEEGDAG-EGAC"
+    },
+    {
+     "value": "AEEDAAG--AAC"
+    },
+    {
+     "value": "AEEDAAG--AAC"
+    }
+   ]
+  },
+  {
+   "id": "t099",
+   "sequence_weights": {
+    "value": [
+     0.7291666666666667,
+     0.765625,
+     1.155729166666667,
+     1.1447916666666669,
+     1.1265625,
+     1.1265625,
+     0.9515625000000001
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GCEAEDAD"
+    },
+    {
+     "value": "GCEAEDAD"
+    },
+    {
+     "value": "GAAAAAAD"
+    },
+    {
+     "value": "GAAAAAAD"
+    }
+   ]
+  },
+  {
+   "id": "t100",
+   "sequence_weights": {
+    "value": [
+     1.0666666666666667,
+     1.0666666666666667,
+     0.9333333333333335,
+     0.9333333333333335
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CEDAEGDDGC"
+    },
+    {
+     "value": "CEDAEGDDGC"
+    },
+    {
+     "value": "CEDAEEDDGA"
+    },
+    {
+     "value": "CEDAEEDDGA"
+    }
+   ]
+  },
+  {
+   "id": "t101",
+   "sequence_weights": {
+    "value": [
+     0.9523809523809522,
+     1.0476190476190474,
+     0.9523809523809523,
+     1.0476190476190474
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DAG---E"
+    },
+    {
+     "value": "DAG---E"
+    },
+    {
+     "value": "AAG---E"
+    },
+    {
+     "value": "AAG---E"
+    }
+   ]
+  },
+  {
+   "id": "t102",
+   "sequence_weights": {
+    "value": [
+     1.0257575757575756,
+     0.9803030303030302,
+     0.7287878787878788,
+     1.003030303030303,
+     1.23030303030303,
+     1.0318181818181817
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EGDAADCDCEG"
+    },
+    {
+     "value": "EGDAADCDCEG"
+    },
+    {
+     "value": "EAAAAAAACAA"
+    },
+    {
+     "value": "EAAAAAAACAA"
+    }
+   ]
+  },
+  {
+   "id": "t103",
+   "sequence_weights": {
+    "value": [
+     0.875,
+     1.2083333333333335,
+     0.8750000000000001,
+     1.0416666666666665
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DDGECAEA"
+    },
+    {
+     "value": "DDGECAEA"
+    },
+    {
+     "value": "DAAECAAA"
+    },
+    {
+     "value": "DAAECAAA"
+    }
+   ]
+  },
+  {
+   "id": "t104",
+   "sequence_weights": {
+    "value": [
+     1.1375,
+     0.9041666666666668,
+     0.6513888888888888,
+     0.8069444444444444,
+     1.2347222222222223,
+     1.0402777777777779,
+     1.2249999999999999
+    ]
+   },
+   "consensus": [
+    {
+     "value": "G-CAED"
+    },
+    {
+     "value": "G-CAED"
+    },
+    {
+     "value": "E-CAED"
+    },
+    {
+     "value": "E-EAED"
+    }
+   ]
+  },
+  {
+   "id": "t105",
+   "sequence_weights": {
+    "value": [
+     0.9743589743589745,
+     1.0256410256410255,
+     1.0256410256410258,
+     0.9743589743589742
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AEEAGAGDCCEAD"
+    },
+    {
+     "value": "AEEAGAGDCCEAD"
+    },
+    {
+     "value": "AEEAGAGDCCEAD"
+    },
+    {
+     "value": "AEEAGAGDCCEAD"
+    }
+   ]
+  },
+  {
+   "id": "t106",
+   "sequence_weights": {
+    "value": [
+     1.19,
+     0.9849999999999999,
+     1.21,
+     0.7649999999999999,
+     0.7999999999999999,
+     1.05
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ECAAACCAED"
+    },
+    {
+     "value": "ECAAACCAED"
+    },
+    {
+     "value": "ECAAA-CAEA"
+    },
+    {
+     "value": "ECAAA-AAEA"
+    }
+   ]
+  },
+  {
+   "id": "t107",
+   "sequence_weights": {
+    "value": [
+     0.976190476190476,
+     0.976190476190476,
+     1.0238095238095237,
+     1.0238095238095237
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EDEGADCCCGADC-"
+    },
+    {
+     "value": "EDEGADCCCGADCD"
+    },
+    {
+     "value": "EAEGADCGAGAEE-"
+    },
+    {
+     "value": "EAEGADCGAGAEED"
+    }
+   ]
+  },
+  {
+   "id": "t108",
+   "sequence_weights": {
+    "value": [
+     0.9423076923076923,
+     1.1153846153846154,
+     0.9423076923076923
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GADACGCDEGDCE"
+    },
+    {
+     "value": "GADACGCDEGDCE"
+    },
+    {
+     "value": "GADACGADEGDCE"
+    },
+    {
+     "value": "GADACGADEGDCE"
+    }
+   ]
+  },
+  {
+   "id": "t109",
+   "sequence_weights": {
+    "value": [
+     1.0730769230769233,
+     0.9243589743589745,
+     0.9115384615384616,
+     1.085897435897436,
+     1.1884615384615385,
+     0.8166666666666668
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GGGADDECCCDCA"
+    },
+    {
+     "value": "GGGADDECCCDCA"
+    },
+    {
+     "value": "GAAADDECCADAA"
+    },
+    {
+     "value": "GAAADDECCADAA"
+    }
+   ]
+  },
+  {
+   "id": "t110",
+   "sequence_weights": {
+    "value": [
+     0.9285714285714285,
+     1.0357142857142856,
+     1.0357142857142856
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CG-ADACD"
+    },
+    {
+     "value": "CG-ADACD"
+    },
+    {
+     "value": "CG-AGADA"
+    },
+    {
+     "value": "CG-AGADA"
+    }
+   ]
+  },
+  {
+   "id": "t111",
+   "sequence_weights": {
+    "value": [
+     1.0333333333333332,
+     0.9666666666666668,
+     1.0333333333333332,
+     0.9666666666666667
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADCAGECDGG"
+    },
+    {
+     "value": "ADCAGECDGG"
+    },
+    {
+     "value": "ADCAGEGD-G"
+    },
+    {
+     "value": "ADCAGEGD-G"
+    }
+   ]
+  },
+  {
+   "id": "t112",
+   "sequence_weights": {
+    "value": [
+     1.2053571428571428,
+     0.9722222222222221,
+     0.9920634920634922,
+     1.0069444444444446,
+     0.8234126984126984
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AGAACAGCDCEEGC"
+    },
+    {
+     "value": "AGAACAGCDCEEGC"
+    },
+    {
+     "value": "AGAACAGCDCEEAC"
+    },
+    {
+     "value": "AGAACAGCDCEEAC"
+    }
+   ]
+  },
+  {
+   "id": "t113",
+   "sequence_weights": {
+    "value": [
+     0.886904761904762,
+     1.0109126984126986,
+     0.9761904761904764,
+     1.080357142857143,
+     1.0456349206349207
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DDEGAEGACDGAAC"
+    },
+    {
+     "value": "DDEGAEGACDGAAC"
+    },
+    {
+     "value": "DDAAAEAACDCAAC"
+    },
+    {
+     "value": "DDAAAEAACDCAAC"
+    }
+   ]
+  },
+  {
+   "id": "t114",
+   "sequence_weights": {
+    "value": [
+     0.8611111111111112,
+     1.0277777777777777,
+     1.1111111111111112
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GCEAADAAC"
+    },
+    {
+     "value": "GCEAADAAC"
+    },
+    {
+     "value": "GGEAADAAC"
+    },
+    {
+     "value": "GGEAADAAC"
+    }
+   ]
+  },
+  {
+   "id": "t115",
+   "sequence_weights": {
+    "value": [
+     1.2151515151515149,
+     0.9575757575757575,
+     0.8348484848484848,
+     1.0484848484848484,
+     0.9863636363636362,
+     0.9575757575757575
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DEEGADDG-CCE"
+    },
+    {
+     "value": "DEEGADDG-CCE"
+    },
+    {
+     "value": "DEAGADEG-CCE"
+    },
+    {
+     "value": "DEAGADEG-CCE"
+    }
+   ]
+  },
+  {
+   "id": "t116",
+   "sequence_weights": {
+    "value": [
+     1.0912698412698414,
+     1.0416666666666667,
+     0.9722222222222223,
+     0.9623015873015874,
+     0.9325396825396826
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CCEDGEC"
+    },
+    {
+     "value": "CCEDGEC"
+    },
+    {
+     "value": "CCEDGEC"
+    },
+    {
+     "value": "CCEDGEC"
+    }
+   ]
+  },
+  {
+   "id": "t117",
+   "sequence_weights": {
+    "value": [
+     0.7666666666666666,
+     0.7833333333333333,
+     0.9916666666666666,
+     1.0166666666666666,
+     1.2833333333333332,
+     1.1,
+     1.0583333333333333
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CGCEAED"
+    },
+    {
+     "value": "CGCEAED"
+    },
+    {
+     "value": "AADEAED"
+    },
+    {
+     "value": "AADEAED"
+    }
+   ]
+  },
+  {
+   "id": "t118",
+   "sequence_weights": {
+    "value": [
+     0.9866666666666666,
+     0.96,
+     1.095,
+     0.9866666666666666,
+     0.9116666666666666,
+     1.0599999999999998
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AEECDDCGGA"
+    },
+    {
+     "value": "AEECDDCGGA"
+    },
+    {
+     "value": "AEGCDDCGAA"
+    },
+    {
+     "value": "AEGCDDCGAA"
+    }
+   ]
+  },
+  {
+   "id": "t119",
+   "sequence_weights": {
+    "value": [
+     1.2812499999999998,
+     0.8333333333333334,
+     0.8333333333333334,
+     0.9875,
+     0.9083333333333332,
+     1.15625
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADCEAECG"
+    },
+    {
+     "value": "ADCEAECG"
+    },
+    {
+     "value": "AACEAACG"
+    },
+    {
+     "value": "AACEAACG"
+    }
+   ]
+  },
+  {
+   "id": "t120",
+   "sequence_weights": {
+    "value": [
+     0.7875000000000001,
+     0.7875000000000001,
+     0.9236111111111112,
+     0.7777777777777778,
+     1.088888888888889,
+     1.05,
+     1.5847222222222224
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CEAEGA"
+    },
+    {
+     "value": "CEAEGA"
+    },
+    {
+     "value": "CEAEGA"
+    },
+    {
+     "value": "CEAEGA"
+    }
+   ]
+  },
+  {
+   "id": "t121",
+   "sequence_weights": {
+    "value": [
+     0.9523809523809524,
+     0.9523809523809523,
+     1.0476190476190477,
+     1.0476190476190477
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ACEGACACCDACAE"
+    },
+    {
+     "value": "ACEGACACCDACAE"
+    },
+    {
+     "value": "AGEGACAACAAAAA"
+    },
+    {
+     "value": "AGEGACAACAAAAA"
+    }
+   ]
+  },
+  {
+   "id": "t122",
+   "sequence_weights": {
+    "value": [
+     1.2083333333333333,
+     0.9583333333333333,
+     0.8333333333333333
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GAADGE"
+    },
+    {
+     "value": "GAADGE"
+    },
+    {
+     "value": "GAACGE"
+    },
+    {
+     "value": "GAACGE"
+    }
+   ]
+  },
+  {
+   "id": "t123",
+   "sequence_weights": {
+    "value": [
+     0.8333333333333333,
+     1.0833333333333333,
+     1.0833333333333333
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CAEGGAGC-D"
+    },
+    {
+     "value": "CAEGGAGC-D"
+    },
+    {
+     "value": "CAEGGAAC-D"
+    },
+    {
+     "value": "CAEGGAAC-D"
+    }
+   ]
+  },
+  {
+   "id": "t124",
+   "sequence_weights": {
+    "value": [
+     1.3703703703703705,
+     0.9259259259259257,
+     0.8518518518518519,
+     0.8518518518518519
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CCCAGEDDE"
+    },
+    {
+     "value": "CCCAGEDDE"
+    },
+    {
+     "value": "C-AAAEAA-"
+    },
+    {
+     "value": "C-AAAEAAA"
+    }
+   ]
+  },
+  {
+   "id": "t125",
+   "sequence_weights": {
+    "value": [
+     1.1111111111111112,
+     1.0,
+     1.0,
+     0.888888888888889
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GAEGDA"
+    },
+    {
+     "value": "GAEGDA"
+    },
+    {
+     "value": "GAEGCA"
+    },
+    {
+     "value": "GAEGCA"
+    }
+   ]
+  },
+  {
+   "id": "t126",
+   "sequence_weights": {
+    "value": [
+     0.9047619047619047,
+     1.0,
+     1.0,
+     1.0952380952380951
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CEAE-DEC"
+    },
+    {
+     "value": "CEAE-DEC"
+    },
+    {
+     "value": "CEAG-DCC"
+    },
+    {
+     "value": "CEAG-DCC"
+    }
+   ]
+  },
+  {
+   "id": "t127",
+   "sequence_weights": {
+    "value": [
+     1.215277777777778,
+     1.225,
+     1.2541666666666667,
+     0.9041666666666668,
+     0.7875000000000001,
+     0.7875000000000001,
+     0.826388888888889
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AECAGG"
+    },
+    {
+     "value": "AECAGG"
+    },
+    {
+     "value": "AACAGA"
+    },
+    {
+     "value": "AACAGA"
+    }
+   ]
+  },
+  {
+   "id": "t128",
+   "sequence_weights": {
+    "value": [
+     1.0694444444444442,
+     0.9936868686868685,
+     0.9053030303030303,
+     1.0694444444444444,
+     0.9621212121212122
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AEAECGAEGGD"
+    },
+    {
+     "value": "AEAECGAEGGD"
+    },
+    {
+     "value": "AEAECGAEDGD"
+    },
+    {
+     "value": "AEAECGAEDGD"
+    }
+   ]
+  },
+  {
+   "id": "t129",
+   "sequence_weights": {
+    "value": [
+     1.1666666666666667,
+     0.7500000000000002,
+     1.166666666666667,
+     0.9166666666666669
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GEACAECC"
+    },
+    {
+     "value": "GEACAECC"
+    },
+    {
+     "value": "GEACAE-C"
+    },
+    {
+     "value": "GEACAE-A"
+    }
+   ]
+  },
+  {
+   "id": "t130",
+   "sequence_weights": {
+    "value": [
+     0.9033333333333334,
+     0.9766666666666666,
+     1.0366666666666666,
+     0.9033333333333334,
+     1.0683333333333334,
+     1.1116666666666666
+    ]
+   },
+   "consensus": [
+    {
+     "value": "C-EDAGEDAD"
+    },
+    {
+     "value": "C-EDAGEDAD"
+    },
+    {
+     "value": "C-ADAGADAD"
+    },
+    {
+     "value": "C-ADAGADAD"
+    }
+   ]
+  },
+  {
+   "id": "t131",
+   "sequence_weights": {
+    "value": [
+     0.9,
+     1.3916666666666666,
+     1.0083333333333333,
+     1.0750000000000002,
+     1.1416666666666666,
+     0.8083333333333333,
+     0.6749999999999999
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AADEGGE"
+    },
+    {
+     "value": "AADEGGE"
+    },
+    {
+     "value": "AAAGGAE"
+    },
+    {
+     "value": "AAAGGAE"
+    }
+   ]
+  },
+  {
+   "id": "t132",
+   "sequence_weights": {
+    "value": [
+     1.025,
+     0.8749999999999999,
+     1.0999999999999999
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EGD-EGCACAA"
+    },
+    {
+     "value": "EGD-EGCACAA"
+    },
+    {
+     "value": "EGA-EGCACAA"
+    },
+    {
+     "value": "EGA-EGCACAA"
+    }
+   ]
+  },
+  {
+   "id": "t133",
+   "sequence_weights": {
+    "value": [
+     0.9916666666666666,
+     0.8733333333333334,
+     1.2349999999999999,
+     1.0083333333333333,
+     0.9066666666666667,
+     0.9850000000000001
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EDCGDEGCAG"
+    },
+    {
+     "value": "EDCGDEGCAG"
+    },
+    {
+     "value": "EECDDEACAA"
+    },
+    {
+     "value": "EECDDEACAA"
+    }
+   ]
+  },
+  {
+   "id": "t134",
+   "sequence_weights": {
+    "value": [
+     1.2141025641025642,
+     0.9064102564102564,
+     1.0089743589743592,
+     1.0141025641025643,
+     0.9435897435897438,
+     0.9128205128205129
+    ]
+   },
+   "consensus": [
+    {
+     "value": "C-EDCAACDACDA"
+    },
+    {
+     "value": "C-EDCAACDACDA"
+    },
+    {
+     "value": "C-EGCAACDAGDA"
+    },
+    {
+     "value": "C-EGCAACDAGDA"
+    }
+   ]
+  },
+  {
+   "id": "t135",
+   "sequence_weights": {
+    "value": [
+     0.8666666666666669,
+     0.8916666666666668,
+     0.7666666666666668,
+     1.2416666666666667,
+     0.9916666666666669,
+     1.2416666666666667
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CAAGDD"
+    },
+    {
+     "value": "CAAGDD"
+    },
+    {
+     "value": "CAAAAE"
+    },
+    {
+     "value": "CAAAAE"
+    }
+   ]
+  },
+  {
+   "id": "t136",
+   "sequence_weights": {
+    "value": [
+     1.1719696969696969,
+     0.8378787878787879,
+     1.0411616161616162,
+     1.1348484848484848,
+     1.0835858585858584,
+     0.7547979797979798,
+     0.9757575757575757
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CEDGGADECAE"
+    },
+    {
+     "value": "CEDGGADECAE"
+    },
+    {
+     "value": "CAAAAAAAGAA"
+    },
+    {
+     "value": "CAAAAAAAGAA"
+    }
+   ]
+  },
+  {
+   "id": "t137",
+   "sequence_weights": {
+    "value": [
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DDEDAADEG-GAD"
+    },
+    {
+     "value": "DDEDAADEG-GAD"
+    },
+    {
+     "value": "DCEDAACEG-CAD"
+    },
+    {
+     "value": "DCEDAACEG-AAD"
+    }
+   ]
+  },
+  {
+   "id": "t138",
+   "sequence_weights": {
+    "value": [
+     1.0555555555555556,
+     0.8472222222222222,
+     1.1666666666666665,
+     0.9166666666666666,
+     1.0138888888888888
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GCDDADEGCE"
+    },
+    {
+     "value": "GCDDADEGCE"
+    },
+    {
+     "value": "GCDDADEGCE"
+    },
+    {
+     "value": "GCDDADEGCE"
+    }
+   ]
+  },
+  {
+   "id": "t139",
+   "sequence_weights": {
+    "value": [
+     0.9541666666666666,
+     1.2333333333333334,
+     0.8125,
+     1.1375000000000002,
+     0.9416666666666668,
+     0.8916666666666666,
+     1.0291666666666668
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DEEEDGDEACGDAC"
+    },
+    {
+     "value": "DEEEDGDEACGDAC"
+    },
+    {
+     "value": "DAAEDGDGAAGDAC"
+    },
+    {
+     "value": "DAAEDGDGAAGDAC"
+    }
+   ]
+  },
+  {
+   "id": "t140",
+   "sequence_weights": {
+    "value": [
+     0.9116161616161615,
+     1.164141414141414,
+     0.880050505050505,
+     0.9368686868686867,
+     1.1073232323232323
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GEAGADAEEAC"
+    },
+    {
+     "value": "GEAGADAEEAC"
+    },
+    {
+     "value": "GAAAADAEAAC"
+    },
+    {
+     "value": "GAAAADAEAAC"
+    }
+   ]
+  },
+  {
+   "id": "t141",
+   "sequence_weights": {
+    "value": [
+     0.8469696969696969,
+     1.1969696969696968,
+     0.9939393939393939,
+     0.9636363636363636,
+     1.0227272727272725,
+     0.9757575757575757
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EAEADAECACG"
+    },
+    {
+     "value": "EAEADAECACG"
+    },
+    {
+     "value": "EAEADAECACG"
+    },
+    {
+     "value": "EAEADAECACG"
+    }
+   ]
+  },
+  {
+   "id": "t142",
+   "sequence_weights": {
+    "value": [
+     0.9749999999999999,
+     1.0766666666666667,
+     1.075,
+     0.7666666666666666,
+     0.9966666666666668,
+     1.1099999999999999
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CAGGEADCCA"
+    },
+    {
+     "value": "CAGGEADCCA"
+    },
+    {
+     "value": "A-GGEADC-A"
+    },
+    {
+     "value": "A-AGEADC-A"
+    }
+   ]
+  },
+  {
+   "id": "t143",
+   "sequence_weights": {
+    "value": [
+     0.9635416666666667,
+     1.015625,
+     1.0677083333333333,
+     0.8854166666666667,
+     1.0677083333333335
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADCCAEGE"
+    },
+    {
+     "value": "ADCCAEGE"
+    },
+    {
+     "value": "ADACAEAE"
+    },
+    {
+     "value": "ADACAEAE"
+    }
+   ]
+  },
+  {
+   "id": "t144",
+   "sequence_weights": {
+    "value": [
+     1.0,
+     1.1111111111111112,
+     1.0,
+     0.888888888888889
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EG-CCC"
+    },
+    {
+     "value": "EG-CCC"
+    },
+    {
+     "value": "ED-CDC"
+    },
+    {
+     "value": "ED-CDC"
+    }
+   ]
+  },
+  {
+   "id": "t145",
+   "sequence_weights": {
+    "value": [
+     1.1061507936507937,
+     1.056547619047619,
+     1.1557539682539684,
+     0.8928571428571429,
+     0.7886904761904763
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADGCCGDCEDADAC"
+    },
+    {
+     "value": "ADGCCGDCEDADAC"
+    },
+    {
+     "value": "AAGCCGDAEAAAAC"
+    },
+    {
+     "value": "AAGCCGDAEAAAAC"
+    }
+   ]
+  },
+  {
+   "id": "t146",
+   "sequence_weights": {
+    "value": [
+     1.2000000000000002,
+     1.2194444444444443,
+     0.6722222222222222,
+     1.0527777777777776,
+     0.9277777777777778,
+     0.9277777777777778
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CDCGGD"
+    },
+    {
+     "value": "CDCGGD"
+    },
+    {
+     "value": "CACAGD"
+    },
+    {
+     "value": "CACAGD"
+    }
+   ]
+  },
+  {
+   "id": "t147",
+   "sequence_weights": {
+    "value": [
+     0.8275462962962965,
+     1.041666666666667,
+     1.215277777777778,
+     0.9317129629629631,
+     0.9837962962962965
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DCCAGGGGDEDC"
+    },
+    {
+     "value": "DCCAGGGGDEDC"
+    },
+    {
+     "value": "DCCAGGGGDEDC"
+    },
+    {
+     "value": "DCCAGGGGDEDC"
+    }
+   ]
+  },
+  {
+   "id": "t148",
+   "sequence_weights": {
+    "value": [
+     0.9500000000000002,
+     0.9666666666666669,
+     0.8416666666666669,
+     1.1083333333333334,
+     1.05,
+     1.0333333333333334,
+     1.0500000000000003
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ACEGCDA"
+    },
+    {
+     "value": "ACEGCDA"
+    },
+    {
+     "value": "ACEGCAA"
+    },
+    {
+     "value": "ACEGCAA"
+    }
+   ]
+  },
+  {
+   "id": "t149",
+   "sequence_weights": {
+    "value": [
+     0.9097222222222222,
+     1.1875,
+     1.1388888888888888,
+     0.9305555555555556,
+     0.9722222222222222,
+     0.8611111111111112
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DAGDACGEGAEC"
+    },
+    {
+     "value": "DAGDACGEGAEC"
+    },
+    {
+     "value": "DAGDAEGEGAAA"
+    },
+    {
+     "value": "DAGDAEGEGAAA"
+    }
+   ]
+  },
+  {
+   "id": "t150",
+   "sequence_weights": {
+    "value": [
+     1.1785714285714286,
+     0.8214285714285715,
+     1.1785714285714286,
+     1.092857142857143,
+     0.8214285714285715,
+     0.9071428571428571
+    ]
+   },
+   "consensus": [
+    {
+     "value": "-EDGAEE"
+    },
+    {
+     "value": "AEDGAEE"
+    },
+    {
+     "value": "-EAGAEA"
+    },
+    {
+     "value": "AEAGAEA"
+    }
+   ]
+  },
+  {
+   "id": "t151",
+   "sequence_weights": {
+    "value": [
+     0.8510101010101011,
+     0.8952020202020201,
+     1.0845959595959596,
+     1.0088383838383839,
+     1.1603535353535352
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DGAGGEDCAAC"
+    },
+    {
+     "value": "DGAGGEDCAAC"
+    },
+    {
+     "value": "DGAACADAAAA"
+    },
+    {
+     "value": "DGAACADAAAA"
+    }
+   ]
+  },
+  {
+   "id": "t152",
+   "sequence_weights": {
+    "value": [
+     1.1212962962962962,
+     0.9657407407407408,
+     1.1407407407407408,
+     0.661111111111111,
+     0.8101851851851851,
+     1.1277777777777778,
+     1.173148148148148
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AAAEECDGG"
+    },
+    {
+     "value": "AAAEECDGG"
+    },
+    {
+     "value": "AAAEECDDG"
+    },
+    {
+     "value": "AAAEECDDG"
+    }
+   ]
+  },
+  {
+   "id": "t153",
+   "sequence_weights": {
+    "value": [
+     1.0,
+     0.9393939393939394,
+     1.0606060606060606,
+     1.0000000000000002
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CAEAGCACEEE"
+    },
+    {
+     "value": "CAEAGCACEEE"
+    },
+    {
+     "value": "CAEAACACEEE"
+    },
+    {
+     "value": "CAEAACACEEE"
+    }
+   ]
+  },
+  {
+   "id": "t154",
+   "sequence_weights": {
+    "value": [
+     0.9476495726495727,
+     0.7446581196581197,
+     1.1185897435897436,
+     1.1773504273504274,
+     1.0117521367521367
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DGCDDAAAGGEGE"
+    },
+    {
+     "value": "DGCDDAAAGGEGE"
+    },
+    {
+     "value": "DACDDAAAGGEGE"
+    },
+    {
+     "value": "DACDDAAAGGEGE"
+    }
+   ]
+  },
+  {
+   "id": "t155",
+   "sequence_weights": {
+    "value": [
+     0.9146825396825397,
+     0.9246031746031745,
+     1.2123015873015872,
+     1.1230158730158732,
+     0.8253968253968254
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ECECED-DGDEDGA"
+    },
+    {
+     "value": "ECECED-DGDEDGA"
+    },
+    {
+     "value": "ECDCEG-DGDEDGA"
+    },
+    {
+     "value": "ECDCEG-DGDEDGA"
+    }
+   ]
+  },
+  {
+   "id": "t156",
+   "sequence_weights": {
+    "value": [
+     0.9821428571428572,
+     1.001984126984127,
+     0.9126984126984127,
+     0.9126984126984127,
+     1.1904761904761905
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AAGDDDG"
+    },
+    {
+     "value": "AAGDDDG"
+    },
+    {
+     "value": "AAGACDG"
+    },
+    {
+     "value": "AAGACDG"
+    }
+   ]
+  },
+  {
+   "id": "t157",
+   "sequence_weights": {
+    "value": [
+     1.1250000000000002,
+     1.275462962962963,
+     0.8703703703703705,
+     0.8703703703703705,
+     0.8587962962962964
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CDEAGGDAEADC"
+    },
+    {
+     "value": "CDEAGGDAEADC"
+    },
+    {
+     "value": "CDAAGEDAEADA"
+    },
+    {
+     "value": "CDAAGEDAEADA"
+    }
+   ]
+  },
+  {
+   "id": "t158",
+   "sequence_weights": {
+    "value": [
+     0.9455128205128205,
+     1.2072649572649572,
+     0.9722222222222224,
+     0.7745726495726498,
+     1.1004273504273505
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GAEGACCAAEGDC"
+    },
+    {
+     "value": "GAEGACCAAEGDC"
+    },
+    {
+     "value": "GAEGACAAAAGDC"
+    },
+    {
+     "value": "GAEGACAAAAGDC"
+    }
+   ]
+  },
+  {
+   "id": "t159",
+   "sequence_weights": {
+    "value": [
+     1.051282051282051,
+     1.0000000000000002,
+     0.9487179487179487,
+     1.0
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ACGAAGAGEGEDD"
+    },
+    {
+     "value": "ACGAAGAGEGEDD"
+    },
+    {
+     "value": "A-G-ACAGCAEDD"
+    },
+    {
+     "value": "A-D-ACAGCAEDD"
+    }
+   ]
+  },
+  {
+   "id": "t160",
+   "sequence_weights": {
+    "value": [
+     0.9166666666666667,
+     1.166666666666667,
+     1.0000000000000002,
+     0.9166666666666669
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AGDECDDA-"
+    },
+    {
+     "value": "AGDECDDAC"
+    },
+    {
+     "value": "AGDECDAA-"
+    },
+    {
+     "value": "AGDECDAAC"
+    }
+   ]
+  },
+  {
+   "id": "t161",
+   "sequence_weights": {
+    "value": [
+     0.8564814814814814,
+     1.0300925925925928,
+     0.9953703703703706,
+     0.9375,
+     1.1805555555555556
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADAGEC"
+    },
+    {
+     "value": "ADAGEC"
+    },
+    {
+     "value": "ADADEC"
+    },
+    {
+     "value": "ADADEC"
+    }
+   ]
+  },
+  {
+   "id": "t162",
+   "sequence_weights": {
+    "value": [
+     1.222222222222222,
+     0.7777777777777778,
+     0.9259259259259259,
+     1.074074074074074
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CDGDCAAEE"
+    },
+    {
+     "value": "CDGDCAAEE"
+    },
+    {
+     "value": "CA-DEAAEE"
+    },
+    {
+     "value": "CA-ECAAEE"
+    }
+   ]
+  },
+  {
+   "id": "t163",
+   "sequence_weights": {
+    "value": [
+     0.8166666666666667,
+     1.771875,
+     0.8385416666666669,
+     0.9552083333333333,
+     1.1520833333333336,
+     0.6562500000000001,
+     0.8093750000000002
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CDCEAEGA"
+    },
+    {
+     "value": "CDCEAEGA"
+    },
+    {
+     "value": "CDCEAEGA"
+    },
+    {
+     "value": "CDCEAEGA"
+    }
+   ]
+  },
+  {
+   "id": "t164",
+   "sequence_weights": {
+    "value": [
+     0.8183333333333334,
+     1.1916666666666667,
+     1.01,
+     1.0266666666666666,
+     1.0016666666666667,
+     0.9516666666666665
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CACEACCDGD"
+    },
+    {
+     "value": "CACEACCDGD"
+    },
+    {
+     "value": "CAAEACADGA"
+    },
+    {
+     "value": "CAAEACADGA"
+    }
+   ]
+  },
+  {
+   "id": "t165",
+   "sequence_weights": {
+    "value": [
+     0.9206944444444444,
+     1.0062499999999999,
+     1.295,
+     0.8963888888888888,
+     1.3144444444444443,
+     0.7408333333333333,
+     0.8263888888888888
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AGADCECAGC"
+    },
+    {
+     "value": "AGADCECAGC"
+    },
+    {
+     "value": "AAADCECAEC"
+    },
+    {
+     "value": "AAADCECAEC"
+    }
+   ]
+  },
+  {
+   "id": "t166",
+   "sequence_weights": {
+    "value": [
+     0.9285714285714285,
+     1.0357142857142856,
+     1.0357142857142856
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CDGAEGE"
+    },
+    {
+     "value": "CDGAEGE"
+    },
+    {
+     "value": "CDCAEGE"
+    },
+    {
+     "value": "CDCAEGE"
+    }
+   ]
+  },
+  {
+   "id": "t167",
+   "sequence_weights": {
+    "value": [
+     1.0677083333333333,
+     1.0850694444444444,
+     0.9895833333333333,
+     0.9288194444444444,
+     0.9288194444444444
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DAEEGCDD"
+    },
+    {
+     "value": "DAEEGCDD"
+    },
+    {
+     "value": "DAEAGCDD"
+    },
+    {
+     "value": "DAEAGCDD"
+    }
+   ]
+  },
+  {
+   "id": "t168",
+   "sequence_weights": {
+    "value": [
+     0.7708333333333334,
+     1.1875,
+     1.3333333333333333,
+     0.7291666666666667,
+     0.7708333333333334,
+     1.2083333333333335,
+     1.0
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CEGGADC"
+    },
+    {
+     "value": "CEGGADC"
+    },
+    {
+     "value": "AEGAADA"
+    },
+    {
+     "value": "AEGAADA"
+    }
+   ]
+  },
+  {
+   "id": "t169",
+   "sequence_weights": {
+    "value": [
+     1.4194444444444445,
+     0.7842592592592593,
+     0.9957175925925926,
+     1.0394675925925927,
+     0.7696759259259259,
+     0.922800925925926,
+     1.0686342592592593
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CCADGEDDAGDA"
+    },
+    {
+     "value": "CCADGEDDAGDA"
+    },
+    {
+     "value": "CCADGDDDAADA"
+    },
+    {
+     "value": "CCADGDDDAADA"
+    }
+   ]
+  },
+  {
+   "id": "t170",
+   "sequence_weights": {
+    "value": [
+     1.0523809523809524,
+     0.7523809523809524,
+     1.2428571428571427,
+     1.207142857142857,
+     0.9928571428571429,
+     0.7523809523809524
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GDECGDA"
+    },
+    {
+     "value": "GDECGDA"
+    },
+    {
+     "value": "GDECGAA"
+    },
+    {
+     "value": "GDECGAA"
+    }
+   ]
+  },
+  {
+   "id": "t171",
+   "sequence_weights": {
+    "value": [
+     0.988095238095238,
+     0.8809523809523809,
+     1.0357142857142854,
+     1.238095238095238,
+     0.7857142857142856,
+     1.0714285714285712
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GEDCCAD"
+    },
+    {
+     "value": "GEDCCAD"
+    },
+    {
+     "value": "GDACCAD"
+    },
+    {
+     "value": "GDACCAD"
+    }
+   ]
+  },
+  {
+   "id": "t172",
+   "sequence_weights": {
+    "value": [
+     0.982142857142857,
+     1.0357142857142856,
+     0.982142857142857
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GDCGCAADGEGCDA"
+    },
+    {
+     "value": "GDCGCAADGEGCDA"
+    },
+    {
+     "value": "GDAGGAADGDGCDA"
+    },
+    {
+     "value": "GDAGGAADGDGCDA"
+    }
+   ]
+  },
+  {
+   "id": "t173",
+   "sequence_weights": {
+    "value": [
+     1.0,
+     1.0,
+     0.8666666666666668,
+     1.1333333333333333
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CDCEGEG-EA"
+    },
+    {
+     "value": "CDCEGEG-EA"
+    },
+    {
+     "value": "CDC-GGC-DD"
+    },
+    {
+     "value": "CDC-GGC-CC"
+    }
+   ]
+  },
+  {
+   "id": "t174",
+   "sequence_weights": {
+    "value": [
+     1.095238095238095,
+     1.0,
+     0.9047619047619048,
+     1.0
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AGECEDA"
+    },
+    {
+     "value": "AGECEDA"
+    },
+    {
+     "value": "AGECEDA"
+    },
+    {
+     "value": "AGECEDA"
+    }
+   ]
+  },
+  {
+   "id": "t175",
+   "sequence_weights": {
+    "value": [
+     1.0192307692307692,
+     1.0192307692307692,
+     0.9615384615384616
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DCCAGEAAE-CEAD"
+    },
+    {
+     "value": "DCCAGEAAE-CEAD"
+    },
+    {
+     "value": "DCCCAEAAE-CEAD"
+    },
+    {
+     "value": "DCCCAEAAE-CEAD"
+    }
+   ]
+  },
+  {
+   "id": "t176",
+   "sequence_weights": {
+    "value": [
+     1.0714285714285714,
+     1.0714285714285714,
+     0.9285714285714283,
+     0.9285714285714285
+    ]
+   },
+   "consensus": [
+    {
+     "value": "E-AGGADEAAAAEC"
+    },
+    {
+     "value": "E-AGGADEAAAAEC"
+    },
+    {
+     "value": "E-AGGADEAAAACC"
+    },
+    {
+     "value": "E-AGGADEAAAACC"
+    }
+   ]
+  },
+  {
+   "id": "t177",
+   "sequence_weights": {
+    "value": [
+     0.976190476190476,
+     1.0238095238095237,
+     1.0238095238095237,
+     0.9761904761904759
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ECGDAG-EADCEGA"
+    },
+    {
+     "value": "ECGDAG-EADCEGA"
+    },
+    {
+     "value": "ECEGAG-EAGCEGA"
+    },
+    {
+     "value": "ECEGAG-EAGCEGA"
+    }
+   ]
+  },
+  {
+   "id": "t178",
+   "sequence_weights": {
+    "value": [
+     0.9819444444444445,
+     0.952777777777778,
+     0.9600694444444443,
+     1.1423611111111112,
+     0.7388888888888889,
+     1.0694444444444444,
+     1.154513888888889
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AGAECDGECGDC"
+    },
+    {
+     "value": "AGAECDGECGDC"
+    },
+    {
+     "value": "AAAECDEAAAAC"
+    },
+    {
+     "value": "AAAECDEAAAAC"
+    }
+   ]
+  },
+  {
+   "id": "t179",
+   "sequence_weights": {
+    "value": [
+     1.0128205128205128,
+     0.7653846153846153,
+     1.0589743589743588,
+     1.214102564102564,
+     1.0974358974358973,
+     0.8512820512820511
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EEAEGDAAD-ADE"
+    },
+    {
+     "value": "EEAEGDAAD-ADE"
+    },
+    {
+     "value": "EEAEAAAAA-ADE"
+    },
+    {
+     "value": "EEAEAAAAA-ADE"
+    }
+   ]
+  },
+  {
+   "id": "t180",
+   "sequence_weights": {
+    "value": [
+     0.9126984126984128,
+     1.2202380952380953,
+     0.9722222222222224,
+     0.7341269841269842,
+     1.160714285714286
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GEACEDD"
+    },
+    {
+     "value": "GEACEDD"
+    },
+    {
+     "value": "GEAEEAA"
+    },
+    {
+     "value": "GEAEEAA"
+    }
+   ]
+  },
+  {
+   "id": "t181",
+   "sequence_weights": {
+    "value": [
+     0.9863636363636363,
+     0.8590909090909091,
+     1.003030303030303,
+     0.9727272727272727,
+     1.253030303030303,
+     0.9257575757575757
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DEGGDDAECC-"
+    },
+    {
+     "value": "DEGGDDAECCA"
+    },
+    {
+     "value": "AEGGDAAEAA-"
+    },
+    {
+     "value": "AEGGDAAEAAA"
+    }
+   ]
+  },
+  {
+   "id": "t182",
+   "sequence_weights": {
+    "value": [
+     0.8809829059829061,
+     1.0544871794871795,
+     0.9019230769230769,
+     1.002136752136752,
+     1.0155982905982905,
+     1.1128205128205129,
+     1.032051282051282
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CGAEGADDACDGD"
+    },
+    {
+     "value": "CGAEGADDACDGD"
+    },
+    {
+     "value": "CGACGADDACDAD"
+    },
+    {
+     "value": "CGACGADDACDAD"
+    }
+   ]
+  },
+  {
+   "id": "t183",
+   "sequence_weights": {
+    "value": [
+     0.6166666666666666,
+     0.75,
+     1.05,
+     1.2000000000000002,
+     1.125,
+     1.0,
+     1.2583333333333333
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GEAACGC"
+    },
+    {
+     "value": "GEAACGC"
+    },
+    {
+     "value": "GEAAAGD"
+    },
+    {
+     "value": "GEAAAGD"
+    }
+   ]
+  },
+  {
+   "id": "t184",
+   "sequence_weights": {
+    "value": [
+     1.1300505050505052,
+     1.003787878787879,
+     1.0921717171717171,
+     0.7007575757575758,
+     1.0732323232323233
+    ]
+   },
+   "consensus": [
+    {
+     "value": "GAAECDGEDAG"
+    },
+    {
+     "value": "GAAECDGEDAG"
+    },
+    {
+     "value": "GAAECGGEGAG"
+    },
+    {
+     "value": "GAAECGGEGAG"
+    }
+   ]
+  },
+  {
+   "id": "t185",
+   "sequence_weights": {
+    "value": [
+     1.0555555555555551,
+     0.909722222222222,
+     1.0569444444444442,
+     1.0694444444444442,
+     0.9513888888888888,
+     0.9569444444444444
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AACAGDAGCDDE"
+    },
+    {
+     "value": "AACAGDAGCDDE"
+    },
+    {
+     "value": "AACAGDAGCCDE"
+    },
+    {
+     "value": "AACAGDAGCCDE"
+    }
+   ]
+  },
+  {
+   "id": "t186",
+   "sequence_weights": {
+    "value": [
+     1.0454545454545454,
+     1.0454545454545454,
+     0.9090909090909091
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ECGGEDAEDCC"
+    },
+    {
+     "value": "ECGGEDAEDCC"
+    },
+    {
+     "value": "ECGAEEAECCC"
+    },
+    {
+     "value": "ECGAEEAECCC"
+    }
+   ]
+  },
+  {
+   "id": "t187",
+   "sequence_weights": {
+    "value": [
+     0.951190476190476,
+     1.0392857142857141,
+     1.0273809523809523,
+     0.9976190476190473,
+     1.094047619047619,
+     0.8904761904761902
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AGECAAEADDEGAA"
+    },
+    {
+     "value": "AGECAAEADDEGAA"
+    },
+    {
+     "value": "AGECAAEADDEAAA"
+    },
+    {
+     "value": "AGECAAEADDEAAA"
+    }
+   ]
+  },
+  {
+   "id": "t188",
+   "sequence_weights": {
+    "value": [
+     0.8777777777777779,
+     0.9444444444444444,
+     0.961111111111111,
+     1.0944444444444443,
+     0.9444444444444443,
+     1.1777777777777776
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DEACACEDA"
+    },
+    {
+     "value": "DEACACEDA"
+    },
+    {
+     "value": "AEACACADA"
+    },
+    {
+     "value": "AEACACADA"
+    }
+   ]
+  },
+  {
+   "id": "t189",
+   "sequence_weights": {
+    "value": [
+     1.0769230769230769,
+     0.9615384615384617,
+     0.9615384615384617
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CCEGGAAGAGDD-C"
+    },
+    {
+     "value": "CCEGGAAGAGDD-C"
+    },
+    {
+     "value": "CDEGAAAGAGEA-D"
+    },
+    {
+     "value": "CDEGAAAGAGEA-D"
+    }
+   ]
+  },
+  {
+   "id": "t190",
+   "sequence_weights": {
+    "value": [
+     0.9772727272727274,
+     1.1136363636363638,
+     0.9090909090909091
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ACEG-CCADDED"
+    },
+    {
+     "value": "ACEG-CCADDED"
+    },
+    {
+     "value": "ACEG-CCACDAG"
+    },
+    {
+     "value": "ACEG-CCACDAG"
+    }
+   ]
+  },
+  {
+   "id": "t191",
+   "sequence_weights": {
+    "value": [
+     0.8571428571428571,
+     1.2380952380952381,
+     1.0476190476190477,
+     0.8571428571428572
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DAAGCCD"
+    },
+    {
+     "value": "DAAGCCD"
+    },
+    {
+     "value": "DAA-CCD"
+    },
+    {
+     "value": "DAA-CCD"
+    }
+   ]
+  },
+  {
+   "id": "t192",
+   "sequence_weights": {
+    "value": [
+     0.95,
+     1.025,
+     1.025
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CAACECED-GE"
+    },
+    {
+     "value": "CAACECED-GE"
+    },
+    {
+     "value": "CAACACAD-GE"
+    },
+    {
+     "value": "CAACACAD-GE"
+    }
+   ]
+  },
+  {
+   "id": "t193",
+   "sequence_weights": {
+    "value": [
+     0.8287878787878789,
+     1.0196969696969698,
+     1.1181818181818182,
+     1.1015151515151513,
+     0.9818181818181819,
+     0.9500000000000001
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DEGGDDCDEAC"
+    },
+    {
+     "value": "DEGGDDCDEAC"
+    },
+    {
+     "value": "DEDGDDCDEA-"
+    },
+    {
+     "value": "DEDGDDCDEAC"
+    }
+   ]
+  },
+  {
+   "id": "t194",
+   "sequence_weights": {
+    "value": [
+     1.1515151515151516,
+     1.0303030303030305,
+     0.8484848484848485,
+     0.9696969696969698
+    ]
+   },
+   "consensus": [
+    {
+     "value": "EGACEADEGAD"
+    },
+    {
+     "value": "EGACEADEGAD"
+    },
+    {
+     "value": "EGACEADEGAD"
+    },
+    {
+     "value": "EGACEADEGAD"
+    }
+   ]
+  },
+  {
+   "id": "t195",
+   "sequence_weights": {
+    "value": [
+     0.8875,
+     1.1291666666666667,
+     0.9083333333333332,
+     0.8166666666666667,
+     1.025,
+     1.2333333333333334
+    ]
+   },
+   "consensus": [
+    {
+     "value": "ADAACGCA"
+    },
+    {
+     "value": "ADAACGCA"
+    },
+    {
+     "value": "ADAADGCA"
+    },
+    {
+     "value": "ADAADGCA"
+    }
+   ]
+  },
+  {
+   "id": "t196",
+   "sequence_weights": {
+    "value": [
+     1.0,
+     0.9999999999999999,
+     0.9333333333333332,
+     1.0666666666666667
+    ]
+   },
+   "consensus": [
+    {
+     "value": "AGDECACAEA"
+    },
+    {
+     "value": "AGDECACAEA"
+    },
+    {
+     "value": "AGDEC-DAEA"
+    },
+    {
+     "value": "AGDEC-CAEA"
+    }
+   ]
+  },
+  {
+   "id": "t197",
+   "sequence_weights": {
+    "value": [
+     1.134259259259259,
+     1.0648148148148149,
+     0.914351851851852,
+     0.8449074074074074,
+     1.0416666666666667
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DAEEDC"
+    },
+    {
+     "value": "DAEEDC"
+    },
+    {
+     "value": "DAAEDA"
+    },
+    {
+     "value": "DAAEDA"
+    }
+   ]
+  },
+  {
+   "id": "t198",
+   "sequence_weights": {
+    "value": [
+     0.9351851851851851,
+     1.0555555555555556,
+     0.9907407407407406,
+     1.111111111111111,
+     0.6944444444444443,
+     1.212962962962963
+    ]
+   },
+   "consensus": [
+    {
+     "value": "DACGADEDG"
+    },
+    {
+     "value": "DACGADEDG"
+    },
+    {
+     "value": "CAAGAAEDG"
+    },
+    {
+     "value": "CAAGAAEDG"
+    }
+   ]
+  },
+  {
+   "id": "t199",
+   "sequence_weights": {
+    "value": [
+     1.1282051282051282,
+     1.0256410256410258,
+     1.0256410256410258,
+     0.8205128205128204
+    ]
+   },
+   "consensus": [
+    {
+     "value": "CCGADECAEDGGE"
+    },
+    {
+     "value": "CCGADECAEDGGE"
+    },
+    {
+     "value": "CCGADE-AEDCGE"
+    },
+    {
+     "value": "CCGADE-AEDCGE"
+    }
+   ]
+  }
+ ]
+}

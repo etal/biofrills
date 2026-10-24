@@ -1,0 +1,11 @@
+{
+ "script": "seq-composition",
+ "argv": [
+  "synth-mixedcase.aln.fasta"
+ ],
+ "stdin": null,
+ "returncode": 0,
+ "stdout": "-: 0.062500\nG: 0.125000\nH: 0.093750\nK: 0.093750\nL: 0.093750\nM: 0.125000\nN: 0.031250\nR: 0.031250\nV: 0.062500\nY: 0.031250\na: 0.125000\nl: 0.031250\nw: 0.093750\n",
+ "stderr": "",
+ "written_files": {}
+}

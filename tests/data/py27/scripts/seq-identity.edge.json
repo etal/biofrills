@@ -1,0 +1,11 @@
+{
+ "script": "seq-identity",
+ "argv": [
+  "synth-edge.aln.fasta"
+ ],
+ "stdin": null,
+ "returncode": 0,
+ "stdout": "s1\t\ns2\t88.89\t\ns3\t66.67\t66.67\t\ns4\t77.78\t60.00\t44.44\t\ns5\t85.71\t71.43\t71.43\t71.43\t\n  \ts1      s2      s3      s4      s5     \n\n Min: 44.44  ~  Mean: 70.44  ~  Max: 88.89\n",
+ "stderr": "",
+ "written_files": {}
+}

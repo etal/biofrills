@@ -1,0 +1,12 @@
+{
+ "script": "seq-convert",
+ "argv": [
+  "fasta",
+  "clustal"
+ ],
+ "stdin": "synth-edge.aln.fasta",
+ "returncode": 0,
+ "stdout": "CLUSTAL X (1.81) multiple sequence alignment\n\n\ns1                                  --MKV-LA.YRGH--\ns2                                  --MKVILA.FRGH--\ns3                                  ---KVIL-.YKGHQ-\ns4                                  -AMRV-LA.YRGN--\ns5                                  ---KV-LS.YRG---\n\n\n",
+ "stderr": "SeqIO: Converted 5 sequences\n",
+ "written_files": {}
+}

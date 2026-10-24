@@ -1,0 +1,712 @@
+{
+ "input": "inputs/synth-single.aln.fasta",
+ "ids": [
+  "only"
+ ],
+ "sequence_weights": [
+  {
+   "kwargs": {
+    "scaling": "none"
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "kwargs": {
+    "scaling": "sum1"
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "kwargs": {
+    "scaling": "max1"
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "kwargs": {
+    "scaling": "avg1"
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "integer division or modulo by zero"
+    }
+   }
+  },
+  {
+   "kwargs": {
+    "scaling": "andy"
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "integer division or modulo by zero"
+    }
+   }
+  }
+ ],
+ "aa_counts": [
+  {
+   "weights": null,
+   "kwargs": {
+    "gap_chars": "-."
+   },
+   "result": {
+    "value": {
+     "A": 1,
+     "G": 1,
+     "H": 1,
+     "K": 1,
+     "L": 1,
+     "M": 1,
+     "R": 1,
+     "V": 1,
+     "Y": 1
+    }
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "gap_chars": "-.X"
+   },
+   "result": {
+    "value": {
+     "A": 1,
+     "G": 1,
+     "H": 1,
+     "K": 1,
+     "L": 1,
+     "M": 1,
+     "R": 1,
+     "V": 1,
+     "Y": 1
+    }
+   }
+  },
+  {
+   "weights": true,
+   "kwargs": {
+    "gap_chars": "-."
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": true,
+   "kwargs": {
+    "gap_chars": "-.X"
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": "seqweights",
+   "kwargs": {
+    "gap_chars": "-."
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": "seqweights",
+   "kwargs": {
+    "gap_chars": "-.X"
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": "unit",
+   "kwargs": {
+    "gap_chars": "-."
+   },
+   "result": {
+    "value": {
+     "A": 1.0,
+     "G": 1.0,
+     "H": 1.0,
+     "K": 1.0,
+     "L": 1.0,
+     "M": 1.0,
+     "R": 1.0,
+     "V": 1.0,
+     "Y": 1.0
+    }
+   }
+  },
+  {
+   "weights": "unit",
+   "kwargs": {
+    "gap_chars": "-.X"
+   },
+   "result": {
+    "value": {
+     "A": 1.0,
+     "G": 1.0,
+     "H": 1.0,
+     "K": 1.0,
+     "L": 1.0,
+     "M": 1.0,
+     "R": 1.0,
+     "V": 1.0,
+     "Y": 1.0
+    }
+   }
+  }
+ ],
+ "aa_frequencies": [
+  {
+   "weights": null,
+   "kwargs": {
+    "gap_chars": "-."
+   },
+   "result": {
+    "value": {
+     "A": 0.1111111111111111,
+     "G": 0.1111111111111111,
+     "H": 0.1111111111111111,
+     "K": 0.1111111111111111,
+     "L": 0.1111111111111111,
+     "M": 0.1111111111111111,
+     "R": 0.1111111111111111,
+     "V": 0.1111111111111111,
+     "Y": 0.1111111111111111
+    }
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "gap_chars": "-.X"
+   },
+   "result": {
+    "value": {
+     "A": 0.1111111111111111,
+     "G": 0.1111111111111111,
+     "H": 0.1111111111111111,
+     "K": 0.1111111111111111,
+     "L": 0.1111111111111111,
+     "M": 0.1111111111111111,
+     "R": 0.1111111111111111,
+     "V": 0.1111111111111111,
+     "Y": 0.1111111111111111
+    }
+   }
+  },
+  {
+   "weights": true,
+   "kwargs": {
+    "gap_chars": "-."
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": true,
+   "kwargs": {
+    "gap_chars": "-.X"
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": "seqweights",
+   "kwargs": {
+    "gap_chars": "-."
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": "seqweights",
+   "kwargs": {
+    "gap_chars": "-.X"
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": "unit",
+   "kwargs": {
+    "gap_chars": "-."
+   },
+   "result": {
+    "value": {
+     "A": 0.1111111111111111,
+     "G": 0.1111111111111111,
+     "H": 0.1111111111111111,
+     "K": 0.1111111111111111,
+     "L": 0.1111111111111111,
+     "M": 0.1111111111111111,
+     "R": 0.1111111111111111,
+     "V": 0.1111111111111111,
+     "Y": 0.1111111111111111
+    }
+   }
+  },
+  {
+   "weights": "unit",
+   "kwargs": {
+    "gap_chars": "-.X"
+   },
+   "result": {
+    "value": {
+     "A": 0.1111111111111111,
+     "G": 0.1111111111111111,
+     "H": 0.1111111111111111,
+     "K": 0.1111111111111111,
+     "L": 0.1111111111111111,
+     "M": 0.1111111111111111,
+     "R": 0.1111111111111111,
+     "V": 0.1111111111111111,
+     "Y": 0.1111111111111111
+    }
+   }
+  }
+ ],
+ "consensus": [
+  {
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.5
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "integer division or modulo by zero"
+    }
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.6
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "integer division or modulo by zero"
+    }
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.8
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "integer division or modulo by zero"
+    }
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "integer division or modulo by zero"
+    }
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "integer division or modulo by zero"
+    }
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "integer division or modulo by zero"
+    }
+   }
+  },
+  {
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.5
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.6
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.8
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "float division by zero"
+    }
+   }
+  },
+  {
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.5
+   },
+   "result": {
+    "value": "MKV-LAYRGH"
+   }
+  },
+  {
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.6
+   },
+   "result": {
+    "value": "MKV-LAYRGH"
+   }
+  },
+  {
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.8
+   },
+   "result": {
+    "value": "MKV-LAYRGH"
+   }
+  },
+  {
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "result": {
+    "value": "MKV-LAYRGH"
+   }
+  },
+  {
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "result": {
+    "value": "MKV-LAYRGH"
+   }
+  },
+  {
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "result": {
+    "value": "MKV-LAYRGH"
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "simple": true,
+    "trim_ends": true,
+    "gap_threshold": 0.5
+   },
+   "result": {
+    "value": "MKV-LAYRGH"
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "simple": true,
+    "trim_ends": true,
+    "gap_threshold": 0.6
+   },
+   "result": {
+    "value": "MKV-LAYRGH"
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "simple": true,
+    "trim_ends": true,
+    "gap_threshold": 0.8
+   },
+   "result": {
+    "value": "MKV-LAYRGH"
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "simple": true,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "result": {
+    "value": "MKV-LAYRGH"
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "simple": true,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "result": {
+    "value": "MKV-LAYRGH"
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "simple": true,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "result": {
+    "value": "MKV-LAYRGH"
+   }
+  }
+ ],
+ "blocks": [
+  {
+   "weights": null,
+   "kwargs": {
+    "threshold": 0.4
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "integer division or modulo by zero"
+    }
+   }
+  },
+  {
+   "weights": false,
+   "kwargs": {
+    "threshold": 0.4
+   },
+   "result": {
+    "value": [
+     [
+      "only",
+      "only",
+      "MKVLAYRGH"
+     ]
+    ]
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "threshold": 0.5
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "integer division or modulo by zero"
+    }
+   }
+  },
+  {
+   "weights": false,
+   "kwargs": {
+    "threshold": 0.5
+   },
+   "result": {
+    "value": [
+     [
+      "only",
+      "only",
+      "MKVLAYRGH"
+     ]
+    ]
+   }
+  },
+  {
+   "weights": null,
+   "kwargs": {
+    "threshold": 0.9
+   },
+   "result": {
+    "error": {
+     "type": "ZeroDivisionError",
+     "message": "integer division or modulo by zero"
+    }
+   }
+  },
+  {
+   "weights": false,
+   "kwargs": {
+    "threshold": 0.9
+   },
+   "result": {
+    "value": [
+     [
+      "only",
+      "only",
+      "MKVLAYRGH"
+     ]
+    ]
+   }
+  }
+ ],
+ "remove_empty_cols": {
+  "value": [
+   [
+    "only",
+    "only",
+    "MKVLAYRGH"
+   ]
+  ]
+ },
+ "score_pairwise": [],
+ "identity_abs": [],
+ "identity_avg": []
+}

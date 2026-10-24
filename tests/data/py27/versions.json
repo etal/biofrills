@@ -1,0 +1,12 @@
+{
+ "python": "2.7.15",
+ "implementation": "CPython",
+ "platform": "Darwin-25.6.0-x86_64-i386-64bit",
+ "machine": "x86_64",
+ "biopython": "1.76",
+ "numpy": "1.16.5",
+ "networkx": "2.2",
+ "biocma_commit": "eac0c57eb83a9498e53ccdeb9cbc3fe21a5826a7",
+ "biofrills_sources_commit": "36684bb6c7632f96215e8b2b4ebc86640f331bcd",
+ "biofrills_sources_modified": false
+}

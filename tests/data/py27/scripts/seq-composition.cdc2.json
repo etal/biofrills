@@ -1,0 +1,11 @@
+{
+ "script": "seq-composition",
+ "argv": [
+  "cdc2-domain.fasta"
+ ],
+ "stdin": null,
+ "returncode": 0,
+ "stdout": "A: 0.048316\nC: 0.014830\nD: 0.058649\nE: 0.063529\nF: 0.045924\nG: 0.054344\nH: 0.027555\nI: 0.081324\nK: 0.073479\nL: 0.115863\nM: 0.024397\nN: 0.036452\nP: 0.052239\nQ: 0.036931\nR: 0.050995\nS: 0.054726\nT: 0.048316\nV: 0.057597\nW: 0.012246\nY: 0.042289\n",
+ "stderr": "",
+ "written_files": {}
+}

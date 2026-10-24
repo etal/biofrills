@@ -1,0 +1,13 @@
+{
+ "script": "seq-diff",
+ "argv": [
+  "-s",
+  "cdc2-domain.fasta",
+  "diff-query.fasta"
+ ],
+ "stdin": null,
+ "returncode": 1,
+ "stdout": "",
+ "stderr": "Traceback (most recent call last):\n  File \"<repo>/scripts/seq-diff\", line 142, in <module>\n    gain, loss = differ(infile1, infile2, identifiers[opt])\n  File \"<repo>/scripts/seq-diff\", line 36, in differ\n    seqrecs1 = SeqIO.to_dict(SeqIO.parse(infile1, 'fasta'), key_func)\n  File \"<python-prefix>/lib/python2.7/site-packages/Bio/SeqIO/__init__.py\", line 833, in to_dict\n    raise ValueError(\"Duplicate key '%s'\" % key)\nValueError: Duplicate key 'YEKVEKIGEGTYGVVYKARDRITNETIALKKIRLDQEDEGVPSTAIREISLLKEMQHGNIVRLQDVVHCEKKLYLVFEYLDLDLKKHMDNSPDFAKSPRMIKTFLYQMIRGLAYCHSHRVLHRDLKPQNLLIDRRTNALKLADFGLARAFGIPVRTFTHEVVTLWYRAPEILLGSRHYSTPVDMWSVGCIFAEMINQRPLFPGDSEIDELFKIFRILGTPNEETWPGVTSLPDFKSAFPKWLPKDLATLVPGLEHAGVDLLSKMLCLDPSSRITARAALEHDYF'\n",
+ "written_files": {}
+}

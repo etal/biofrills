@@ -1,0 +1,11 @@
+{
+ "script": "seq-extract",
+ "argv": [
+  "-3,7"
+ ],
+ "stdin": "synth-edge.aln.fasta",
+ "returncode": 0,
+ "stdout": ">s1 first sequence\n--ML\n>s2\n--ML\n>s3\n---L\n>s4\n-AML\n>s5\n---L\n",
+ "stderr": "",
+ "written_files": {}
+}

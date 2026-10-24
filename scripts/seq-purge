@@ -16,6 +16,7 @@ Options for how "duplicate" is determined:
     -b      Same identifiers and sequences ("both")
     -c      One sequence contains another ("contains")
 """
+import re
 import sys
 
 from Bio import SeqIO
@@ -61,7 +62,14 @@ def purger(seqrecs, identify):
 
 
 def container(seqrecs, is_cma):
-    """Filter out SeqRecords that are completely contained by another."""
+    """Filter out SeqRecords that are completely contained by another.
+
+    Records are visited in order of decreasing sequence length, and a record
+    is dropped if its sequence occurs within a sequence already kept. An 'X'
+    in the record's sequence matches any single character; an 'X' in a kept
+    sequence matches only an 'X'. fammer's update_fasta.ungap_and_unique
+    applies the same rule after removing gaps and converting to uppercase.
+    """
     seen = set()
     counter = 0
     if is_cma:
@@ -71,28 +79,16 @@ def container(seqrecs, is_cma):
     for rec in sorted(seqrecs, key=lambda r: len(getseq(r)), reverse=True):
         recseq = getseq(rec)
         if 'X' in recseq:
-            # Ignore ambiguous chars by checking each unambigous segment
-            for segment in recseq.split('X'):
-                for longseq in seen:
-                    if segment in longseq:
-                        # Check the next segment
-                        break
-                else:
-                    # No match -- recseq is novel
-                    seen.add(recseq)
-                    yield rec
-                    break
-            else:
-                # All fragments have been "seen"
-                counter += 1
+            # Each ambiguous residue matches any single character
+            pattern = re.compile(re.escape(recseq).replace('X', '.'))
+            redundant = any(pattern.search(longseq) for longseq in seen)
         else:
-            for seq in seen:
-                if recseq in seq:
-                    counter += 1
-                    break
-            else:
-                seen.add(recseq)
-                yield rec
+            redundant = any(recseq in longseq for longseq in seen)
+        if redundant:
+            counter += 1
+        else:
+            seen.add(recseq)
+            yield rec
     print >>sys.stderr, "Purged %d sequence%s" % (counter,
                                                   '' if counter == 1 else 's')
 

@@ -164,6 +164,13 @@ Standard error has the scratch directory, the repository root, the biocma extrac
   For example, `seq-sort -l` is accepted but ignored, so `seq-sort.l` and `seq-sort.default` are identical, and `seq-diff -s` stops with a `ValueError` traceback because `cdc2-domain.fasta` contains one sequence twice.
   A port that fixes such a defect differs from the fixture by design, and the test should state the expected difference.
   For the consensus cases, the expected differences are recorded in `differences.json`, described under "Differences in consensus output" below.
+- **Ambiguous residues in `seq-purge -c`.**
+  The recorded rule split a sequence at each `X` and purged the record when every segment occurred in some kept sequence, in any order and possibly in different kept sequences; a leading, trailing or doubled `X` yields an empty segment, which occurs in every sequence.
+  The current rule, which fammer's `update_fasta.ungap_and_unique` also applies, purges a record containing `X` only where the whole sequence, with each `X` matching any single character, occurs within one kept sequence; an `X` in a kept sequence matches only an `X`.
+  In `seq-purge.c` the record `x_fragment_of_1` is therefore kept, because its two segments both occur in the first record of `dupes.fasta` but 20 residues apart.
+  Standard error reads `Purged 5 sequences` instead of `Purged 6 sequences`, and standard output gains that record between `psu|PFF0750w` and `x_novel`.
+  The other `seq-purge` cases are unchanged, including `seq-purge.fikk-cma.c`, where both rules keep the one record that contains `X`.
+  `replay.py` covers only the consensus cases, so this difference is recorded here rather than in `differences.json`.
 - **Biopython output.**
   `seq-convert`, `seq-extract`, `seq-purge`, `seq-sort`, `seq-intersect` and `seq-diff` write records through Biopython's writers, and `seq-dupes` through `SeqRecord.format`, so their output also depends on the Biopython version.
   The BiopythonWarning about partial codons in the `seq-orfs` cases is another example.

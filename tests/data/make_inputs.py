@@ -207,7 +207,9 @@ def dupes_set(real):
         ("copy_of_3", q3),
         # Contained in record 4.
         ("fragment_of_4", q4[30:150]),
-        # Contains 'X'; each X-separated segment is contained in record 1.
+        # Contains 'X'; each X-separated segment is contained in record 1, but
+        # the two lie 20 residues apart there, so the current seq-purge -c
+        # keeps it, where the earlier segment-wise rule purged it.
         ("x_fragment_of_1", q1[10:60] + "X" + q1[80:140]),
         # Contains 'X' and one segment is novel.
         ("x_novel", q1[10:60] + "X" + "WWWWWWWWWW"),

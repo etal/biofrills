@@ -28,11 +28,15 @@ files are committed. With uv_, which installs the dependencies from PyPI::
 
     uv sync --all-extras
     uv run pytest
+    uv run ruff check
+    uv run ruff format
 
 With pixi_, which installs them from conda-forge::
 
     pixi run test            # newest Python in the lock file
     pixi run -e py312 test   # Python 3.12, the oldest supported version
+    pixi run lint            # ruff check
+    pixi run fmt             # ruff format
 
 Only weblogo comes from PyPI there, with three of its dependencies, because
 conda-forge lacks a recent enough build of it.

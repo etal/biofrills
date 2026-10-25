@@ -54,6 +54,16 @@ testpaths = ["tests"]
 pythonpath = ["tests"]
 filterwarnings = ["error"]
 
+[tool.ruff]
+# tests/data/capture_py27.py is the frozen Python 2.7 script that captured
+# the reference outputs; the pyupgrade rules would rewrite it into code that
+# Python 2 cannot run. .pixi holds the pixi environments, including a Python
+# 2.7 standard library, and is otherwise excluded only through .gitignore.
+extend-exclude = [".pixi", "tests/data/capture_py27.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "LOG", "G"]
+
 [tool.pixi.workspace]
 channels = ["conda-forge"]
 platforms = ["osx-arm64", "linux-64"]
@@ -83,6 +93,8 @@ scipy = "*"
 
 [tool.pixi.feature.dev.tasks]
 test = "pytest"
+lint = "ruff check"
+fmt = "ruff format"
 
 [tool.pixi.feature.py312.dependencies]
 python = "3.12.*"

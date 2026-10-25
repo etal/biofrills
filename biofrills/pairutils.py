@@ -2,6 +2,8 @@
 
 """
 
+# The table is aligned by hand, four entries to a row.
+# fmt: off
 blosum62 = {
         ('W', 'F') : 1, ('L', 'R') : -2, ('S', 'P') : -1, ('V', 'T') : 0, 
         ('Q', 'Q') : 5, ('N', 'A') : -2, ('Z', 'Y') : -2, ('W', 'R') : -3, 
@@ -73,6 +75,7 @@ blosum62 = {
         ('F', 'D') : -3, ('X', 'Y') : -1, ('Z', 'R') : 0, ('F', 'H') : -1, 
         ('B', 'F') : -3, ('F', 'L') : 0, ('X', 'Q') : -1, ('B', 'B') : 4,
 }
+# fmt: on
 
 # Make the matrix complete/symmetrical by filling in missing values
 # (to avoid double-checking in score_pairwise)

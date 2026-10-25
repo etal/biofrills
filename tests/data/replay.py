@@ -29,10 +29,10 @@ OUT = os.path.join(HERE, "differences.json")
 
 sys.path.insert(0, REPO)
 
-from Bio import AlignIO, SeqIO
-from Bio.Align import MultipleSeqAlignment
+from Bio import AlignIO, SeqIO  # noqa: E402
+from Bio.Align import MultipleSeqAlignment  # noqa: E402
 
-from biofrills import alnutils, consensus
+from biofrills import alnutils, consensus  # noqa: E402
 
 assert os.path.dirname(os.path.abspath(consensus.__file__)) == os.path.join(
     REPO, "biofrills"
@@ -73,7 +73,7 @@ def changed_columns(recorded, current):
     new = current.get("value")
     if not (isinstance(old, str) and isinstance(new, str)) or len(old) != len(new):
         return None
-    return [i + 1 for i, (a, b) in enumerate(zip(old, new)) if a != b]
+    return [i + 1 for i, (a, b) in enumerate(zip(old, new, strict=True)) if a != b]
 
 
 def difference(case, recorded, current):
@@ -156,8 +156,8 @@ def main():
         {"differences": found}, indent=1, separators=(",", ": "), ensure_ascii=True
     )
     with open(OUT, "w", encoding="ascii", newline="\n") as handle:
-        handle.write("%s\n" % text)
-    print("%d differing cases written to %s" % (len(found), OUT))
+        handle.write(f"{text}\n")
+    print(f"{len(found)} differing cases written to {OUT}")
 
 
 if __name__ == "__main__":

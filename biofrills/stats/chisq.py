@@ -4,7 +4,6 @@ Adapted from SciPy: scipy/special/cephes/{chdtr,igam}.c
 """
 
 import math
-import sys
 
 # Cephes Math Library Release 2.0:  April, 1987
 # Copyright 1985, 1987 by Stephen L. Moshier

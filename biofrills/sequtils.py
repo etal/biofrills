@@ -5,8 +5,6 @@ import os.path
 from collections import Counter
 
 from Bio import SeqIO
-from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
 
 
 def clean_accession(rec_id):
@@ -39,7 +37,7 @@ def intersect_keys(keys, reffile, cache=False, clean_accs=False):
         refcache = reffile + ".sqlite"
         if os.path.exists(refcache):
             if os.stat(refcache).st_mtime < os.stat(reffile).st_mtime:
-                logging.warning("Outdated cache; rebuilding index")
+                logging.warning("Outdated cache; rebuilding index")  # noqa: LOG015
             else:
                 try:
                     index = (
@@ -49,7 +47,9 @@ def intersect_keys(keys, reffile, cache=False, clean_accs=False):
                     )
 
                 except Exception:
-                    logging.warning("Skipping corrupted cache; rebuilding index")
+                    logging.warning(  # noqa: LOG015
+                        "Skipping corrupted cache; rebuilding index"
+                    )
                     index = None
     else:
         refcache = ":memory:"
@@ -69,7 +69,7 @@ def intersect_keys(keys, reffile, cache=False, clean_accs=False):
             record = index[key]
         except LookupError:
             # Missing keys are rare, so it's faster not to check every time
-            logging.info("No match: %s", repr(key))
+            logging.info("No match: %s", repr(key))  # noqa: LOG015
             continue
         yield record
 

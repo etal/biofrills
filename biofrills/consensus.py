@@ -1,8 +1,8 @@
 """Calculate the consensus of a sequence alignment."""
 
-import math
 import logging
-from collections import Counter, defaultdict
+import math
+from collections import Counter
 
 from biofrills import alnutils, sequtils
 
@@ -65,7 +65,7 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
 
         def is_majority_gap(col):
             gap_count = 0.0
-            for wt, char in zip(seq_weights, col):
+            for wt, char in zip(seq_weights, col, strict=True):
                 if char == "-":
                     gap_count += wt
             return gap_count / sum(seq_weights) >= gap_threshold
@@ -91,8 +91,9 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
                     maybe_right_tail.append("-")
                 continue
             if any(c.islower() for c in col):
-                logging.warning(
-                    "Mixed lowercase and uppercase letters in a column: " + "".join(col)
+                logging.warning(  # noqa: LOG015
+                    "Mixed lowercase and uppercase letters in a column: %s",
+                    "".join(col),
                 )
                 col = tuple(map(str.upper, col))
 
@@ -132,8 +133,7 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
                     maybe_right_tail.append(cons_char)
                 else:
                     # Match -> gaps weren't the right tail; emit all gaps
-                    for char in maybe_right_tail:
-                        yield "-"
+                    yield from "-" * len(maybe_right_tail)
                     maybe_right_tail = []
                     yield cons_char
 
@@ -142,10 +142,9 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
 
         # Finally, if we were keeping a right (C-term) tail, emit it
         if not trim_ends:
-            for char in maybe_right_tail:
-                yield char
+            yield from maybe_right_tail
 
-    return "".join(col_wise_consensus(zip(*aln)))
+    return "".join(col_wise_consensus(zip(*aln, strict=False)))
 
 
 # --- Algorithm: entropy ---
@@ -203,7 +202,7 @@ def make_simple_col_consensus(bg_freqs):
     """
 
     # Hack: use default kwargs to persist across iterations
-    def col_consensus(col, prev_col=[], prev_char=[]):
+    def col_consensus(col, prev_col=[], prev_char=[]):  # noqa: B006
         # Count the amino acid types in this column
         aa_counts = sequtils.aa_frequencies(col)
         assert aa_counts, "Column is all gaps! That's not allowed."
@@ -219,7 +218,7 @@ def make_simple_col_consensus(bg_freqs):
                 mc_next = Counter(
                     [
                         b
-                        for a, b in zip(prev_col, col)
+                        for a, b in zip(prev_col, col, strict=True)
                         if a == prev_char[0] and b in ties
                     ]
                 ).most_common()
@@ -269,15 +268,16 @@ def supported(aln):
                 continue
             # Validation - copied from consensus() above
             if any(c.islower() for c in col):
-                logging.warning(
-                    "Mixed lowercase and uppercase letters in a column: " + "".join(col)
+                logging.warning(  # noqa: LOG015
+                    "Mixed lowercase and uppercase letters in a column: %s",
+                    "".join(col),
                 )
                 col = tuple(map(str.upper, col))
             # Calculate the consensus character
             most_common = Counter([c for c in col if c not in "-"]).most_common()
             if not most_common:
                 # XXX ever reached?
-                logging.warning("Column is all gaps! How did that happen?")
+                logging.warning("Column is all gaps! How did that happen?")  # noqa: LOG015
             if most_common[0][1] == 1:
                 # No char has frequency > 1; no consensus char
                 yield "-"
@@ -288,4 +288,4 @@ def supported(aln):
             else:
                 yield most_common[0][0]
 
-    return list(col_consensus(zip(*aln)))
+    return list(col_consensus(zip(*aln, strict=False)))

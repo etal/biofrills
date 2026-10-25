@@ -93,7 +93,7 @@ def score_pairwise(aseq, bseq):
     score = 0.0
     in_gap = True  # Don't apply the opening penalty to the N-terminal gap
 
-    for ares, bres in zip(aseq.upper(), bseq.upper()):
+    for ares, bres in zip(aseq.upper(), bseq.upper(), strict=True):
         if ares in GAP_CHARS and bres in GAP_CHARS:
             # Both are gaps -- this happens in multiple sequence alignments
             continue
@@ -121,7 +121,9 @@ def score_pairwise(aseq, bseq):
 def identity_abs(aseq, bseq):
     """Compute absolute identity (# matching sites) between sequence strings."""
     assert len(aseq) == len(bseq)
-    return sum(a == b for a, b in zip(aseq, bseq) if not (a in "-." and b in "-."))
+    return sum(
+        a == b for a, b in zip(aseq, bseq, strict=True) if not (a in "-." and b in "-.")
+    )
 
 
 def identity_avg(aseq, bseq):

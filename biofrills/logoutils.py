@@ -17,9 +17,9 @@ def read_logodata(handle):
     counts = ldata.counts.array
     logodata = []
     for i, coldata, entropy, weight in zip(
-        range(len(counts)), counts, ldata.entropy, ldata.weight
+        range(len(counts)), counts, ldata.entropy, ldata.weight, strict=True
     ):
-        cnts = dict((let, int(cnt)) for let, cnt in zip(letters, coldata))
+        cnts = dict((let, int(cnt)) for let, cnt in zip(letters, coldata, strict=True))
         logodata.append((i + 1, cnts, entropy, weight))
     return logodata
 

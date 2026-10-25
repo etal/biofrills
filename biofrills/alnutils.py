@@ -28,12 +28,11 @@ def aa_counts(aln, weights=None, gap_chars="-."):
             weights = sequence_weights(aln)
         else:
             assert len(weights) == len(aln), (
-                "Length mismatch: weights = %d, alignment = %d"
-                % (len(weights), len(aln))
+                f"Length mismatch: weights = {len(weights)}, alignment = {len(aln)}"
             )
         counts = defaultdict(float)
-        for col in zip(*aln):
-            for aa, wt in zip(col, weights):
+        for col in zip(*aln, strict=False):
+            for aa, wt in zip(col, weights, strict=True):
                 counts[aa] += wt
 
     # Don't count gaps
@@ -67,14 +66,16 @@ def blocks(aln, threshold=0.5, weights=None):
 
         def pct_nongaps(col):
             assert len(col) == len(weights)
-            ngaps = sum(wt * (c == "-") for wt, c in zip(weights, col))
+            ngaps = sum(wt * (c == "-") for wt, c in zip(weights, col, strict=True))
             return 1 - (ngaps / len(col))
 
     seqstrs = [str(rec.seq) for rec in aln]
-    clean_cols = [col for col in zip(*seqstrs) if pct_nongaps(col) >= threshold]
-    clean_seqs = [Seq("".join(row)) for row in zip(*clean_cols)]
+    clean_cols = [
+        col for col in zip(*seqstrs, strict=False) if pct_nongaps(col) >= threshold
+    ]
+    clean_seqs = [Seq("".join(row)) for row in zip(*clean_cols, strict=True)]
     clean_recs = []
-    for rec, seq in zip(aln, clean_seqs):
+    for rec, seq in zip(aln, clean_seqs, strict=False):
         newrec = deepcopy(rec)
         newrec.seq = seq
         clean_recs.append(newrec)
@@ -84,7 +85,7 @@ def blocks(aln, threshold=0.5, weights=None):
 def col_counts(col, weights=None, gap_chars="-."):
     """Absolute counts of each residue type in a single column."""
     cnt = defaultdict(float)
-    for aa, wt in zip(col, weights):
+    for aa, wt in zip(col, weights, strict=False):
         if aa not in gap_chars:
             cnt[aa] += wt
     return cnt
@@ -103,9 +104,11 @@ def remove_empty_cols(records):
     # In case it's a generator, turn it into a list
     records = list(records)
     seqstrs = [str(rec.seq) for rec in records]
-    clean_cols = [col for col in zip(*seqstrs) if not all(c == "-" for c in col)]
-    clean_seqs = ["".join(row) for row in zip(*clean_cols)]
-    for rec, clean_seq in zip(records, clean_seqs):
+    clean_cols = [
+        col for col in zip(*seqstrs, strict=False) if not all(c == "-" for c in col)
+    ]
+    clean_seqs = ["".join(row) for row in zip(*clean_cols, strict=True)]
+    for rec, clean_seq in zip(records, clean_seqs, strict=False):
         yield SeqRecord(
             Seq(clean_seq),
             id=rec.id,
@@ -277,7 +280,7 @@ def sequence_weights(aln, scaling="none", gap_chars="-."):
     tot_nres = 0.0  # Expected no. different types in independent seqs
     # Sum the contributions from each position along each sequence
     # -> total weight
-    for col in zip(*aln):
+    for col in zip(*aln, strict=False):
         wts, nres = col_weight(col)
         assert sum(wts) <= 20
         tot_nres += expectk[nres] if nres < len(expectk) else 20
@@ -300,7 +303,7 @@ def sequence_weights(aln, scaling="none", gap_chars="-."):
         scale = len(aln) / sum(seq_weights)
         return [min(scale * wt, 1.0) for wt in seq_weights]
     else:
-        raise ValueError("Unknown scaling scheme '%s'" % scaling)
+        raise ValueError(f"Unknown scaling scheme '{scaling}'")
     return [scale * wt for wt in seq_weights]
 
 

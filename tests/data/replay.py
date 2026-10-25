@@ -41,8 +41,8 @@ assert os.path.dirname(os.path.abspath(consensus.__file__)) == \
 def build_weights(aln, spec):
     """The sequence weights that a recorded weights name stands for.
 
-    This repeats build_weights in capture_py27.py, which defines the names;
-    the two must agree.
+    This repeats build_weights in capture_py27.py, which defines the names,
+    and in tests/test_reference.py; the three must agree.
     """
     if spec == 'seqweights':
         return alnutils.sequence_weights(aln, 'none')

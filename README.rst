@@ -37,10 +37,11 @@ With pixi_, which installs them from conda-forge::
 Only weblogo comes from PyPI there, with three of its dependencies, because
 conda-forge lacks a recent enough build of it.
 
-The test suite is not yet written, so ``pytest`` currently collects no tests
-and exits with status 5. The ``py27-oracle`` pixi environment regenerates the
-Python 2.7 reference outputs from a worktree of the pre-port sources, as
-described in ``tests/data/README.md``.
+The tests compare the library with reference outputs recorded under Python
+2.7, and check properties that need no reference. The tests of ``logoutils``
+need the ``logo`` extra and are skipped without it. The ``py27-oracle`` pixi
+environment regenerates the reference outputs from a worktree of the pre-port
+sources, as described in ``tests/data/README.md``.
 
 .. _uv: https://docs.astral.sh/uv/
 .. _pixi: https://pixi.prefix.dev/

@@ -48,6 +48,12 @@ namespaces = false
 [tool.setuptools.dynamic]
 version = {attr = "biofrills.__version__"}
 
+[tool.pytest.ini_options]
+minversion = "9.0.2"
+testpaths = ["tests"]
+pythonpath = ["tests"]
+filterwarnings = ["error"]
+
 [tool.pixi.workspace]
 channels = ["conda-forge"]
 platforms = ["osx-arm64", "linux-64"]

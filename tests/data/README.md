@@ -107,7 +107,7 @@ Integers and floats remain distinct: a count of `3` and a weighted count of `3.0
 - `remove_empty_cols`: records as `[id, description, sequence]`.
 - `score_pairwise`, `identity_abs`, `identity_avg`: every pair of rows, as `[i, j, outcome]` with `i < j`.
 
-In every section except `remove_empty_cols` and the pairwise ones, each case gives the keyword arguments of the call in `kwargs`, so that it can be replayed as `func(aln, **kwargs)` once the weights are supplied.
+In the sections that call a function on the whole alignment, each case gives the keyword arguments of the call in `kwargs`, so that it can be replayed as `func(aln, **kwargs)` once the weights are supplied.
 The `weights` field of an `aa_counts`, `aa_frequencies` or `consensus` case names the sequence weights passed to the function:
 
 | Name | Value |
@@ -142,7 +142,7 @@ The cases whose current output differs, explained below under "Consensus ties" a
 
 - **Consensus ties.**
   Where several residues tie, the original code takes whichever comes first in Python 2's dictionary iteration order, which follows string hashes rather than any documented rule.
-  The current code breaks such ties by an explicit rule instead, so consensus strings may differ where ties occur; the cases that changed are listed under "Differences in consensus output" below, and `tie-batch.json` exists to measure that difference.
+  The current code breaks such ties by an explicit rule instead, so consensus strings may differ where ties occur; the cases that changed are listed under "Differences in library output" below, and `tie-batch.json` exists to measure that difference.
   The same order dependence affects `seq-pick -c`, which sorts records by clustering coefficient, and `seq-pick -k`, which starts from those records.
   In `cdc2-domain.aln.fasta`, the records `CDC2-1_Sm` and `CDC2-2_Sm` have the same aligned sequence, and their weighted clustering coefficients differ only in the last place, by an amount that depends on the order in which networkx iterates over sets, that is, on the hash seed.
   `seq-pick.c5` therefore lists those two records in either order, and `tests/test_cli.py` accepts either order of those two records only; with `PYTHONHASHSEED` set to `0` the current code lists them in the order opposite to the fixture.
@@ -158,7 +158,7 @@ The cases whose current output differs, explained below under "Consensus ties" a
   `sequence_weights` divides by `sum(seq_weights)` under the scalings `sum1`, `avg1` and `andy`, so these weights differ from the fixtures by at most 3 units in the last place: 35 values in `scttlre-domain.aln.json`, 8 in `synth-x.aln.json`, and 185 in 39 of the 200 alignments of `tie-batch.json`.
   The largest relative difference is `4.2e-16`, so the tolerance given above for weighted frequencies covers these values too.
   The scalings `none` and `max1` take no such sum and match the fixtures exactly.
-  The same sum is the denominator of the weighted gap fraction in `consensus`, where it changes one column of one alignment; see "Differences in consensus output" below.
+  The same sum is the denominator of the weighted gap fraction in `consensus`, where it changes one column of one alignment; see "Differences in library output" below.
 - **Platform math library.**
   `chisqprob` calls `math.lgamma`, whose result depends on the platform's C math library.
   The fixtures were captured on x86_64 macOS under Rosetta 2, where Python 3.12 reproduces every `chisqprob` value exactly.
@@ -175,14 +175,14 @@ The cases whose current output differs, explained below under "Consensus ties" a
   For example, `seq-sort -l` is accepted but ignored, so `seq-sort.l` and `seq-sort.default` are identical, and `seq-diff -s` stops with a `ValueError` traceback because `cdc2-domain.fasta` contains one sequence twice.
   The frames of that traceback name files and lines of the interpreter, of Biopython and of the script, so `tests/test_cli.py` compares only its first and last lines.
   A port that fixes such a defect differs from the fixture by design, and the test should state the expected difference.
-  For the consensus cases, the expected differences are recorded in `differences.json`, described under "Differences in consensus output" below.
+  For the library cases, the expected differences are recorded in `differences.json`, described under "Differences in library output" below.
 - **Ambiguous residues in `seq-purge -c`.**
   The recorded rule split a sequence at each `X` and purged the record when every segment occurred in some kept sequence, in any order and possibly in different kept sequences; a leading, trailing or doubled `X` yields an empty segment, which occurs in every sequence.
   The current rule, which fammer's `update_fasta.ungap_and_unique` also applies, purges a record containing `X` only where the whole sequence, with each `X` matching any single character, occurs within one kept sequence; an `X` in a kept sequence matches only an `X`.
   In `seq-purge.c` the record `x_fragment_of_1` is therefore kept, because its two segments both occur in the first record of `dupes.fasta` but 20 residues apart.
   Standard error reads `Purged 5 sequences` instead of `Purged 6 sequences`, and standard output gains that record between `psu|PFF0750w` and `x_novel`.
   The other `seq-purge` cases are unchanged, including `seq-purge.fikk-cma.c`, where both rules keep the one record that contains `X`.
-  `replay.py` covers only the consensus cases, so this difference is recorded here and in `tests/test_cli.py` rather than in `differences.json`.
+  `replay.py` covers only the library cases, so this difference is recorded here and in `tests/test_cli.py` rather than in `differences.json`.
 - **Biopython output.**
   `seq-convert`, `seq-extract`, `seq-purge`, `seq-sort`, `seq-intersect` and `seq-diff` write records through Biopython's writers, and `seq-dupes` through `SeqRecord.format`, so their output also depends on the Biopython version.
   The BiopythonWarning about partial codons in the `seq-orfs` cases is another example: its message is unchanged, but the file and line that issue it and the source line that Python echoes after it are those of the installed Biopython, so `tests/test_cli.py` compares the warning's category and message only.
@@ -192,11 +192,12 @@ The cases whose current output differs, explained below under "Consensus ties" a
   `logoutils` requires WebLogo, whose computations are its own rather than biofrills'.
   The on-disk index cache of `seq-intersect -c` is a side effect rather than an output.
 
-## Differences in consensus output
+## Differences in library output
 
-`replay.py` calls every recorded consensus case again with the current sources of this repository and writes each case whose outcome differs from the recorded one to `differences.json`.
-An entry identifies the case as the fixture does: the fixture file relative to `py27/`, the section, the case index, the `weights` name for a `library/<input>.json` case or the alignment for a `tie-batch.json` case, and the keyword arguments.
-It then gives the recorded outcome, the current outcome, and the 1-based columns at which the two consensus strings differ.
+`replay.py` calls every recorded library case again with the current sources of this repository and writes each case whose outcome differs from the recorded one to `differences.json`.
+It compares outcomes as `tests/test_reference.py` does, through the shared module `tests/reference_cases.py`, so the floating-point differences described above under "Summation order of weighted frequencies", "Compensated summation" and "Platform math library" are compared with a tolerance and produce no entries.
+An entry identifies the case as the fixture does: the fixture file relative to `py27/`, the section, the alignment for a `tie-batch.json` case, and the index of the case within its section, which is `null` for a section that records a single outcome.
+It then repeats the fields that describe the call (`weights` and `kwargs` where the fixture records them, `rows` for a pairwise case, `x` and `df` for a `chisqprob` case), and gives the recorded outcome, the current outcome, and, where both are strings of equal length, the 1-based columns at which they differ.
 Every entry is explained below: the first two kinds are deliberate changes of behavior, and the third follows from the port to Python 3.
 A test of the current code expects the fixture value except where `differences.json` records another.
 After a change that moves a recorded output, regenerate the file from the repository root and explain the new entries here:

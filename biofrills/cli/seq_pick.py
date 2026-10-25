@@ -1,6 +1,7 @@
 """Pick a subset of sequences from a larger sequence set (FASTA)."""
 
 import argparse
+import importlib.util
 import itertools
 import random
 import sys
@@ -149,6 +150,12 @@ def main(argv=None):
     AP.add_argument("seqfname", help="Input sequences (FASTA format).")
     args = AP.parse_args(argv)
     N = args.nseqs
+    if args.method in ("cluster", "k-means"):
+        # networkx comes with the graph extra; other methods need only Biopython
+        if importlib.util.find_spec("networkx") is None:
+            sys.exit(
+                "seq-pick -c and -k require networkx, the graph extra of biofrills"
+            )
 
     index = SeqIO.index(args.seqfname, "fasta")
 

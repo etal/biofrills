@@ -131,12 +131,22 @@ A final `.stdin` labels a case whose input arrives on standard input, and `.defa
 Each run takes place in a scratch directory holding copies of `inputs/`, so output names input files without a directory.
 Standard error has the scratch directory, the repository root, the biocma extraction directory and the Python installation prefix replaced by `<workdir>`, `<repo>`, `<biocma>` and `<python-prefix>`.
 
+`tests/test_cli.py` replays every script case against the installed console scripts in the same way: as a separate process in a scratch copy of `inputs/`, with `PYTHONHASHSEED` set to `0`.
+It compares the exit status, standard output and written files exactly, and standard error after the normalizations described below under "Log line numbers", "Recorded defects" and "Biopython output".
+After those normalizations no recorded line contains one of the placeholders above, so the replay substitutes no paths.
+The cases that read CMA files run only where biocma can be imported; with a Python 3 checkout of biocma beside this repository, `PYTHONPATH=$PWD/../biocma uv run pytest tests/test_cli.py` runs them.
+The path must be absolute, because each command runs in a scratch directory.
+The cases whose current output differs, explained below under "Consensus ties" and "Ambiguous residues in `seq-purge -c`", are listed in `EXPECTED` and `TIED` in `tests/test_cli.py`.
+
 ## Interpreting a mismatch
 
 - **Consensus ties.**
   Where several residues tie, the original code takes whichever comes first in Python 2's dictionary iteration order, which follows string hashes rather than any documented rule.
   The current code breaks such ties by an explicit rule instead, so consensus strings may differ where ties occur; the cases that changed are listed under "Differences in consensus output" below, and `tie-batch.json` exists to measure that difference.
-  The same dictionary-order dependence affects the ordering of tied clustering coefficients in `seq-pick -c` and the medoids that `seq-pick -k` derives from them.
+  The same order dependence affects `seq-pick -c`, which sorts records by clustering coefficient, and `seq-pick -k`, which starts from those records.
+  In `cdc2-domain.aln.fasta`, the records `CDC2-1_Sm` and `CDC2-2_Sm` have the same aligned sequence, and their weighted clustering coefficients differ only in the last place, by an amount that depends on the order in which networkx iterates over sets, that is, on the hash seed.
+  `seq-pick.c5` therefore lists those two records in either order, and `tests/test_cli.py` accepts either order of those two records only; with `PYTHONHASHSEED` set to `0` the current code lists them in the order opposite to the fixture.
+  In `seq-pick.k3` the k-medoids cost of the two records ties exactly, and the current code chooses `CDC2-2_Sm` where the fixture has `CDC2-1_Sm`, with each hash seed tried from `0` to `7`.
 - **Summation order of weighted frequencies.**
   `aa_frequencies` normalizes by `sum(counts.values())`, a floating-point sum taken in dictionary order, which is string-hash order on Python 2 and insertion order on Python 3.
   With non-integer weights (`true` and `"seqweights"`), summing the same counts in another order changes the normalizer in its last place, and every frequency with it.
@@ -158,10 +168,12 @@ Standard error has the scratch directory, the repository root, the biocma extrac
   The exception type is the reference; the message text is the interpreter's.
   For example, Python 2 reports integer division by zero as `integer division or modulo by zero` and Python 3 as `division by zero`.
 - **Log line numbers.**
-  The `seq-intersect` cases log through `cmdutils.log_config`, whose format includes the source line of the logging call (`sequtils [@71]`), so editing `sequtils.py` above that line changes standard error without changing behavior.
+  The `seq-intersect` cases log through `cmdutils.log_config`, whose format includes the source line of the logging call (`sequtils [@71]`, at line 72 since the port), so editing `sequtils.py` above that line changes standard error without changing behavior.
+  `tests/test_cli.py` replaces that number with `N` on both sides.
 - **Recorded defects.**
   The fixtures record the original behavior, defects included.
   For example, `seq-sort -l` is accepted but ignored, so `seq-sort.l` and `seq-sort.default` are identical, and `seq-diff -s` stops with a `ValueError` traceback because `cdc2-domain.fasta` contains one sequence twice.
+  The frames of that traceback name files and lines of the interpreter, of Biopython and of the script, so `tests/test_cli.py` compares only its first and last lines.
   A port that fixes such a defect differs from the fixture by design, and the test should state the expected difference.
   For the consensus cases, the expected differences are recorded in `differences.json`, described under "Differences in consensus output" below.
 - **Ambiguous residues in `seq-purge -c`.**
@@ -170,10 +182,10 @@ Standard error has the scratch directory, the repository root, the biocma extrac
   In `seq-purge.c` the record `x_fragment_of_1` is therefore kept, because its two segments both occur in the first record of `dupes.fasta` but 20 residues apart.
   Standard error reads `Purged 5 sequences` instead of `Purged 6 sequences`, and standard output gains that record between `psu|PFF0750w` and `x_novel`.
   The other `seq-purge` cases are unchanged, including `seq-purge.fikk-cma.c`, where both rules keep the one record that contains `X`.
-  `replay.py` covers only the consensus cases, so this difference is recorded here rather than in `differences.json`.
+  `replay.py` covers only the consensus cases, so this difference is recorded here and in `tests/test_cli.py` rather than in `differences.json`.
 - **Biopython output.**
   `seq-convert`, `seq-extract`, `seq-purge`, `seq-sort`, `seq-intersect` and `seq-diff` write records through Biopython's writers, and `seq-dupes` through `SeqRecord.format`, so their output also depends on the Biopython version.
-  The BiopythonWarning about partial codons in the `seq-orfs` cases is another example.
+  The BiopythonWarning about partial codons in the `seq-orfs` cases is another example: its message is unchanged, but the file and line that issue it and the source line that Python echoes after it are those of the installed Biopython, so `tests/test_cli.py` compares the warning's category and message only.
   The CMA output of `seq-purge` and `seq-diff` is written by biocma.
 - **Not captured.**
   `seq-pick -r` and `stats.uniqueof20` sample at random.

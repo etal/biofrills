@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """Pick a subset of k sequences from a larger sequence set (FASTA).
 
 Usage:
@@ -21,54 +19,49 @@ For alignments only:
 import random
 import sys
 
-import networkx
 from Bio import SeqIO
 
 from biofrills import alnutils, pairutils
-
-try:
-    option, N, infname = sys.argv[1], int(sys.argv[2]), sys.argv[3]
-except:
-    sys.exit(__doc__)
-
-index = SeqIO.index(infname, 'fasta')
+from biofrills.cli import help_requested
 
 
-def get_random():
+def get_random(index, N):
     return random.sample(index, N)
 
 
-def get_first():
+def get_first(infname, N):
     accs = []
     with open(infname) as infile:
         for line in infile:
-            if line.startswith('>'):
+            if line.startswith(">"):
                 accs.append(line.split(None, 1)[0][1:])
                 if len(accs) == N:
                     return accs
 
-def get_by_length(sort_reverse):
+
+def get_by_length(infname, N, sort_reverse):
     seqlens = []
-    for rec in SeqIO.parse(infname, 'fasta'):
+    for rec in SeqIO.parse(infname, "fasta"):
         seqlens.append((len(rec.seq), rec.id))
     seqlens.sort(reverse=sort_reverse)
-    return [acc for l, acc in seqlens[:N]]
+    return [acc for _length, acc in seqlens[:N]]
 
 
-def get_cluster():
+def get_cluster(infname, N):
     """Central sequences by clustering coefficient.
 
     Input sequences must be aligned.
     """
+    import networkx
+
     G = alnutils.to_graph(infname, pairutils.identity_abs)
-    coeffs = networkx.clustering(G, weight='weight')
-    hubs = [k for k, v in sorted(coeffs.iteritems(),
-                                 key=lambda kv: kv[1], reverse=True)]
+    coeffs = networkx.clustering(G, weight="weight")
+    hubs = [k for k, _ in sorted(coeffs.items(), key=lambda kv: kv[1], reverse=True)]
     return hubs[:N]
 
 
-def get_kmeans():
-    """K-means clustering. (Actually, uses the k-medioids algorithm.)
+def get_kmeans(infname, N):
+    """K-means clustering. (Actually, uses the k-medoids algorithm.)
 
     See: https://en.wikipedia.org/wiki/K-medoids
 
@@ -78,17 +71,17 @@ def get_kmeans():
     G = alnutils.to_graph(infname, pairutils.identity_abs)
     nodes = G.nodes()
 
-    def associate(medioids):
+    def associate(medoids):
         """Closes over: nodes, G"""
         # ENH: make assoc a Graph object? also store the distance?
-        assoc = dict((med, set()) for med in medioids)
+        assoc = {med: set() for med in medoids}
         for otr in nodes:
-            if otr in medioids:
+            if otr in medoids:
                 continue
             closest_m = None
             closest_m_ident = 0
-            for med in medioids:
-                this_m_ident = G[otr][med]['weight']
+            for med in medoids:
+                this_m_ident = G[otr][med]["weight"]
                 if this_m_ident > closest_m_ident:
                     closest_m = med
                     closest_m_ident = this_m_ident
@@ -96,51 +89,48 @@ def get_kmeans():
         return assoc
 
     def total_cost(assoc):
-        """Sum of all distances to nearest medioid. Closes over: G.
+        """Sum of all distances to nearest medoid. Closes over: G.
 
         NB: identity is a measure of similarity, not distance, so costs will be
         negative numbers (pairwise cost = -identity)
         """
         cost = 0.0
-        for med, cluster in assoc.iteritems():
+        for med, cluster in assoc.items():
             for otr in cluster:
-                cost -= G[otr][med]['weight']
+                cost -= G[otr][med]["weight"]
         return cost
 
     def same_clustering(old, new):
-        """True if no node-medioid associations changed. Closes over: G"""
+        """True if no node-medoid associations changed. Closes over: G"""
         return list(sorted(old.keys())) == list(sorted(new.keys()))
 
-    # 1. Select k of the n nodes as medioids
+    # 1. Select k of the n nodes as medoids
     # NB: For efficiency, take "hubs" or random?
     # curr_meds = get_random()
-    curr_meds = get_cluster()
+    curr_meds = get_cluster(infname, N)
 
     for _i in range(MAX_ITERATE):
-        # 2. Associate each "other" node to the closest medioid
+        # 2. Associate each "other" node to the closest medoid
         best_assoc = curr_assoc = associate(curr_meds)
-        best_cost = curr_cost = total_cost(curr_assoc)
+        best_cost = total_cost(curr_assoc)
         best_meds = curr_meds
-        # print >>sys.stderr, "Initial cost:", curr_cost
 
-        # 3,4. For each medioid and each other node, replace the medioid with
+        # 3,4. For each medoid and each other node, replace the medoid with
         # each node and recalculate the cost of the new association.
         # Choose the lowest-cost association.
-        for i, med in enumerate(curr_meds):
+        for i, _med in enumerate(curr_meds):
             for otr in nodes:
                 if otr in curr_meds:
                     continue
-                new_meds = curr_meds[:i] + [otr] + curr_meds[i+1:]
+                new_meds = curr_meds[:i] + [otr] + curr_meds[i + 1 :]
                 new_assoc = associate(new_meds)
                 new_cost = total_cost(new_assoc)
                 if new_cost < best_cost:
-                    # print >>sys.stderr, "Cost:", new_cost, "with", \
-                    #         str(otr), '<->', med
                     best_cost = new_cost
                     best_assoc = new_assoc
                     best_meds = new_meds
 
-        # 5. Repeat steps 2-4 until medioids do not change
+        # 5. Repeat steps 2-4 until medoids do not change
         if same_clustering(curr_assoc, best_assoc):
             break
         else:
@@ -151,22 +141,34 @@ def get_kmeans():
     return curr_meds
 
 
-if option in ('-r', '--random'):
-    accs = get_random()
-elif option in ('-f', '--first'):
-    accs = get_first()
-elif option in ('-l', '--longest'):
-    accs = get_by_length(True)
-elif option in ('-s', '--shortest'):
-    accs = get_by_length(False)
-elif option in ('-c', '--cluster'):
-    accs = get_cluster()
-elif option in ('-k', '--k-means'):
-    accs = get_kmeans()
-else:
-    sys.exit(__doc__)
+def main(argv=None):
+    args = sys.argv[1:] if argv is None else list(argv)
+    if help_requested(args, __doc__):
+        return 0
 
-for acc in accs:
-    block = index.get_raw(acc)
-    sys.stdout.write(block)
+    try:
+        option, N, infname = args[0], int(args[1]), args[2]
+    except (IndexError, ValueError):
+        sys.exit(__doc__)
 
+    index = SeqIO.index(infname, "fasta")
+
+    if option in ("-r", "--random"):
+        accs = get_random(index, N)
+    elif option in ("-f", "--first"):
+        accs = get_first(infname, N)
+    elif option in ("-l", "--longest"):
+        accs = get_by_length(infname, N, True)
+    elif option in ("-s", "--shortest"):
+        accs = get_by_length(infname, N, False)
+    elif option in ("-c", "--cluster"):
+        accs = get_cluster(infname, N)
+    elif option in ("-k", "--k-means"):
+        accs = get_kmeans(infname, N)
+    else:
+        sys.exit(__doc__)
+
+    # SeqIO.index returns each record's text from the file as bytes
+    for acc in accs:
+        block = index.get_raw(acc)
+        sys.stdout.buffer.write(block)

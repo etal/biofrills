@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 """Split a FASTA file into multiple parts.
 
 According to:
@@ -14,8 +12,13 @@ Usage:
 """
 
 import itertools
+import os
+import subprocess
+import sys
 
 from Bio import SeqIO
+
+from biofrills.cli import help_requested
 
 
 def sizeof(record):
@@ -30,34 +33,36 @@ def sizeof(record):
 
 def split_bytes(fname, byte_limit):
     """Split the sequence set into chunks of about ``byte_limit`` bytes."""
-    # savage hack! wish 'nonlocal' worked here.
-    def byte_grouper(record, curr_bytes=[0]):
-        size = sizeof(record)
-        curr_bytes[0] += size
+    curr_bytes = 0
+
+    def byte_grouper(record):
+        nonlocal curr_bytes
+        curr_bytes += sizeof(record)
         # NB: keys are non-sequential if byte_limit is smaller than a record
-        return curr_bytes[0] / byte_limit 
-    return itertools.groupby(SeqIO.parse(fname, 'fasta'), byte_grouper)
+        return curr_bytes // byte_limit
+
+    return itertools.groupby(SeqIO.parse(fname, "fasta"), byte_grouper)
 
 
 def split_count(fname, count_limit):
     """Split the sequence set into chunks of <= ``count_limit`` sequences."""
-    # savage hack! wish enumerate didn't just make things worse.
-    def count_grouper(record, curr_seqs=[-1]):
-        curr_seqs[0] += 1
-        return curr_seqs[0] / count_limit
-    return itertools.groupby(SeqIO.parse(fname, 'fasta'), count_grouper)
+    curr_seqs = -1
+
+    def count_grouper(record):
+        nonlocal curr_seqs
+        curr_seqs += 1
+        return curr_seqs // count_limit
+
+    return itertools.groupby(SeqIO.parse(fname, "fasta"), count_grouper)
 
 
 def split_n_bytes(fname, num_chunks):
-    import os
     tot_bytes = os.stat(fname).st_size
-    return split_bytes(fname, tot_bytes / num_chunks)
+    return split_bytes(fname, tot_bytes // num_chunks)
 
 
 def split_n_count(fname, num_chunks):
-    import subprocess
-    cnt = subprocess.Popen(['grep', '-c', r'^>', fname],
-            stdout=subprocess.PIPE)
+    cnt = subprocess.Popen(["grep", "-c", r"^>", fname], stdout=subprocess.PIPE)
     tot_recs = int(cnt.stdout.readline())
     chunk_size, remainder = divmod(tot_recs, num_chunks)
     if remainder:
@@ -66,31 +71,32 @@ def split_n_count(fname, num_chunks):
 
 
 def write_chunk(fname, suffix, records):
-    out_fname = "%s.%d" % (fname, suffix)
-    with open(out_fname, 'w+') as outfile:
-        outfile.writelines((">%s\n%s\n" % (r.id, r.seq)) for r in records)
-    print "Wrote", out_fname
+    out_fname = f"{fname}.{suffix}"
+    with open(out_fname, "w+") as outfile:
+        outfile.writelines(f">{r.id}\n{r.seq}\n" for r in records)
+    print("Wrote", out_fname)
 
 
-if __name__ == '__main__':
-    import sys
+def main(argv=None):
+    args = sys.argv[1:] if argv is None else list(argv)
+    if help_requested(args, __doc__):
+        return 0
 
     chunk_func = {
-            '-b': split_bytes,
-            '-s': split_count,
-            '-nb': split_n_bytes,
-            '-ns': split_n_count,
-            }
+        "-b": split_bytes,
+        "-s": split_count,
+        "-nb": split_n_bytes,
+        "-ns": split_n_count,
+    }
 
     try:
-        opt, value, fnames = sys.argv[1], sys.argv[2], sys.argv[3:]
-        assert opt[0] == '-'
+        opt, value, fnames = args[0], args[1], args[2:]
+        assert opt[0] == "-"
         assert opt in chunk_func
-        value = int(float(value)) if 'e' in value else int(value)
+        value = int(float(value)) if "e" in value else int(value)
     except Exception:
         sys.exit(__doc__)
 
     for fname in fnames:
         for key, chunk in chunk_func[opt](fname, value):
             write_chunk(fname, key, chunk)
-

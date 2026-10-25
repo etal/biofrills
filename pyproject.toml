@@ -31,6 +31,21 @@ dependencies = [
 graph = ["networkx>=3.2.1"]
 logo = ["weblogo>=3.9.0"]
 
+[project.scripts]
+seq-blocks = "biofrills.cli.seq_blocks:main"
+seq-composition = "biofrills.cli.seq_composition:main"
+seq-convert = "biofrills.cli.seq_convert:main"
+seq-diff = "biofrills.cli.seq_diff:main"
+seq-dupes = "biofrills.cli.seq_dupes:main"
+seq-extract = "biofrills.cli.seq_extract:main"
+seq-identity = "biofrills.cli.seq_identity:main"
+seq-intersect = "biofrills.cli.seq_intersect:main"
+seq-orfs = "biofrills.cli.seq_orfs:main"
+seq-pick = "biofrills.cli.seq_pick:main"
+seq-purge = "biofrills.cli.seq_purge:main"
+seq-sort = "biofrills.cli.seq_sort:main"
+seq-split = "biofrills.cli.seq_split:main"
+
 [project.urls]
 homepage = "https://github.com/etal/biofrills"
 

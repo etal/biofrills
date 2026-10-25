@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """Remove duplicate sequences from a FASTA or CMA file.
 
 For CMA, the filename must be given and end with ".cma".
@@ -16,27 +14,13 @@ Options for how "duplicate" is determined:
     -b      Same identifiers and sequences ("both")
     -c      One sequence contains another ("contains")
 """
+
 import re
 import sys
 
 from Bio import SeqIO
 
-
-identifiers = {
-        'h': lambda rec: (rec.id, rec.description),
-        'i': lambda rec: rec.id,
-        's': lambda rec: str(rec.seq),
-        'a': lambda rec: (rec.id, rec.description, str(rec.seq)),
-        'b': lambda rec: (rec.id, str(rec.seq)),
-        }
-
-identifiers_cma = {
-        'h': lambda rec: (rec['id'], rec['description']),
-        'i': lambda rec: rec['id'],
-        's': lambda rec: rec['seq'],
-        'a': lambda rec: (rec['id'], rec['description'], rec['seq']),
-        'b': lambda rec: (rec['id'], rec['seq']),
-        }
+from biofrills.cli import CMA_KEYS, RECORD_KEYS, help_requested, import_cma
 
 
 def purger(seqrecs, identify):
@@ -49,16 +33,15 @@ def purger(seqrecs, identify):
     for rec in seqrecs:
         try:
             this = identify(rec)
-        except Exception, exc:
-            print rec
-            raise exc
+        except Exception:
+            print(rec)
+            raise
         if this not in seen:
             seen.add(this)
             yield rec
         else:
             counter += 1
-    print >>sys.stderr, "Purged %d sequence%s" % (counter,
-                                                  '' if counter == 1 else 's')
+    print(f"Purged {counter} sequence{'' if counter == 1 else 's'}", file=sys.stderr)
 
 
 def container(seqrecs, is_cma):
@@ -73,14 +56,19 @@ def container(seqrecs, is_cma):
     seen = set()
     counter = 0
     if is_cma:
-        getseq = lambda rec: rec['seq']
+
+        def getseq(rec):
+            return rec["seq"]
     else:
-        getseq = lambda rec: str(rec.seq)
+
+        def getseq(rec):
+            return str(rec.seq)
+
     for rec in sorted(seqrecs, key=lambda r: len(getseq(r)), reverse=True):
         recseq = getseq(rec)
-        if 'X' in recseq:
+        if "X" in recseq:
             # Each ambiguous residue matches any single character
-            pattern = re.compile(re.escape(recseq).replace('X', '.'))
+            pattern = re.compile(re.escape(recseq).replace("X", "."))
             redundant = any(pattern.search(longseq) for longseq in seen)
         else:
             redundant = any(recseq in longseq for longseq in seen)
@@ -89,40 +77,39 @@ def container(seqrecs, is_cma):
         else:
             seen.add(recseq)
             yield rec
-    print >>sys.stderr, "Purged %d sequence%s" % (counter,
-                                                  '' if counter == 1 else 's')
+    print(f"Purged {counter} sequence{'' if counter == 1 else 's'}", file=sys.stderr)
 
 
-if __name__ == '__main__':
-    if len(sys.argv) == 2:
+def main(argv=None):
+    args = sys.argv[1:] if argv is None else list(argv)
+    if help_requested(args, __doc__):
+        return 0
+
+    if len(args) == 1:
         infile = sys.stdin
-    elif len(sys.argv) == 3:
-        infile = sys.argv[2]
+    elif len(args) == 2:
+        infile = args[1]
     else:
-        sys.exit("Wrong number of arguments (%d)\n\n%s"
-                % (len(sys.argv)-1, __doc__))
+        sys.exit(f"Wrong number of arguments ({len(args)})\n\n{__doc__}")
 
-    opt = sys.argv[1]
-    if not (len(opt) == 2 and opt[0] == '-' and opt[1] in 'hisabc'):
-        sys.exit("Invalid option '%s'\n\n%s" % (opt, __doc__))
+    opt = args[0]
+    if not (len(opt) == 2 and opt[0] == "-" and opt[1] in "hisabc"):
+        sys.exit(f"Invalid option '{opt}'\n\n{__doc__}")
 
-    if isinstance(infile, basestring) and infile.endswith('.cma'):
+    if isinstance(infile, str) and infile.endswith(".cma"):
         # CMA file
-        from biocma import cma
+        cma = import_cma()
         block = cma.read(infile)
-        if opt == '-c':
-            block['sequences'] = list(container(block['sequences'], True))
+        if opt == "-c":
+            block["sequences"] = list(container(block["sequences"], True))
         else:
-            block['sequences'] = list(purger(block['sequences'],
-                                             identifiers_cma[opt[1]]))
+            block["sequences"] = list(purger(block["sequences"], CMA_KEYS[opt[1]]))
         cma.write(block, sys.stdout)
     else:
         # Assume FASTA
-        inseqs = SeqIO.parse(infile, 'fasta')
-        if opt == '-c':
+        inseqs = SeqIO.parse(infile, "fasta")
+        if opt == "-c":
             results = container(inseqs, False)
         else:
-            results = purger(inseqs, identifiers[opt[1]])
-        SeqIO.write(results,
-                    sys.stdout, 'fasta')
-
+            results = purger(inseqs, RECORD_KEYS[opt[1]])
+        SeqIO.write(results, sys.stdout, "fasta")

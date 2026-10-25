@@ -15,10 +15,12 @@ with pip::
 
     pip install .
 
-This version is not yet released, and its port from Python 2 is in progress:
-the library modules run on Python 3, but the command-line utilities in
-scripts/ are still written for Python 2. The latest release on PyPI, 0.3.1,
-requires Python 2.7. The scripts are not installed with the package.
+This version is not yet released. It installs 13 command-line utilities,
+``seq-blocks`` through ``seq-split``; each prints its usage with ``--help``.
+``seq-pick -c`` and ``seq-pick -k`` require the ``graph`` extra, and the CMA
+input of ``seq-diff`` and ``seq-purge`` requires biocma 0.3 or later, which is
+not yet available from PyPI. The latest release on PyPI, 0.3.1, requires
+Python 2.7 and does not install the utilities.
 
 Development
 -----------
@@ -44,10 +46,13 @@ With pixi_, which installs them from conda-forge::
 Only weblogo comes from PyPI there, with three of its dependencies, because
 conda-forge lacks a recent enough build of it.
 
-The tests compare the library with reference outputs recorded under Python
-2.7, and check properties that need no reference. The ``py27-oracle`` pixi
-environment regenerates the reference outputs from a worktree of the pre-port
-sources, as described in ``tests/data/README.md``.
+The tests compare the library and the command-line utilities with reference
+outputs recorded under Python 2.7, and check properties that need no
+reference. The utilities are tested as installed: ``uv run`` reinstalls the
+package after a change to ``[project.scripts]``, and otherwise an existing
+environment needs ``uv sync`` or ``pixi install`` before the tests find them.
+The ``py27-oracle`` pixi environment regenerates the reference outputs from a
+worktree of the pre-port sources, as described in ``tests/data/README.md``.
 
 Code is formatted with ``ruff format``, and the formatting-only commits are
 listed in ``.git-blame-ignore-revs``. To skip them in ``git blame``::

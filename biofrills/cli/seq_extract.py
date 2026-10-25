@@ -1,16 +1,18 @@
-#!/usr/bin/env python
-
 """Extract a range of columns from an alignment.
 
 Usage:
     seq-extract [infile] <range>
-    
+
 where <range> resembles: '1-5,10-20,34,35,40-'
 
 Uses 1-based counting for column positions.
 """
 
+import sys
+
 from Bio import AlignIO
+
+from biofrills.cli import help_requested
 
 
 def _parse_position(text):
@@ -21,17 +23,17 @@ def _parse_position(text):
         return slice(pos, pos + 1)
 
     # ENH: allow ranges like "2:4"
-    if not text.count('-') == 1:
+    if not text.count("-") == 1:
         raise ValueError("String must resemble: '1', '2-4', '5-'")
 
-    left, right = text.split('-')
-    if left == '':
+    left, right = text.split("-")
+    if left == "":
         left = 0
     else:
         left = int(left) - 1
         if left < 0:
             raise ValueError("Range must start from at least 1; got " + text)
-    if right == '':
+    if right == "":
         return slice(left, None)
     else:
         right = int(right)
@@ -48,15 +50,16 @@ def parse_positions(text):
     >>> parse_range("6,7,10-20,25-")
     [5,6,(9,20),(24,)]
     """
-    return [_parse_position(pos) for pos in text.split(',')]
+    return [_parse_position(pos) for pos in text.split(",")]
 
 
-if __name__ == '__main__':
-    import sys
-    args = sys.argv[1:]
+def main(argv=None):
+    args = sys.argv[1:] if argv is None else list(argv)
+    if help_requested(args, __doc__):
+        return 0
 
-    fmt = 'fasta'
-    if args[0] == '-f':
+    fmt = "fasta"
+    if args[0] == "-f":
         fmt = args[1]
         args = args[2:]
 
@@ -73,9 +76,8 @@ if __name__ == '__main__':
     indices = parse_positions(positions)
     # TODO: select columns from aln
     first, rest = indices[0], indices[1:]
-    out = aln[:,first]
+    out = aln[:, first]
     for index in rest:
-        out += aln[:,index]
+        out += aln[:, index]
 
     AlignIO.write(out, sys.stdout, fmt)
-

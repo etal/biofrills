@@ -1,6 +1,4 @@
-"""Pairwise sequence alignment operations.
-
-"""
+"""Pairwise sequence alignment operations."""
 
 # The table is aligned by hand, four entries to a row.
 # fmt: off
@@ -90,10 +88,10 @@ def score_pairwise(aseq, bseq):
     # Affine gap penalties -- default values from EMBOSS needle/water
     GAP_OPEN = -10.0
     GAP_EXTEND = -0.5
-    GAP_CHARS = frozenset('-.')
+    GAP_CHARS = frozenset("-.")
 
     score = 0.0
-    in_gap = True   # Don't apply the opening penalty to the N-terminal gap
+    in_gap = True  # Don't apply the opening penalty to the N-terminal gap
 
     for ares, bres in zip(aseq.upper(), bseq.upper()):
         if ares in GAP_CHARS and bres in GAP_CHARS:
@@ -101,8 +99,9 @@ def score_pairwise(aseq, bseq):
             continue
         match = blosum62.get((ares, bres), None)
         if match is None:
-            assert GAP_CHARS.intersection((ares, bres)), \
-                    "Expected one gap in: " + str((ares, bres))
+            assert GAP_CHARS.intersection((ares, bres)), "Expected one gap in: " + str(
+                (ares, bres)
+            )
             # Gap
             if not in_gap:
                 score += GAP_OPEN
@@ -122,15 +121,13 @@ def score_pairwise(aseq, bseq):
 def identity_abs(aseq, bseq):
     """Compute absolute identity (# matching sites) between sequence strings."""
     assert len(aseq) == len(bseq)
-    return sum(a == b
-               for a, b in zip(aseq, bseq)
-               if not (a in '-.' and b in '-.'))
+    return sum(a == b for a, b in zip(aseq, bseq) if not (a in "-." and b in "-."))
 
 
 def identity_avg(aseq, bseq):
     """Compute absolute identity (# matching sites) between sequence strings."""
     match = identity_abs(aseq, bseq)
-    alen = len(aseq.replace('-', '').replace('.', ''))
-    blen = len(bseq.replace('-', '').replace('.', ''))
+    alen = len(aseq.replace("-", "").replace(".", ""))
+    blen = len(bseq.replace("-", "").replace(".", ""))
     avg_len = 0.5 * (alen + blen)
     return match / avg_len

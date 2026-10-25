@@ -180,7 +180,9 @@ def dna_set(rng):
     # The same kind of ORF on the reverse strand, with ambiguous bases.
     orf = "ATG" + "".join(rng.choice(sense) for _ in range(90)) + "TGA"
     revcomp = orf[::-1].translate(str.maketrans("ACGT", "TGCA"))
-    records.append(("orf2 reverse ORF with Ns", random_dna(20) + "NN" + revcomp + random_dna(25)))
+    records.append(
+        ("orf2 reverse ORF with Ns", random_dna(20) + "NN" + revcomp + random_dna(25))
+    )
     return records
 
 
@@ -268,13 +270,19 @@ def main():
     OUT.mkdir()
 
     cc_test = args.cladecompare / "test"
-    write_fasta("cdc2-domain.aln.fasta", cma_blocks(cc_test / "cdc2-domain.fasta_aln.cma"))
-    write_fasta("scttlre-domain.aln.fasta", cma_blocks(cc_test / "scttlre-domain.fasta_aln.cma"))
+    write_fasta(
+        "cdc2-domain.aln.fasta", cma_blocks(cc_test / "cdc2-domain.fasta_aln.cma")
+    )
+    write_fasta(
+        "scttlre-domain.aln.fasta", cma_blocks(cc_test / "scttlre-domain.fasta_aln.cma")
+    )
     write_fasta("fikk.aln.fasta", cma_blocks(args.biocma / "test" / "fikk.cma"))
 
     shutil.copyfile(cc_test / "cdc2-domain.fasta", OUT / "cdc2-domain.fasta")
     shutil.copyfile(args.biocma / "test" / "fikk.cma", OUT / "fikk.cma")
-    (OUT / "fikk-subset.cma").write_text(cma_subset(args.biocma / "test" / "fikk.cma", 15))
+    (OUT / "fikk-subset.cma").write_text(
+        cma_subset(args.biocma / "test" / "fikk.cma", 15)
+    )
     cdc2 = read_fasta(cc_test / "cdc2-domain.fasta")
 
     write_fasta("synth-edge.aln.fasta", EDGE)
@@ -287,7 +295,9 @@ def main():
     # output, and the fixtures captured from it, unchanged.
     write_fasta("tie-batch.fasta", tie_batch(random.Random(20261023)))
     write_fasta("dna.fasta", dna_set(random.Random(20261024)), width=60)
-    write_fasta("dupes.fasta", dupes_set(read_fasta(cc_test / "scttlre-domain.fasta")), width=60)
+    write_fasta(
+        "dupes.fasta", dupes_set(read_fasta(cc_test / "scttlre-domain.fasta")), width=60
+    )
     write_fasta("intersect-query.fasta", intersect_query(cdc2))
     write_fasta("diff-query.fasta", diff_query(cdc2), width=60)
 

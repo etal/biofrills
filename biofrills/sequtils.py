@@ -1,6 +1,5 @@
-"""Utilities for manipulating sequence sets.
+"""Utilities for manipulating sequence sets."""
 
-"""
 import logging
 import os.path
 from collections import Counter
@@ -17,7 +16,7 @@ def clean_accession(rec_id):
     added by HMMer. Most other records won't have a '/' character in the FASTA
     header key.
     """
-    return rec_id.rsplit('/', 1)[0]
+    return rec_id.rsplit("/", 1)[0]
 
 
 # Obsolete, but left here for backward compatibility for now
@@ -37,28 +36,30 @@ def intersect_keys(keys, reffile, cache=False, clean_accs=False):
     # Build/load the index of reference sequences
     index = None
     if cache:
-        refcache = reffile + '.sqlite'
+        refcache = reffile + ".sqlite"
         if os.path.exists(refcache):
             if os.stat(refcache).st_mtime < os.stat(reffile).st_mtime:
                 logging.warning("Outdated cache; rebuilding index")
             else:
                 try:
-                    index = (SeqIO.index_db(refcache,
-                                            key_function=clean_accession)
-                             if clean_accs
-                             else SeqIO.index_db(refcache))
+                    index = (
+                        SeqIO.index_db(refcache, key_function=clean_accession)
+                        if clean_accs
+                        else SeqIO.index_db(refcache)
+                    )
 
                 except Exception:
                     logging.warning("Skipping corrupted cache; rebuilding index")
                     index = None
     else:
-        refcache = ':memory:'
+        refcache = ":memory:"
     if index is None:
         # Rebuild the index, for whatever reason
-        index = (SeqIO.index_db(refcache, [reffile], 'fasta',
-                                key_function=clean_accession)
-                 if clean_accs
-                 else SeqIO.index_db(refcache, [reffile], 'fasta'))
+        index = (
+            SeqIO.index_db(refcache, [reffile], "fasta", key_function=clean_accession)
+            if clean_accs
+            else SeqIO.index_db(refcache, [reffile], "fasta")
+        )
 
     # Extract records by key
     if clean_accs:
@@ -73,7 +74,7 @@ def intersect_keys(keys, reffile, cache=False, clean_accs=False):
         yield record
 
 
-def aa_frequencies(seq, gap_chars='-.'):
+def aa_frequencies(seq, gap_chars="-."):
     """Calculate the amino acid frequencies in a sequence set."""
     aa_counts = Counter(seq)
     # Don't count gaps
@@ -83,4 +84,3 @@ def aa_frequencies(seq, gap_chars='-.'):
     # Reduce to frequencies
     scale = 1.0 / sum(aa_counts.values())
     return dict((aa, cnt * scale) for aa, cnt in aa_counts.items())
-

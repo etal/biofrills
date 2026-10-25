@@ -21,4 +21,3 @@ def log_config(verbose=1):
         level = logging.DEBUG
         fmt = "%(module)s [%(lineno)s]: %(levelname)s: %(message)s"
     logging.basicConfig(format=fmt, level=level)
-

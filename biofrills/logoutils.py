@@ -1,5 +1,5 @@
-"""Utilities for sequence logos.
-"""
+"""Utilities for sequence logos."""
+
 from io import StringIO
 
 import weblogo
@@ -11,16 +11,15 @@ def read_logodata(handle):
 
     Returns a list of tuples: (posn, letter_counts, entropy, weight)
     """
-    seqs = weblogo.read_seq_data(handle,
-                                 alphabet=unambiguous_protein_alphabet)
+    seqs = weblogo.read_seq_data(handle, alphabet=unambiguous_protein_alphabet)
     ldata = weblogo.LogoData.from_seqs(seqs)
     letters = ldata.alphabet.letters()
     counts = ldata.counts.array
     logodata = []
-    for i, coldata, entropy, weight in zip(range(len(counts)), counts,
-                                           ldata.entropy, ldata.weight):
-        cnts = dict((let, int(cnt))
-                    for let, cnt in zip(letters, coldata))
+    for i, coldata, entropy, weight in zip(
+        range(len(counts)), counts, ldata.entropy, ldata.weight
+    ):
+        cnts = dict((let, int(cnt)) for let, cnt in zip(letters, coldata))
         logodata.append((i + 1, cnts, entropy, weight))
     return logodata
 
@@ -30,20 +29,19 @@ def aln2logodata(aln):
 
     Returns a list of tuples: (posn, letter_counts, entropy, weight)
     """
-    handle = StringIO(format(aln, 'fasta'))
+    handle = StringIO(format(aln, "fasta"))
     logodata = read_logodata(handle)
     handle.close()
     return logodata
 
 
 def letter_scales(counts):
-    """Convert letter counts to frequencies, sorted increasing.""" 
+    """Convert letter counts to frequencies, sorted increasing."""
     try:
         scale = 1.0 / sum(counts.values())
     except ZeroDivisionError:
         # This logo is all gaps, nothing can be done
         return []
-    freqs = [(aa, cnt*scale) for aa, cnt in counts.items() if cnt]
+    freqs = [(aa, cnt * scale) for aa, cnt in counts.items() if cnt]
     freqs.sort(key=lambda pair: pair[1])
     return freqs
-

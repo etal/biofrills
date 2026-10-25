@@ -48,24 +48,27 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
     if simple:
         # Use the simple, unweighted algorithm
         col_consensus = make_simple_col_consensus(alnutils.aa_frequencies(aln))
+
         def is_majority_gap(col):
-            return (float(col.count('-')) / len(col) >= gap_threshold)
+            return float(col.count("-")) / len(col) >= gap_threshold
+
         # ENH (alternatively/additionally): does any aa occur more than once?
         # ENH: choose gap-decisionmaking separately from col_consensus
     else:
         # Use the entropy-based, weighted algorithm
         if weights is None:
-            seq_weights = alnutils.sequence_weights(aln, 'avg1')
+            seq_weights = alnutils.sequence_weights(aln, "avg1")
         else:
             seq_weights = weights
         aa_frequencies = alnutils.aa_frequencies(aln, weights=seq_weights)
         col_consensus = make_entropy_col_consensus(aa_frequencies)
+
         def is_majority_gap(col):
             gap_count = 0.0
             for wt, char in zip(seq_weights, col):
-                if char == '-':
+                if char == "-":
                     gap_count += wt
-            return (gap_count / sum(seq_weights) >= gap_threshold)
+            return gap_count / sum(seq_weights) >= gap_threshold
 
     # Traverse the alignment, handling gaps etc.
     def col_wise_consensus(columns):
@@ -81,15 +84,16 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
             # a column of only gap characters has no residue to report either.
             # Its gap goes behind any C-terminal residues already buffered, so
             # that the consensus stays aligned with the columns.
-            if all(c.islower() for c in col if c not in '.-'):
+            if all(c.islower() for c in col if c not in ".-"):
                 if trim_ends or in_left_end:
-                    yield '-'
+                    yield "-"
                 else:
-                    maybe_right_tail.append('-')
+                    maybe_right_tail.append("-")
                 continue
             if any(c.islower() for c in col):
-                logging.warning('Mixed lowercase and uppercase letters in a '
-                        'column: ' + ''.join(col))
+                logging.warning(
+                    "Mixed lowercase and uppercase letters in a column: " + "".join(col)
+                )
                 col = tuple(map(str.upper, col))
 
             # Gap chars
@@ -114,7 +118,7 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
             #   -----------     ---------   ------  ----------
 
             if is_gap and trim_ends:
-                yield '-'
+                yield "-"
                 continue
 
             # Get the consensus character, using the chosen algorithm
@@ -129,7 +133,7 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
                 else:
                     # Match -> gaps weren't the right tail; emit all gaps
                     for char in maybe_right_tail:
-                        yield '-'
+                        yield "-"
                     maybe_right_tail = []
                     yield cons_char
 
@@ -141,16 +145,18 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
             for char in maybe_right_tail:
                 yield char
 
-    return ''.join(col_wise_consensus(zip(*aln)))
+    return "".join(col_wise_consensus(zip(*aln)))
 
 
 # --- Algorithm: entropy ---
 
+
 def entropy_func(f_freqs, b_freqs):
     def entropy_term(aa):
-        f = f_freqs[aa] 
+        f = f_freqs[aa]
         b = b_freqs[aa]
-        return f * math.log(f/b)
+        return f * math.log(f / b)
+
     return entropy_term
 
 
@@ -170,16 +176,19 @@ def make_entropy_col_consensus(bg_freqs):
 
     Source: http://bioinformatics.oxfordjournals.org/content/24/18/1987.long
     """
+
     def col_consensus(col):
         col_freqs = sequtils.aa_frequencies(col)
         entroper = entropy_func(col_freqs, bg_freqs)
         return min(col_freqs, key=lambda aa: (-entroper(aa), aa))
+
     return col_consensus
 
 
 # --- Algorithm: simple ---
 # Ironically, this heuristic approach takes more code (and probably time) than
 # the entropy-based calculation...
+
 
 def make_simple_col_consensus(bg_freqs):
     """Consensus by simple plurality, unweighted.
@@ -192,6 +201,7 @@ def make_simple_col_consensus(bg_freqs):
     3. Finally, prefer the alphabetically first aa type, so that the result
        never depends on the order in which residue types were counted.
     """
+
     # Hack: use default kwargs to persist across iterations
     def col_consensus(col, prev_col=[], prev_char=[]):
         # Count the amino acid types in this column
@@ -207,11 +217,13 @@ def make_simple_col_consensus(bg_freqs):
             # char is the consensus type for that (preceding) col
             if prev_char and prev_col:
                 mc_next = Counter(
-                        [b for a, b in zip(prev_col, col)
-                            if a == prev_char[0] and b in ties]
-                        ).most_common()
-                ties_next = [x[0] for x in mc_next
-                        if x[1] == mc_next[0][1]]
+                    [
+                        b
+                        for a, b in zip(prev_col, col)
+                        if a == prev_char[0] and b in ties
+                    ]
+                ).most_common()
+                ties_next = [x[0] for x in mc_next if x[1] == mc_next[0][1]]
                 if ties_next:
                     ties = ties_next
             if len(ties) > 1:
@@ -223,10 +235,12 @@ def make_simple_col_consensus(bg_freqs):
         prev_col[:] = col
         prev_char[:] = best_char
         return best_char
+
     return col_consensus
 
 
 # --- XXX obsolete stuff ---
+
 
 # XXX only used for CHAIN -- omit? or, option to return all ties?
 def supported(aln):
@@ -241,39 +255,37 @@ def supported(aln):
     Returns a *list* -- not a string! -- where elements are strings of the
     consensus character(s), potentially a gap ('-') or multiple chars ('KR').
     """
+
     def col_consensus(columns):
         """Calculate the consensus chars for an iterable of columns."""
         for col in columns:
-            if (# Majority gap chars
-                (col.count('-') >= len(col) // 2) or
+            if (  # Majority gap chars
+                (col.count("-") >= len(col) // 2)
+                or
                 # Lowercase cols mean "don't include in consensus"
-                all(c.islower() for c in col if c not in '.-')
-                ):
-                yield '-'
+                all(c.islower() for c in col if c not in ".-")
+            ):
+                yield "-"
                 continue
             # Validation - copied from consensus() above
             if any(c.islower() for c in col):
-                logging.warning('Mixed lowercase and uppercase letters in a '
-                        'column: ' + ''.join(col))
+                logging.warning(
+                    "Mixed lowercase and uppercase letters in a column: " + "".join(col)
+                )
                 col = tuple(map(str.upper, col))
             # Calculate the consensus character
-            most_common = Counter(
-                    [c for c in col if c not in '-']
-                    ).most_common()
+            most_common = Counter([c for c in col if c not in "-"]).most_common()
             if not most_common:
                 # XXX ever reached?
                 logging.warning("Column is all gaps! How did that happen?")
             if most_common[0][1] == 1:
                 # No char has frequency > 1; no consensus char
-                yield '-'
-            elif (len(most_common) > 1 and
-                    most_common[0][1] == most_common[1][1]):
+                yield "-"
+            elif len(most_common) > 1 and most_common[0][1] == most_common[1][1]:
                 # Tie for most-common residue type
-                ties = [x[0] for x in most_common
-                        if x[1] == most_common[0][1]]
-                yield ''.join(ties)
+                ties = [x[0] for x in most_common if x[1] == most_common[0][1]]
+                yield "".join(ties)
             else:
                 yield most_common[0][0]
 
     return list(col_consensus(zip(*aln)))
-

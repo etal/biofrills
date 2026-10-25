@@ -47,5 +47,10 @@ need the ``logo`` extra and are skipped without it. The ``py27-oracle`` pixi
 environment regenerates the reference outputs from a worktree of the pre-port
 sources, as described in ``tests/data/README.md``.
 
+Code is formatted with ``ruff format``, and the formatting-only commits are
+listed in ``.git-blame-ignore-revs``. To skip them in ``git blame``::
+
+    git config blame.ignoreRevsFile .git-blame-ignore-revs
+
 .. _uv: https://docs.astral.sh/uv/
 .. _pixi: https://pixi.prefix.dev/

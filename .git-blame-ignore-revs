@@ -1,0 +1,8 @@
+# Formatting-only commits, skipped by `git blame` when
+# blame.ignoreRevsFile is set to this file (GitHub applies it automatically).
+
+# Format the code base with ruff format
+c514e008f6865cf0ac5b4d2921acdabd9f1e86a5
+
+# Strip trailing whitespace from the blosum62 table
+bda1e8b4ee9ee9fc95891c53234207b8a6bc0f1c

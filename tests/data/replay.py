@@ -11,9 +11,8 @@ tests/test_reference.py uses as well: a value is compared exactly, except
 for the floating-point differences that README.md documents, which are
 compared with a relative tolerance and not written; an exception is compared
 by its type only, since the message text is the interpreter's.  The script
-requires Python 3.12 or later, whose built-in sum() the two t101 entries
-depend on; the repository's default pixi environment provides a suitable
-interpreter.
+requires Python 3.12 or later, the oldest version biofrills supports; the
+repository's default pixi environment provides a suitable interpreter.
 
 Usage, from the repository root:
 

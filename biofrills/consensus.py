@@ -8,16 +8,27 @@ from biofrills import alnutils, sequtils
 
 logger = logging.getLogger(__name__)
 
+# A weighted gap proportion at most this far below gap_threshold counts as
+# reaching it.  Sequence weights are rounded floats, so a column whose exact
+# weighted gap proportion equals the threshold can compute a few units in the
+# last place below it.  In measured alignments that error was at most 5e-16,
+# and no proportion not equal to the threshold came closer to it than 9.5e-6.
+_GAP_TOLERANCE = 1e-12
+
 
 def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True):
     """Get the consensus of an alignment, as a string.
 
     Emit gap characters for majority-gap columns; apply various strategies to
-    choose the consensus amino acid type for the remaining columns. Ties
-    between amino acid types are broken by explicit rules, ending in
-    alphabetical order, so the choice among tied types does not depend on the
-    order in which residue types were counted; see make_entropy_col_consensus
-    and make_simple_col_consensus.
+    choose the consensus amino acid type for the remaining columns. For given
+    sequence weights, which columns are majority-gap columns does not depend
+    on the order of the alignment's rows: the simple algorithm compares a
+    ratio of integer counts, and the weighted algorithm a quotient of correctly
+    rounded sums (math.fsum), both of which a permutation of the rows leaves
+    unchanged. Ties between amino acid types are broken by explicit rules,
+    ending in alphabetical order, so the choice among tied types does not
+    depend on the order in which residue types were counted; see
+    make_entropy_col_consensus and make_simple_col_consensus.
 
     An alignment whose rows differ in length, or that contains no residue at
     all, raises ValueError.
@@ -30,11 +41,12 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
         type, without weighting sequences for similarity. Otherwise, weight
         sequences for similarity and use relative entropy to choose the
         consensus amino acid type.
-    weights : dict or None
-        Sequence weights. If given, used to calculate amino acid frequencies;
-        otherwise calculated within this function (i.e. this is a way to speed
-        up the function if sequence weights have already been calculated).
-        Ignored in 'simple' mode.
+    weights : sequence of float or None
+        One weight per row of the alignment, in row order, as
+        alnutils.sequence_weights returns. If given, used to calculate amino
+        acid frequencies and gap proportions; otherwise calculated within this
+        function (i.e. this is a way to speed up the function if sequence
+        weights have already been calculated). Ignored in 'simple' mode.
     trim_ends : bool
         If False, stretch the consensus sequence to include the N- and C-tails
         of the alignment, even if those flanking columns are mostly gap
@@ -47,6 +59,9 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
         If the proportion of gap characters in a column is greater than or equal
         to this value (after sequence weighting, if applicable), then the
         consensus character emitted will be a gap instead of an amino acid type.
+        A weighted proportion at most 1e-12 below the threshold counts as
+        equal to it, so that rounding error in the sequence weights does not
+        decide a column whose exact weighted proportion equals the threshold.
 
     """
     # A mixed-case column is uppercased below, so the background frequencies
@@ -73,13 +88,14 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
             seq_weights = weights
         aa_frequencies = alnutils.aa_frequencies(upper_rows, weights=seq_weights)
         col_consensus = make_entropy_col_consensus(aa_frequencies)
+        total_weight = math.fsum(seq_weights)
+        min_gap_fraction = gap_threshold - _GAP_TOLERANCE
 
         def is_majority_gap(col):
-            gap_count = 0.0
-            for wt, char in zip(seq_weights, col, strict=True):
-                if char == "-":
-                    gap_count += wt
-            return gap_count / sum(seq_weights) >= gap_threshold
+            gap_weight = math.fsum(
+                wt for wt, char in zip(seq_weights, col, strict=True) if char == "-"
+            )
+            return gap_weight / total_weight >= min_gap_fraction
 
     # Traverse the alignment, handling gaps etc.
     def col_wise_consensus(columns):

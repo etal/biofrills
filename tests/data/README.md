@@ -162,7 +162,13 @@ The cases whose current output differs, explained below under "Consensus ties" a
   `sequence_weights` divides by `sum(seq_weights)` under the scalings `sum1`, `avg1` and `andy`, so these weights differ from the fixtures by at most 3 units in the last place: 35 values in `scttlre-domain.aln.json`, 8 in `synth-x.aln.json`, and 185 in 39 of the 200 alignments of `tie-batch.json`.
   The largest relative difference is `4.2e-16`, so the tolerance given above for weighted frequencies covers these values too.
   The scalings `none` and `max1` take no such sum and match the fixtures exactly.
-  The same sum is the denominator of the weighted gap fraction in `consensus`, where it changes one column of one alignment; see "Differences in library output" below.
+  `consensus` divides by a sum of these weights to compute the weighted gap fraction of a column, and there a difference in the last place can decide a column whose exact fraction equals the threshold.
+  Column 5 of `tie-batch.json` alignment `t101` holds two gaps, a `C` and an `A`, and in exact arithmetic the `avg1` weights of its four rows are 20/21, 22/21, 20/21 and 22/21, so the weighted gap fraction of the column is exactly one half.
+  As stored, the two weights of 20/21 differ by one unit in the last place: Python 2's term-by-term total, `3.999999999999999`, gives a fraction of exactly `0.5`, and the correctly rounded total, `3.9999999999999996`, gives `0.49999999999999994`.
+  `consensus` therefore sums the weights with `math.fsum`, which is correctly rounded and so does not depend on the order of the rows, and counts a weighted gap fraction at most `1e-12` below `gap_threshold` as reaching it; the column is a gap, as recorded, so the case produces no entry in `differences.json`.
+  The measurements behind that margin cover the fixture inputs and 2,100 random alignments: 600 of 4 to 40 rows and 5 to 60 columns, and 1,500 of 3 to 8 rows and 10 to 60 columns, with gap probabilities from 0.1 to 0.6.
+  There, the largest rounding error of the fraction was `5e-16`, as it was in synthetic alignments of up to 1,000 rows or 20,000 columns, and the smallest distance from the threshold of a fraction not exactly equal to it was `9.5e-6`.
+  The margin is thus about 2,000 times the first and about seven orders of magnitude below the second.
 - **Platform math library.**
   `chisqprob` calls `math.lgamma`, whose result depends on the platform's C math library.
   The fixtures were captured on x86_64 macOS under Rosetta 2, where Python 3.12 reproduces every `chisqprob` value exactly.
@@ -202,7 +208,7 @@ The cases whose current output differs, explained below under "Consensus ties" a
 It compares outcomes as `tests/test_reference.py` does, through the shared module `tests/reference_cases.py`, so the floating-point differences described above under "Summation order of weighted frequencies", "Compensated summation" and "Platform math library" are compared with a tolerance and produce no entries.
 An entry identifies the case as the fixture does: the fixture file relative to `py27/`, the section, the alignment for a `tie-batch.json` case, and the index of the case within its section, which is `null` for a section that records a single outcome.
 It then repeats the fields that describe the call (`weights` and `kwargs` where the fixture records them, `rows` for a pairwise case, `x` and `df` for a `chisqprob` case), and gives the recorded outcome, the current outcome, and, where both are strings of equal length, the 1-based columns at which they differ.
-Every entry is explained below: the first four kinds are deliberate changes of behavior, and the fifth follows from the port to Python 3.
+Every entry is explained below, and all four kinds are deliberate changes of behavior.
 In the third and fourth kinds the recorded outcome is an exception, so they change no outcome that the original code completed.
 A test of the current code expects the fixture value except where `differences.json` records another.
 After a change that moves a recorded output, regenerate the file from the repository root and explain the new entries here:
@@ -242,11 +248,3 @@ Before the port, the unmodified sources at commit `36684bb` produced an empty li
   The background frequencies of both algorithms now fold case as well; `alnutils.aa_frequencies` itself still counts residues as written.
   All 18 entropy cases of that file now complete: they give `MK--LWGH` with `gap_threshold` 0.5 and `MK-VLWGH` with 0.6 and 0.8, as the simple algorithm already did.
   No other input contains a lowercase residue, so no other recorded case changes; on an alignment that does, background frequencies, and with them a consensus residue, can differ from those of the original code.
-- **Compensated summation at an exact threshold** (2 cases, both in `tie-batch.json`).
-  In alignment `t101`, both entropy cases (`simple` false, with `trim_ends` true and false) change at column 5 from a gap to `C`.
-  That column holds two gaps, a `C` and an `A`, and its weighted gap fraction is exactly one half: in exact arithmetic the `avg1` weights of the four rows are 20/21, 22/21, 20/21 and 22/21.
-  At `gap_threshold` 0.5 the documented rule, a gap where the fraction is greater than or equal to the threshold, makes the column a gap.
-  In floating point, however, the two weights of 20/21 differ by one unit in the last place, so the computed fraction lies on either side of 0.5 depending on how `sum(seq_weights)` is rounded.
-  Python 2's term-by-term sum gives `3.999999999999999` and a fraction of exactly `0.5`; the compensated sum of Python 3.12 and later gives the correctly rounded `3.9999999999999996` and a fraction of `0.49999999999999994`.
-  The recorded gap therefore depends on the rounding of the sum, and summing with `math.fsum` gives the same result as the built-in `sum`.
-  The simple cases of `t101` are unchanged, because their unweighted gap fraction, 2/4, is exact, and no case of the three MAPGAPS alignments changes.

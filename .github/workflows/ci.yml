@@ -1,0 +1,163 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PIXI_VERSION: v0.82.1
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@ad1da6449d9e506fd127fd67ab2d054a769f6a94 # v0.11.2
+        with:
+          pixi-version: ${{ env.PIXI_VERSION }}
+          environments: default
+      - run: pixi run lint --output-format=github
+      - run: pixi run fmt --check
+
+  # conda-forge packages from pixi.lock, at the newest and the oldest
+  # supported Python. setup-pixi installs with --locked, so a pixi.lock that
+  # no longer matches pyproject.toml fails here.
+  pixi:
+    name: pixi (${{ matrix.os }}, ${{ matrix.environment }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        environment: [default, py312]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      PIXI_ENV: ${{ matrix.environment }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@ad1da6449d9e506fd127fd67ab2d054a769f6a94 # v0.11.2
+        with:
+          pixi-version: ${{ env.PIXI_VERSION }}
+          environments: ${{ matrix.environment }}
+      - run: pixi run -e "$PIXI_ENV" python -VV
+      - run: pixi run -e "$PIXI_ENV" test
+
+  # PyPI packages from uv.lock; --locked fails if uv.lock no longer matches
+  # pyproject.toml.
+  uv:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+      - run: uv run --locked pytest
+
+  # The declared minimum versions of the direct dependencies, on the oldest
+  # supported Python. uv re-resolves instead of using uv.lock.
+  floor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      UV_RESOLUTION: lowest-direct
+      UV_PYTHON: "3.12"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+      - name: The direct dependencies are at their declared floors
+        shell: uv run python {0}
+        run: |
+          import tomllib
+          from importlib.metadata import version
+
+          from packaging.requirements import Requirement
+          from packaging.version import Version
+
+          with open("pyproject.toml", "rb") as handle:
+              pyproject = tomllib.load(handle)
+          optional = pyproject["project"]["optional-dependencies"]
+          requirements = [
+              *pyproject["project"]["dependencies"],
+              *(req for extra in optional.values() for req in extra),
+              *pyproject["dependency-groups"]["dev"],
+          ]
+          for requirement in map(Requirement, requirements):
+              if requirement.name == "biofrills":
+                  # The dev group's reference to the extras listed above
+                  continue
+              (floor,) = [s.version for s in requirement.specifier if s.operator == ">="]
+              installed = version(requirement.name)
+              print(requirement.name, installed)
+              assert Version(installed) == Version(floor), (requirement, installed)
+      - run: uv run pytest
+
+  # Biopython alone, without the graph and logo extras or the dev group.
+  no-extras:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+      - run: uv sync --locked --no-dev
+      - name: Core modules and seq-pick without the extras
+        shell: uv run --no-sync python {0}
+        run: |
+          import importlib
+          import importlib.util
+          import pkgutil
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          import biofrills
+
+          for extra in ("networkx", "weblogo"):
+              assert importlib.util.find_spec(extra) is None, f"{extra} is installed"
+          imported = []
+          for module in pkgutil.walk_packages(biofrills.__path__, "biofrills."):
+              if module.name != "biofrills.logoutils":
+                  importlib.import_module(module.name)
+                  imported.append(module.name)
+          assert imported, biofrills.__path__
+          print("imported", *imported)
+          try:
+              import biofrills.logoutils  # noqa: F401
+          except ModuleNotFoundError as err:
+              assert err.name == "weblogo", err
+          else:
+              raise AssertionError("biofrills.logoutils imported without weblogo")
+
+          seq_pick = str(Path(sys.executable).with_name("seq-pick"))
+          aln = "tests/data/inputs/cdc2-domain.aln.fasta"
+          for option in ["-c", "-k"]:
+              proc = subprocess.run(
+                  [seq_pick, option, "2", aln], capture_output=True, text=True
+              )
+              assert (proc.returncode, proc.stdout, proc.stderr) == (
+                  1,
+                  "",
+                  "seq-pick -c and -k require networkx, the graph extra of biofrills\n",
+              ), proc
+          proc = subprocess.run(
+              [seq_pick, "-l", "2", aln], capture_output=True, text=True
+          )
+          assert (proc.returncode, proc.stderr, proc.stdout.count(">")) == (
+              0,
+              "",
+              2,
+          ), proc

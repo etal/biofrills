@@ -75,12 +75,17 @@ def intersect_keys(keys, reffile, cache=False, clean_accs=False):
 
 
 def aa_frequencies(seq, gap_chars="-."):
-    """Calculate the amino acid frequencies in a sequence set."""
+    """Calculate the amino acid frequencies in a sequence set.
+
+    Raises ValueError if the sequence contains only gap characters.
+    """
     aa_counts = Counter(seq)
     # Don't count gaps
     for gap_char in gap_chars:
         if gap_char in aa_counts:
             del aa_counts[gap_char]
+    if not aa_counts:
+        raise ValueError("No residues to count: every character is a gap")
     # Reduce to frequencies
     scale = 1.0 / sum(aa_counts.values())
     return dict((aa, cnt * scale) for aa, cnt in aa_counts.items())

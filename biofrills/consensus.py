@@ -17,6 +17,9 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
     order in which residue types were counted; see make_entropy_col_consensus
     and make_simple_col_consensus.
 
+    An alignment whose rows differ in length, or that contains no residue at
+    all, raises ValueError.
+
     Parameters
     ----------
 
@@ -44,10 +47,16 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
         consensus character emitted will be a gap instead of an amino acid type.
 
     """
+    # A mixed-case column is uppercased below, so the background frequencies
+    # fold case too; otherwise a residue type that occurs elsewhere only in
+    # lowercase would have no background frequency.
+    upper_rows = [str(rec.seq).upper() for rec in aln]
     # Choose your algorithms!
     if simple:
         # Use the simple, unweighted algorithm
-        col_consensus = make_simple_col_consensus(alnutils.aa_frequencies(aln))
+        col_consensus = make_simple_col_consensus(
+            sequtils.aa_frequencies("".join(upper_rows))
+        )
 
         def is_majority_gap(col):
             return float(col.count("-")) / len(col) >= gap_threshold
@@ -60,7 +69,7 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
             seq_weights = alnutils.sequence_weights(aln, "avg1")
         else:
             seq_weights = weights
-        aa_frequencies = alnutils.aa_frequencies(aln, weights=seq_weights)
+        aa_frequencies = alnutils.aa_frequencies(upper_rows, weights=seq_weights)
         col_consensus = make_entropy_col_consensus(aa_frequencies)
 
         def is_majority_gap(col):
@@ -144,7 +153,7 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
         if not trim_ends:
             yield from maybe_right_tail
 
-    return "".join(col_wise_consensus(zip(*aln, strict=False)))
+    return "".join(col_wise_consensus(zip(*aln, strict=True)))
 
 
 # --- Algorithm: entropy ---
@@ -288,4 +297,4 @@ def supported(aln):
             else:
                 yield most_common[0][0]
 
-    return list(col_consensus(zip(*aln, strict=False)))
+    return list(col_consensus(zip(*aln, strict=True)))

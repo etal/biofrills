@@ -10,17 +10,8 @@ from Bio.SeqRecord import SeqRecord
 DATA = Path(__file__).parent / "data"
 INPUTS = DATA / "inputs"
 
-# The aligned inputs on which every library function succeeds: the three
-# MAPGAPS alignments and the synthetic edge cases with more than one row
-# and no residue type that occurs only in lowercase.
-ALIGNED_INPUTS = [
-    "cdc2-domain.aln.fasta",
-    "scttlre-domain.aln.fasta",
-    "fikk.aln.fasta",
-    "synth-edge.aln.fasta",
-    "synth-ties.aln.fasta",
-    "synth-x.aln.fasta",
-]
+# Every aligned input, including the synthetic edge cases.
+ALIGNED_INPUTS = sorted(path.name for path in INPUTS.glob("*.aln.fasta"))
 
 
 def read_alignment(name):
@@ -28,11 +19,17 @@ def read_alignment(name):
     return AlignIO.read(INPUTS / name, "fasta")
 
 
+def make_records(rows):
+    """SeqRecords of the given sequence strings, named s0, s1, ...
+
+    Unlike the rows of an alignment, these may differ in length.
+    """
+    return [SeqRecord(Seq(row), id=f"s{index}") for index, row in enumerate(rows)]
+
+
 def make_alignment(rows):
     """An alignment of the given sequence strings, named s0, s1, ..."""
-    return MultipleSeqAlignment(
-        SeqRecord(Seq(row), id=f"s{index}") for index, row in enumerate(rows)
-    )
+    return MultipleSeqAlignment(make_records(rows))
 
 
 def rows(records):

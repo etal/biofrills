@@ -18,3 +18,8 @@ def test_clean_accession_strips_the_hmmer_domain_location():
         "sp|P04637|P53_HUMAN"
     )
     assert sequtils.clean_accession("P53_HUMAN") == "P53_HUMAN"
+
+
+def test_aa_frequencies_of_gaps_alone_raise():
+    with pytest.raises(ValueError, match="every character is a gap"):
+        sequtils.aa_frequencies("-.-")

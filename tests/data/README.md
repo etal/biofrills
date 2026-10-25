@@ -94,6 +94,7 @@ Record identifiers have the form `t<alignment>_s<row>`, and the capture groups r
 Every function call is recorded as `{"value": ...}` or, where the original code raised an exception, `{"error": {"type": ..., "message": ...}}`.
 Exceptions are part of the reference.
 For example, the entropy consensus raises `KeyError` on `synth-mixedcase.aln.fasta`, where a residue type occurs only in lowercase, and on the single-sequence alignment `sequence_weights` divides by zero, as does every call that computes weights from it.
+The current code returns values in both cases; see "Differences in library output" below.
 Floats are written with Python 2.7's `repr`, the shortest decimal string that reads back as the identical double, so a JSON reader recovers the computed values exactly.
 Integers and floats remain distinct: a count of `3` and a weighted count of `3.0` are different values.
 
@@ -198,7 +199,8 @@ The cases whose current output differs, explained below under "Consensus ties" a
 It compares outcomes as `tests/test_reference.py` does, through the shared module `tests/reference_cases.py`, so the floating-point differences described above under "Summation order of weighted frequencies", "Compensated summation" and "Platform math library" are compared with a tolerance and produce no entries.
 An entry identifies the case as the fixture does: the fixture file relative to `py27/`, the section, the alignment for a `tie-batch.json` case, and the index of the case within its section, which is `null` for a section that records a single outcome.
 It then repeats the fields that describe the call (`weights` and `kwargs` where the fixture records them, `rows` for a pairwise case, `x` and `df` for a `chisqprob` case), and gives the recorded outcome, the current outcome, and, where both are strings of equal length, the 1-based columns at which they differ.
-Every entry is explained below: the first two kinds are deliberate changes of behavior, and the third follows from the port to Python 3.
+Every entry is explained below: the first four kinds are deliberate changes of behavior, and the fifth follows from the port to Python 3.
+In the third and fourth kinds the recorded outcome is an exception, so they change no outcome that the original code completed.
 A test of the current code expects the fixture value except where `differences.json` records another.
 After a change that moves a recorded output, regenerate the file from the repository root and explain the new entries here:
 
@@ -226,6 +228,17 @@ Before the port, the unmodified sources at commit `36684bb` produced an empty li
   - `tie-batch.json` alignment `t157`, both simple cases: four residues tie in column 6, which changes from `E` to `D`; column 7 then changes from `D` to `A`, because the first heuristic follows the new residue in column 6.
   - `tie-batch.json` alignment `t081`, simple algorithm with `trim_ends=False`: three residues tie in column 4, which changes from `E` to `D`.
     With `trim_ends=True` the majority-gap column 3 does not reach the algorithm, so the first heuristic conditions on a different preceding column and settles the tie as before.
+- **Sequence weights of an alignment without informative columns** (28 cases, all in `synth-single.aln.json`).
+  `sequence_weights` takes its weights from the columns in which at least two residues, and at least a fifth of the rows, are not gaps, and a single sequence has no such column, so every raw weight was zero and every scaling divided by zero, as did every call that computes weights from it.
+  Where nothing in the alignment tells the sequences apart, the current code weights them equally: `1.0` each under every scaling except `sum1`, which gives `1/N`.
+  Up to rounding, these are the weights that every scaling already gives an alignment of identical sequences without gaps, and under the `none` scaling they sum to the number of sequences, the effective number of independent sequences when no redundancy can be measured.
+  The 5 `sequence_weights` cases now give `[1.0]`.
+  The other 23 cases now give the outcomes recorded for the same call with unit weights or without weights: the 8 weighted `aa_counts` and `aa_frequencies` cases match the `"unit"` cases, the 12 entropy `consensus` cases with weights `null` and `"seqweights"` give `MKV-LAYRGH`, the input sequence, and the 3 `blocks` cases with weights `null` give `MKVLAYRGH`, as with `false`.
+- **Case-insensitive background frequencies** (18 cases, all in `synth-mixedcase.aln.json`).
+  `consensus` uppercases a column that mixes lowercase and uppercase residues, but counted the background frequencies of the alignment as written, so an uppercased residue type that occurs elsewhere only in lowercase had no background frequency, and the entropy algorithm raised `KeyError`.
+  The background frequencies of both algorithms now fold case as well; `alnutils.aa_frequencies` itself still counts residues as written.
+  All 18 entropy cases of that file now complete: they give `MK--LWGH` with `gap_threshold` 0.5 and `MK-VLWGH` with 0.6 and 0.8, as the simple algorithm already did.
+  No other input contains a lowercase residue, so no other recorded case changes; on an alignment that does, background frequencies, and with them a consensus residue, can differ from those of the original code.
 - **Compensated summation at an exact threshold** (2 cases, both in `tie-batch.json`).
   In alignment `t101`, both entropy cases (`simple` false, with `trim_ends` true and false) change at column 5 from a gap to `C`.
   That column holds two gaps, a `C` and an `A`, and its weighted gap fraction is exactly one half: in exact arithmetic the `avg1` weights of the four rows are 20/21, 22/21, 20/21 and 22/21.

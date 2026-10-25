@@ -1,9 +1,9 @@
 import logging
 
 import pytest
-from alignments import make_alignment
+from alignments import make_alignment, make_records
 
-from biofrills.consensus import consensus
+from biofrills.consensus import consensus, supported
 
 
 @pytest.mark.parametrize("simple", [False, True])
@@ -51,3 +51,43 @@ def test_consensus_uppercases_a_mixed_case_column(simple, caplog):
     with caplog.at_level(logging.WARNING):
         assert consensus(aln, simple=simple) == "AD"
     assert "Mixed lowercase and uppercase letters in a column: DdD" in caplog.text
+
+
+@pytest.mark.parametrize("simple", [False, True])
+@pytest.mark.parametrize("trim_ends", [True, False])
+def test_consensus_of_a_single_sequence_is_that_sequence(simple, trim_ends):
+    aln = make_alignment(["MKV-LAYRGH"])
+    assert consensus(aln, simple=simple, trim_ends=trim_ends) == "MKV-LAYRGH"
+
+
+def test_entropy_consensus_of_a_residue_found_elsewhere_only_in_lowercase():
+    assert consensus(make_alignment(["Ad", "AE", "AE"])) == "AE"
+
+
+@pytest.mark.parametrize("simple", [False, True])
+def test_background_frequencies_ignore_case(simple):
+    # Column 1 is all lowercase and yields a gap.  In column 2, D and E tie;
+    # counting the lowercase d of column 1, D is the more common residue in
+    # the alignment, so its entropy term is smaller and the simple
+    # algorithm's second rule prefers the less common E.
+    aln = make_alignment(["dD", "dE"])
+    assert consensus(aln, weights=[1, 1], simple=simple) == "-E"
+
+
+@pytest.mark.parametrize("simple", [False, True])
+def test_consensus_of_gaps_alone_raises(simple):
+    with pytest.raises(ValueError, match="every character is a gap"):
+        consensus(make_alignment(["--", "--"]), simple=simple)
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        consensus,
+        lambda recs: consensus(recs, simple=True),
+        supported,
+    ],
+)
+def test_rows_of_different_lengths_raise(call):
+    with pytest.raises(ValueError):
+        call(make_records(["MKVL", "MKV"]))

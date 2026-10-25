@@ -2,7 +2,7 @@ import math
 
 import numpy as np
 import pytest
-from alignments import columns, make_alignment, rows
+from alignments import columns, make_alignment, make_records, rows
 from Bio.Align import MultipleSeqAlignment
 
 from biofrills import alnutils
@@ -109,3 +109,62 @@ def test_blocks_keeps_columns_at_the_threshold():
     # Unweighted non-gap fractions by column: 1, 3/4, 1/2, 1/4, 0.
     aln = make_alignment(["AAAA-", "CCC--", "DD---", "E----"])
     assert columns(alnutils.blocks(aln, 0.5, weights=False)) == ["ACDE", "ACD-", "AC--"]
+
+
+# No column holds two non-gap residues, so nothing tells the rows apart.
+@pytest.mark.parametrize("seqs", [["MKV-LAYRGH"], ["AC--", "--DE"], ["A-", "--"]])
+@pytest.mark.parametrize("scaling", ["none", "sum1", "max1", "avg1", "andy"])
+def test_uninformative_alignment_gets_uniform_weights(seqs, scaling):
+    weights = alnutils.sequence_weights(make_alignment(seqs), scaling)
+    uniform = 1 / len(seqs) if scaling == "sum1" else 1.0
+    assert weights == [uniform] * len(seqs)
+
+
+def test_sequence_weights_rejects_an_empty_alignment():
+    with pytest.raises(ValueError, match="No sequences"):
+        alnutils.sequence_weights([])
+
+
+def test_col_counts_default_to_unit_weights():
+    assert alnutils.col_counts("AAC-.") == {"A": 2.0, "C": 1.0}
+    assert alnutils.col_frequencies("AAC-.") == {"A": 2 / 3, "C": 1 / 3}
+
+
+def test_col_counts_rejects_weights_of_another_length():
+    with pytest.raises(ValueError):
+        alnutils.col_counts("AAC", [1, 1])
+
+
+def test_frequencies_of_gaps_alone_raise():
+    with pytest.raises(ValueError, match="every character is a gap"):
+        alnutils.aa_frequencies(make_alignment(["-.", ".-"]))
+    with pytest.raises(ValueError, match="every character is a gap"):
+        alnutils.col_frequencies("-.")
+
+
+@pytest.mark.parametrize("weights", [False, None])
+def test_blocks_keeps_every_record_when_no_column_is_kept(weights):
+    # Each column is half gaps, below the threshold of 1.
+    blocked = alnutils.blocks(make_alignment(["A-", "-C"]), 1.0, weights)
+    assert [rec.id for rec in blocked] == ["s0", "s1"]
+    assert rows(blocked) == ["", ""]
+
+
+def test_remove_empty_cols_keeps_every_record_of_gaps_alone():
+    cleaned = list(alnutils.remove_empty_cols(make_alignment(["--", "--"])))
+    assert [rec.id for rec in cleaned] == ["s0", "s1"]
+    assert rows(cleaned) == ["", ""]
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        lambda recs: alnutils.aa_counts(recs, weights=[1, 1]),
+        lambda recs: alnutils.blocks(recs, 0.5, weights=False),
+        lambda recs: list(alnutils.remove_empty_cols(recs)),
+        alnutils.sequence_weights,
+    ],
+)
+def test_rows_of_different_lengths_raise(call):
+    with pytest.raises(ValueError):
+        call(make_records(["MKVL", "MKV"]))

@@ -211,6 +211,997 @@
    ]
   },
   {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 0,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK--LWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 1,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 2,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 3,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK--LWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 4,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 5,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 6,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK--LWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 7,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 8,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 9,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK--LWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 10,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 11,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 12,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK--LWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 13,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 14,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 15,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK--LWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 16,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "consensus",
+   "case": 17,
+   "weights": "unit",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "error": {
+     "type": "KeyError"
+    }
+   },
+   "current": {
+    "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "sequence_weights",
+   "case": 0,
+   "kwargs": {
+    "scaling": "none"
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": [
+     1.0
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "sequence_weights",
+   "case": 1,
+   "kwargs": {
+    "scaling": "sum1"
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": [
+     1.0
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "sequence_weights",
+   "case": 2,
+   "kwargs": {
+    "scaling": "max1"
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": [
+     1.0
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "sequence_weights",
+   "case": 3,
+   "kwargs": {
+    "scaling": "avg1"
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": [
+     1.0
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "sequence_weights",
+   "case": 4,
+   "kwargs": {
+    "scaling": "andy"
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": [
+     1.0
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "aa_counts",
+   "case": 2,
+   "weights": true,
+   "kwargs": {
+    "gap_chars": "-."
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": {
+     "M": 1.0,
+     "K": 1.0,
+     "V": 1.0,
+     "L": 1.0,
+     "A": 1.0,
+     "Y": 1.0,
+     "R": 1.0,
+     "G": 1.0,
+     "H": 1.0
+    }
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "aa_counts",
+   "case": 3,
+   "weights": true,
+   "kwargs": {
+    "gap_chars": "-.X"
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": {
+     "M": 1.0,
+     "K": 1.0,
+     "V": 1.0,
+     "L": 1.0,
+     "A": 1.0,
+     "Y": 1.0,
+     "R": 1.0,
+     "G": 1.0,
+     "H": 1.0
+    }
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "aa_counts",
+   "case": 4,
+   "weights": "seqweights",
+   "kwargs": {
+    "gap_chars": "-."
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": {
+     "M": 1.0,
+     "K": 1.0,
+     "V": 1.0,
+     "L": 1.0,
+     "A": 1.0,
+     "Y": 1.0,
+     "R": 1.0,
+     "G": 1.0,
+     "H": 1.0
+    }
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "aa_counts",
+   "case": 5,
+   "weights": "seqweights",
+   "kwargs": {
+    "gap_chars": "-.X"
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": {
+     "M": 1.0,
+     "K": 1.0,
+     "V": 1.0,
+     "L": 1.0,
+     "A": 1.0,
+     "Y": 1.0,
+     "R": 1.0,
+     "G": 1.0,
+     "H": 1.0
+    }
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "aa_frequencies",
+   "case": 2,
+   "weights": true,
+   "kwargs": {
+    "gap_chars": "-."
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": {
+     "M": 0.1111111111111111,
+     "K": 0.1111111111111111,
+     "V": 0.1111111111111111,
+     "L": 0.1111111111111111,
+     "A": 0.1111111111111111,
+     "Y": 0.1111111111111111,
+     "R": 0.1111111111111111,
+     "G": 0.1111111111111111,
+     "H": 0.1111111111111111
+    }
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "aa_frequencies",
+   "case": 3,
+   "weights": true,
+   "kwargs": {
+    "gap_chars": "-.X"
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": {
+     "M": 0.1111111111111111,
+     "K": 0.1111111111111111,
+     "V": 0.1111111111111111,
+     "L": 0.1111111111111111,
+     "A": 0.1111111111111111,
+     "Y": 0.1111111111111111,
+     "R": 0.1111111111111111,
+     "G": 0.1111111111111111,
+     "H": 0.1111111111111111
+    }
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "aa_frequencies",
+   "case": 4,
+   "weights": "seqweights",
+   "kwargs": {
+    "gap_chars": "-."
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": {
+     "M": 0.1111111111111111,
+     "K": 0.1111111111111111,
+     "V": 0.1111111111111111,
+     "L": 0.1111111111111111,
+     "A": 0.1111111111111111,
+     "Y": 0.1111111111111111,
+     "R": 0.1111111111111111,
+     "G": 0.1111111111111111,
+     "H": 0.1111111111111111
+    }
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "aa_frequencies",
+   "case": 5,
+   "weights": "seqweights",
+   "kwargs": {
+    "gap_chars": "-.X"
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": {
+     "M": 0.1111111111111111,
+     "K": 0.1111111111111111,
+     "V": 0.1111111111111111,
+     "L": 0.1111111111111111,
+     "A": 0.1111111111111111,
+     "Y": 0.1111111111111111,
+     "R": 0.1111111111111111,
+     "G": 0.1111111111111111,
+     "H": 0.1111111111111111
+    }
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "consensus",
+   "case": 0,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": "MKV-LAYRGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "consensus",
+   "case": 1,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": "MKV-LAYRGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "consensus",
+   "case": 2,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": "MKV-LAYRGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "consensus",
+   "case": 3,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": "MKV-LAYRGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "consensus",
+   "case": 4,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": "MKV-LAYRGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "consensus",
+   "case": 5,
+   "weights": null,
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": "MKV-LAYRGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "consensus",
+   "case": 6,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": "MKV-LAYRGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "consensus",
+   "case": 7,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": "MKV-LAYRGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "consensus",
+   "case": 8,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": true,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": "MKV-LAYRGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "consensus",
+   "case": 9,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.5
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": "MKV-LAYRGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "consensus",
+   "case": 10,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.6
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": "MKV-LAYRGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "consensus",
+   "case": 11,
+   "weights": "seqweights",
+   "kwargs": {
+    "simple": false,
+    "trim_ends": false,
+    "gap_threshold": 0.8
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": "MKV-LAYRGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "blocks",
+   "case": 0,
+   "weights": null,
+   "kwargs": {
+    "threshold": 0.4
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": [
+     [
+      "only",
+      "only",
+      "MKVLAYRGH"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "blocks",
+   "case": 2,
+   "weights": null,
+   "kwargs": {
+    "threshold": 0.5
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": [
+     [
+      "only",
+      "only",
+      "MKVLAYRGH"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-single.aln.json",
+   "section": "blocks",
+   "case": 4,
+   "weights": null,
+   "kwargs": {
+    "threshold": 0.9
+   },
+   "recorded": {
+    "error": {
+     "type": "ZeroDivisionError"
+    }
+   },
+   "current": {
+    "value": [
+     [
+      "only",
+      "only",
+      "MKVLAYRGH"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
    "file": "library/synth-ties.aln.json",
    "section": "consensus",
    "case": 0,

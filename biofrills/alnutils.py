@@ -15,7 +15,8 @@ def aa_counts(aln, weights=None, gap_chars="-."):
     Weights for each sequence in the alignment can be given as a list/tuple,
     usually calculated with the sequence_weights function. For convenience, you
     can also pass "weights=True" and the weights will be calculated with
-    sequence_weights here.
+    sequence_weights here. With weights, the rows may also be given as
+    sequence strings; rows of different lengths then raise ValueError.
     """
     if weights is None:
         counts = Counter()
@@ -31,7 +32,7 @@ def aa_counts(aln, weights=None, gap_chars="-."):
                 f"Length mismatch: weights = {len(weights)}, alignment = {len(aln)}"
             )
         counts = defaultdict(float)
-        for col in zip(*aln, strict=False):
+        for col in zip(*aln, strict=True):
             for aa, wt in zip(col, weights, strict=True):
                 counts[aa] += wt
 
@@ -45,16 +46,27 @@ def aa_counts(aln, weights=None, gap_chars="-."):
 def aa_frequencies(aln, weights=None, gap_chars="-."):
     """Frequency of each residue type in an alignment.
 
-    Alignment is a MultipleSeqAlignment or iterable of SeqRecords.
+    Alignment is a MultipleSeqAlignment or iterable of SeqRecords. Raises
+    ValueError if the alignment contains no residues, only gap characters.
     """
     counts = aa_counts(aln, weights, gap_chars)
-    # Reduce to frequencies
+    return _frequencies(counts)
+
+
+def _frequencies(counts):
+    """Scale residue counts to frequencies that total 1.0."""
+    if not counts:
+        raise ValueError("No residues to count: every character is a gap")
     scale = 1.0 / sum(counts.values())
     return dict((aa, cnt * scale) for aa, cnt in counts.items())
 
 
 def blocks(aln, threshold=0.5, weights=None):
-    """Remove gappy columns from an alignment."""
+    """Remove gappy columns from an alignment.
+
+    Every record is kept; its sequence is empty if no column remains. Rows of
+    different lengths raise ValueError.
+    """
     assert len(aln)
     if weights is False:
 
@@ -71,44 +83,59 @@ def blocks(aln, threshold=0.5, weights=None):
 
     seqstrs = [str(rec.seq) for rec in aln]
     clean_cols = [
-        col for col in zip(*seqstrs, strict=False) if pct_nongaps(col) >= threshold
+        col for col in zip(*seqstrs, strict=True) if pct_nongaps(col) >= threshold
     ]
-    clean_seqs = [Seq("".join(row)) for row in zip(*clean_cols, strict=True)]
     clean_recs = []
-    for rec, seq in zip(aln, clean_seqs, strict=False):
+    for rec, seq in zip(aln, _rows(clean_cols, len(seqstrs)), strict=True):
         newrec = deepcopy(rec)
-        newrec.seq = seq
+        newrec.seq = Seq(seq)
         clean_recs.append(newrec)
     return MultipleSeqAlignment(clean_recs)
 
 
+def _rows(columns, nrows):
+    """Join the given columns into nrows sequence strings.
+
+    With no columns, the result is nrows empty strings.
+    """
+    return ["".join(col[idx] for col in columns) for idx in range(nrows)]
+
+
 def col_counts(col, weights=None, gap_chars="-."):
-    """Absolute counts of each residue type in a single column."""
+    """Absolute counts of each residue type in a single column.
+
+    Without weights, each residue counts 1.0.
+    """
+    if weights is None:
+        weights = [1] * len(col)
     cnt = defaultdict(float)
-    for aa, wt in zip(col, weights, strict=False):
+    for aa, wt in zip(col, weights, strict=True):
         if aa not in gap_chars:
             cnt[aa] += wt
     return cnt
 
 
 def col_frequencies(col, weights=None, gap_chars="-."):
-    """Frequencies of each residue type (totaling 1.0) in a single column."""
-    counts = col_counts(col, weights, gap_chars)
-    # Reduce to frequencies
-    scale = 1.0 / sum(counts.values())
-    return dict((aa, cnt * scale) for aa, cnt in counts.items())
+    """Frequencies of each residue type (totaling 1.0) in a single column.
+
+    Raises ValueError if the column holds only gap characters.
+    """
+    return _frequencies(col_counts(col, weights, gap_chars))
 
 
 def remove_empty_cols(records):
-    """Remove all-gap columns from aligned SeqRecords."""
+    """Remove all-gap columns from aligned SeqRecords.
+
+    Every record is kept; its sequence is empty if no column remains. Rows of
+    different lengths raise ValueError.
+    """
     # In case it's a generator, turn it into a list
     records = list(records)
     seqstrs = [str(rec.seq) for rec in records]
     clean_cols = [
-        col for col in zip(*seqstrs, strict=False) if not all(c == "-" for c in col)
+        col for col in zip(*seqstrs, strict=True) if not all(c == "-" for c in col)
     ]
-    clean_seqs = ["".join(row) for row in zip(*clean_cols, strict=True)]
-    for rec, clean_seq in zip(records, clean_seqs, strict=False):
+    for rec, clean_seq in zip(records, _rows(clean_cols, len(seqstrs)), strict=True):
         yield SeqRecord(
             Seq(clean_seq),
             id=rec.id,
@@ -135,6 +162,11 @@ def sequence_weights(aln, scaling="none", gap_chars="-."):
         - 'andy': Average (mean) weight is 0.5, ceiling is 1.0.
         - 'none': Weights are scaled to sum to the effective number of
                   independent sequences.
+
+    If no column holds enough residues to tell the sequences apart, as in a
+    single sequence, every sequence receives the same weight: 1.0, or 1/N
+    under 'sum1'. An alignment of no sequences, or of rows of different
+    lengths, raises ValueError.
 
     Method: At each column position, award each different residue an equal
     share of the weight, and then divide that weight equally among the
@@ -276,18 +308,24 @@ def sequence_weights(aln, scaling="none", gap_chars="-."):
         weights = [freqs[aa] for aa in column]
         return (weights, n_residues)
 
+    if not len(aln):
+        raise ValueError("No sequences to weight")
     seq_weights = [0] * len(aln)
     tot_nres = 0.0  # Expected no. different types in independent seqs
     # Sum the contributions from each position along each sequence
     # -> total weight
-    for col in zip(*aln, strict=False):
+    for col in zip(*aln, strict=True):
         wts, nres = col_weight(col)
         assert sum(wts) <= 20
         tot_nres += expectk[nres] if nres < len(expectk) else 20
         for idx, wt in enumerate(wts):
             seq_weights[idx] += wt
-    # if tot_nres == 0:
-    #     raise ValueError("Alignment has no meaningful columns to weight")
+    if not tot_nres:
+        # Nothing distinguishes the sequences, so weight them equally: one
+        # unit of raw weight each, as N independent sequences, which every
+        # scaling below turns into its uniform vector.
+        seq_weights = [1.0] * len(aln)
+        tot_nres = float(len(aln))
     # Normalize w/ the given scaling criterion
     if scaling == "none":
         avg_seq_len = tot_nres / len(aln)

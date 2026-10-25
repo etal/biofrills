@@ -33,15 +33,3 @@ def aln2logodata(aln):
     logodata = read_logodata(handle)
     handle.close()
     return logodata
-
-
-def letter_scales(counts):
-    """Convert letter counts to frequencies, sorted increasing."""
-    try:
-        scale = 1.0 / sum(counts.values())
-    except ZeroDivisionError:
-        # This logo is all gaps, nothing can be done
-        return []
-    freqs = [(aa, cnt * scale) for aa, cnt in counts.items() if cnt]
-    freqs.sort(key=lambda pair: pair[1])
-    return freqs

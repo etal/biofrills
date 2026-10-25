@@ -71,7 +71,7 @@ def blocks(aln, threshold=0.5, weights=None):
     if weights is False:
 
         def pct_nongaps(col):
-            return 1 - (float(col.count("-")) / len(col))
+            return 1 - (col.count("-") / len(col))
     else:
         if weights is None or weights is True:
             weights = sequence_weights(aln, "avg1")

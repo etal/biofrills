@@ -127,7 +127,7 @@ def identity_abs(aseq, bseq):
 
 
 def identity_avg(aseq, bseq):
-    """Compute absolute identity (# matching sites) between sequence strings."""
+    """Compute identity as matching sites over the mean ungapped length."""
     match = identity_abs(aseq, bseq)
     alen = len(aseq.replace("-", "").replace(".", ""))
     blen = len(bseq.replace("-", "").replace(".", ""))

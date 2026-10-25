@@ -3,7 +3,7 @@ import logging
 import pytest
 from alignments import make_alignment, make_records
 
-from biofrills.consensus import consensus, supported
+from biofrills.consensus import consensus
 
 
 @pytest.mark.parametrize("simple", [False, True])
@@ -80,14 +80,7 @@ def test_consensus_of_gaps_alone_raises(simple):
         consensus(make_alignment(["--", "--"]), simple=simple)
 
 
-@pytest.mark.parametrize(
-    "call",
-    [
-        consensus,
-        lambda recs: consensus(recs, simple=True),
-        supported,
-    ],
-)
-def test_rows_of_different_lengths_raise(call):
+@pytest.mark.parametrize("simple", [False, True])
+def test_rows_of_different_lengths_raise(simple):
     with pytest.raises(ValueError):
-        call(make_records(["MKVL", "MKV"]))
+        consensus(make_records(["MKVL", "MKV"]), simple=simple)

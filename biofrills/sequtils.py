@@ -6,21 +6,17 @@ from collections import Counter
 
 from Bio import SeqIO
 
+logger = logging.getLogger(__name__)
+
 
 def clean_accession(rec_id):
-    """Extract an accession key from one SeqRecord.
+    """Extract an accession key from a sequence identifier.
 
-    The id of the given record is processed to remove domain location info
-    added by HMMer. Most other records won't have a '/' character in the FASTA
-    header key.
+    The given record ID is processed to remove domain location info added by
+    HMMer. Most other records won't have a '/' character in the FASTA header
+    key.
     """
     return rec_id.rsplit("/", 1)[0]
-
-
-# Obsolete, but left here for backward compatibility for now
-def clean_accessions(records):
-    """Extract accession keys from an iterable of SeqRecords."""
-    return (clean_accession(rec.id) for rec in records)
 
 
 def intersect_keys(keys, reffile, cache=False, clean_accs=False):
@@ -37,7 +33,7 @@ def intersect_keys(keys, reffile, cache=False, clean_accs=False):
         refcache = reffile + ".sqlite"
         if os.path.exists(refcache):
             if os.stat(refcache).st_mtime < os.stat(reffile).st_mtime:
-                logging.warning("Outdated cache; rebuilding index")  # noqa: LOG015
+                logger.warning("Outdated cache; rebuilding index")
             else:
                 try:
                     index = (
@@ -47,9 +43,7 @@ def intersect_keys(keys, reffile, cache=False, clean_accs=False):
                     )
 
                 except Exception:
-                    logging.warning(  # noqa: LOG015
-                        "Skipping corrupted cache; rebuilding index"
-                    )
+                    logger.warning("Skipping corrupted cache; rebuilding index")
                     index = None
     else:
         refcache = ":memory:"
@@ -69,7 +63,7 @@ def intersect_keys(keys, reffile, cache=False, clean_accs=False):
             record = index[key]
         except LookupError:
             # Missing keys are rare, so it's faster not to check every time
-            logging.info("No match: %s", repr(key))  # noqa: LOG015
+            logger.info("No match: %s", repr(key))
             continue
         yield record
 

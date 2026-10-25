@@ -6,6 +6,8 @@ from collections import Counter
 
 from biofrills import alnutils, sequtils
 
+logger = logging.getLogger(__name__)
+
 
 def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True):
     """Get the consensus of an alignment, as a string.
@@ -59,7 +61,7 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
         )
 
         def is_majority_gap(col):
-            return float(col.count("-")) / len(col) >= gap_threshold
+            return col.count("-") / len(col) >= gap_threshold
 
         # ENH (alternatively/additionally): does any aa occur more than once?
         # ENH: choose gap-decisionmaking separately from col_consensus
@@ -86,8 +88,6 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
         # change only when trim_ends is False
         in_left_end = True
         maybe_right_tail = []
-        # prev_col = None
-        # prev_char = None
         for col in columns:
             # Lowercase cols mean explicitly, "don't include in consensus";
             # a column of only gap characters has no residue to report either.
@@ -100,7 +100,7 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
                     maybe_right_tail.append("-")
                 continue
             if any(c.islower() for c in col):
-                logging.warning(  # noqa: LOG015
+                logger.warning(
                     "Mixed lowercase and uppercase letters in a column: %s",
                     "".join(col),
                 )
@@ -146,12 +146,8 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
                     maybe_right_tail = []
                     yield cons_char
 
-            # prev_col = col
-            # prev_char = cons_char
-
-        # Finally, if we were keeping a right (C-term) tail, emit it
-        if not trim_ends:
-            yield from maybe_right_tail
+        # Finally, emit any C-terminal tail kept when trim_ends is False
+        yield from maybe_right_tail
 
     return "".join(col_wise_consensus(zip(*aln, strict=True)))
 
@@ -182,7 +178,9 @@ def make_entropy_col_consensus(bg_freqs):
     among them does not depend on the order in which residue types were
     counted.
 
-    Source: http://bioinformatics.oxfordjournals.org/content/24/18/1987.long
+    Source: Przybylski D, Rost B (2008). Powerful fusion: PSI-BLAST and
+    consensus sequences. Bioinformatics 24(18):1987-1993.
+    https://doi.org/10.1093/bioinformatics/btn384
     """
 
     def col_consensus(col):
@@ -204,17 +202,22 @@ def make_simple_col_consensus(bg_freqs):
     Resolves ties by three rules, in order:
 
     1. Prefer the aa that follows the preceding consensus aa type most often
-       in the original sequences.
+       in the original sequences. The preceding consensus aa type is the one
+       chosen for the most recent column passed to the returned function;
+       columns that consensus() emits as gaps without choosing a residue do
+       not count.
     2. Prefer the less-common aa type.
     3. Finally, prefer the alphabetically first aa type, so that the result
        never depends on the order in which residue types were counted.
     """
+    # The column and residue chosen by the previous call, for tie-breaker #1
+    prev_col = None
+    prev_char = None
 
-    # Hack: use default kwargs to persist across iterations
-    def col_consensus(col, prev_col=[], prev_char=[]):  # noqa: B006
+    def col_consensus(col):
+        nonlocal prev_col, prev_char
         # Count the amino acid types in this column
         aa_counts = sequtils.aa_frequencies(col)
-        assert aa_counts, "Column is all gaps! That's not allowed."
         # Take the most common residue(s)
         best_score = max(aa_counts.values())
         ties = [aa for aa in aa_counts if aa_counts[aa] == best_score]
@@ -223,12 +226,12 @@ def make_simple_col_consensus(bg_freqs):
             # Breaker #1: most common after the prev. consensus char
             # Resolve a tied col by restricting to rows where the preceding
             # char is the consensus type for that (preceding) col
-            if prev_char and prev_col:
+            if prev_char is not None:
                 mc_next = Counter(
                     [
                         b
                         for a, b in zip(prev_col, col, strict=True)
-                        if a == prev_char[0] and b in ties
+                        if a == prev_char and b in ties
                     ]
                 ).most_common()
                 ties_next = [x[0] for x in mc_next if x[1] == mc_next[0][1]]
@@ -240,61 +243,8 @@ def make_simple_col_consensus(bg_freqs):
                 ties.sort(key=lambda aa: (bg_freqs[aa], aa))
         best_char = ties[0]
         # Save values for tie-breaker #1
-        prev_col[:] = col
-        prev_char[:] = best_char
+        prev_col = tuple(col)
+        prev_char = best_char
         return best_char
 
     return col_consensus
-
-
-# --- XXX obsolete stuff ---
-
-
-# XXX only used for CHAIN -- omit? or, option to return all ties?
-def supported(aln):
-    """Get only the supported consensus residues in each column.
-
-    Meaning:
-    - Omit majority-gap columns
-    - Omit columns where no residue type appears more than once
-    - In case of a tie, return all the top-scoring residue types
-      (no prioritization)
-
-    Returns a *list* -- not a string! -- where elements are strings of the
-    consensus character(s), potentially a gap ('-') or multiple chars ('KR').
-    """
-
-    def col_consensus(columns):
-        """Calculate the consensus chars for an iterable of columns."""
-        for col in columns:
-            if (  # Majority gap chars
-                (col.count("-") >= len(col) // 2)
-                or
-                # Lowercase cols mean "don't include in consensus"
-                all(c.islower() for c in col if c not in ".-")
-            ):
-                yield "-"
-                continue
-            # Validation - copied from consensus() above
-            if any(c.islower() for c in col):
-                logging.warning(  # noqa: LOG015
-                    "Mixed lowercase and uppercase letters in a column: %s",
-                    "".join(col),
-                )
-                col = tuple(map(str.upper, col))
-            # Calculate the consensus character
-            most_common = Counter([c for c in col if c not in "-"]).most_common()
-            if not most_common:
-                # XXX ever reached?
-                logging.warning("Column is all gaps! How did that happen?")  # noqa: LOG015
-            if most_common[0][1] == 1:
-                # No char has frequency > 1; no consensus char
-                yield "-"
-            elif len(most_common) > 1 and most_common[0][1] == most_common[1][1]:
-                # Tie for most-common residue type
-                ties = [x[0] for x in most_common if x[1] == most_common[0][1]]
-                yield "".join(ties)
-            else:
-                yield most_common[0][0]
-
-    return list(col_consensus(zip(*aln, strict=True)))

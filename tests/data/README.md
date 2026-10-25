@@ -172,7 +172,7 @@ The cases whose current output differs, explained below under "Consensus ties" a
   The exception type is the reference; the message text is the interpreter's.
   For example, Python 2 reports integer division by zero as `integer division or modulo by zero` and Python 3 as `division by zero`.
 - **Log line numbers.**
-  The `seq-intersect` cases log through `cmdutils.log_config`, whose format includes the source line of the logging call (`sequtils [@71]`, at line 72 since the port), so editing `sequtils.py` above that line changes standard error without changing behavior.
+  The `seq-intersect` cases log through `cmdutils.log_config`, whose format includes the source line of the logging call (`sequtils [@71]` in the fixtures), so editing `sequtils.py` above that call changes standard error without changing behavior.
   `tests/test_cli.py` replaces that number with `N` on both sides.
 - **Recorded defects.**
   The fixtures record the original behavior, defects included.

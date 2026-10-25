@@ -1,12 +1,8 @@
 from collections import Counter
 
-import pytest
 from alignments import columns, make_alignment
 
-# logoutils needs the optional WebLogo dependency (the "logo" extra).
-pytest.importorskip("weblogo")
-
-from biofrills import logoutils  # noqa: E402
+from biofrills import logoutils
 
 
 def test_aln2logodata_counts_the_residues_of_each_column():

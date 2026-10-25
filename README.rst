@@ -24,9 +24,12 @@ Development
 -----------
 
 Two development workflows are defined in ``pyproject.toml``, and both lock
-files are committed. With uv_, which installs the dependencies from PyPI::
+files are committed. Both install the package in editable mode with its
+``graph`` and ``logo`` extras and the test and lint dependencies of the
+``dev`` dependency group or pixi feature. With uv_, which installs the
+dependencies from PyPI::
 
-    uv sync --all-extras
+    uv sync
     uv run pytest
     uv run ruff check
     uv run ruff format
@@ -42,8 +45,7 @@ Only weblogo comes from PyPI there, with three of its dependencies, because
 conda-forge lacks a recent enough build of it.
 
 The tests compare the library with reference outputs recorded under Python
-2.7, and check properties that need no reference. The tests of ``logoutils``
-need the ``logo`` extra and are skipped without it. The ``py27-oracle`` pixi
+2.7, and check properties that need no reference. The ``py27-oracle`` pixi
 environment regenerates the reference outputs from a worktree of the pre-port
 sources, as described in ``tests/data/README.md``.
 

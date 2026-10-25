@@ -19,6 +19,7 @@ logo = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "biofrills", extra = ["graph", "logo"] },
     { name = "pytest" },
     { name = "ruff" },
     { name = "scipy" },
@@ -34,6 +35,7 @@ provides-extras = ["graph", "logo"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "biofrills", extras = ["graph", "logo"] },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "ruff", specifier = ">=0.17.2" },
     { name = "scipy", specifier = ">=1.16.3" },

@@ -1,6 +1,14 @@
 """Python implementation of chisqprob, to avoid SciPy dependency.
 
 Adapted from SciPy: scipy/special/cephes/{chdtr,igam}.c
+
+The results are not those of SciPy's chi2.sf. The series and the continued
+fraction stop at a relative change of MACHEP = 1e-7, where Cephes stops at
+the machine epsilon, and chisqprob uses the series for x < 1 or x < df, where
+Cephes uses it for x < 2 or x < df. The largest relative difference from
+scipy.stats.chi2.sf over x from 0.01 to 80 and df from 1 to 30 is 3.6e-7, at
+x = 1 and df = 1. Both choices are kept from earlier releases, so that
+results do not change.
 """
 
 import math
@@ -8,34 +16,32 @@ import math
 # Cephes Math Library Release 2.0:  April, 1987
 # Copyright 1985, 1987 by Stephen L. Moshier
 # Direct inquiries to 30 Frost Street, Cambridge, MA 02140
-MACHEP = 0.0000001  # the machine roundoff error / tolerance
+
+MACHEP = 0.0000001  # relative change at which the series and fraction stop
 BIG = 4.503599627370496e15
 BIGINV = 2.22044604925031308085e-16
 
 
 def chisqprob(x, df):
-    """
-    Probability value (1-tail) for the Chi^2 probability distribution.
-
-    Broadcasting rules apply.
+    """Upper-tail probability of the chi-squared distribution.
 
     Parameters
     ----------
-    x : array_like or float > 0
-
-    df : array_like or float, probably int >= 1
+    x : float
+        The chi-squared statistic. For x <= 0 the result is 1.0, whatever
+        the value of df.
+    df : float
+        Degrees of freedom. For x > 0, ValueError is raised unless df is
+        positive.
 
     Returns
     -------
-    chisqprob : ndarray
-        The area from `chisq` to infinity under the Chi^2 probability
-        distribution with degrees of freedom `df`.
-
+    float
+        The area from `x` to infinity under the chi-squared probability
+        density with `df` degrees of freedom.
     """
     if x <= 0:
         return 1.0
-    if x == 0:
-        return 0.0
     if df <= 0:
         raise ValueError("Domain error.")
     if x < 1.0 or x < df:
@@ -44,15 +50,7 @@ def chisqprob(x, df):
 
 
 def _igamc(a, x):
-    """Complemented incomplete Gamma integral.
-
-    SYNOPSIS:
-
-    double a, x, y, igamc();
-
-    y = igamc( a, x );
-
-    DESCRIPTION:
+    """Complemented incomplete Gamma integral, by continued fraction.
 
     The function is defined by::
 
@@ -66,10 +64,9 @@ def _igamc(a, x):
                         | (a)    -
                                     x
 
-    In this implementation both arguments must be positive.
-    The integral is evaluated by either a power series or
-    continued fraction expansion, depending on the relative
-    values of a and x.
+    Both arguments must be positive. chisqprob calls this function when its
+    statistic is at least 1 and at least df, and the power series of _igam
+    otherwise.
     """
     # Compute  x**a * exp(-x) / Gamma(a)
     ax = math.exp(a * math.log(x) - x - math.lgamma(a))
@@ -110,7 +107,7 @@ def _igamc(a, x):
 
 
 def _igam(a, x):
-    """Left tail of incomplete Gamma function:
+    """Left tail of incomplete Gamma function, by power series::
 
             inf.      k
      a  -x   -       x

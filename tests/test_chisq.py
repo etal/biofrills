@@ -4,10 +4,8 @@ from scipy.stats import chi2
 
 from biofrills.stats.chisq import chisqprob
 
-# chisqprob stops its series and continued fraction at a relative change of
-# MACHEP = 1e-7, which bounds its accuracy.  The largest relative error
-# against scipy.stats.chi2.sf over x from 0.01 to 80 in steps of 0.01 and
-# df from 1 to 30 is 3.6e-7, at x = 1 and df = 1.
+# The largest relative difference from scipy.stats.chi2.sf and its two
+# sources are given in the docstring of biofrills.stats.chisq.
 REL_TOL = 5e-7
 
 

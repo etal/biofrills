@@ -1,5 +1,6 @@
 import math
 
+import numpy as np
 import pytest
 from alignments import columns, make_alignment, rows
 from Bio.Align import MultipleSeqAlignment
@@ -47,6 +48,19 @@ def test_aa_frequencies_sum_to_one_without_gaps(aligned_input, weighted, gap_cha
     freqs = alnutils.aa_frequencies(aligned_input, weighted or None, gap_chars)
     assert math.fsum(freqs.values()) == pytest.approx(1.0, rel=1e-12)
     assert not set(gap_chars) & freqs.keys()
+
+
+def test_weights_may_be_a_numpy_array(aligned_input):
+    # aa_counts and blocks also accept True, and blocks False, as flags; an
+    # array of weights must not be compared with them elementwise.
+    weights = alnutils.sequence_weights(aligned_input, "avg1")
+    array = np.array(weights)
+    assert alnutils.aa_counts(aligned_input, array) == alnutils.aa_counts(
+        aligned_input, weights
+    )
+    assert rows(alnutils.blocks(aligned_input, 0.5, array)) == rows(
+        alnutils.blocks(aligned_input, 0.5, weights)
+    )
 
 
 def test_remove_empty_cols_keeps_every_column_with_a_residue():

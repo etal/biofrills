@@ -23,7 +23,7 @@ def aa_counts(aln, weights=None, gap_chars="-."):
             seq_counts = Counter(str(rec.seq))
             counts.update(seq_counts)
     else:
-        if weights == True:
+        if weights is True:
             # For convenience
             weights = sequence_weights(aln)
         else:
@@ -57,12 +57,12 @@ def aa_frequencies(aln, weights=None, gap_chars="-."):
 def blocks(aln, threshold=0.5, weights=None):
     """Remove gappy columns from an alignment."""
     assert len(aln)
-    if weights == False:
+    if weights is False:
 
         def pct_nongaps(col):
             return 1 - (float(col.count("-")) / len(col))
     else:
-        if weights in (None, True):
+        if weights is None or weights is True:
             weights = sequence_weights(aln, "avg1")
 
         def pct_nongaps(col):

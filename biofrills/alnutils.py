@@ -356,6 +356,8 @@ def to_graph(alnfname, weight_func):
     G = networkx.Graph()
     aln = AlignIO.read(alnfname, "fasta")
     for i, arec in enumerate(aln):
+        # Every record is a node, including a record that pairs with no other
+        G.add_node(arec.id)
         for brec in aln[i + 1 :]:
             ident = weight_func(str(arec.seq), str(brec.seq))
             G.add_edge(arec.id, brec.id, weight=ident)

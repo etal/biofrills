@@ -137,17 +137,20 @@ It compares the exit status, standard output and written files exactly, and stan
 After those normalizations no recorded line contains one of the placeholders above, so the replay substitutes no paths.
 The cases that read CMA files run only where biocma can be imported; with a Python 3 checkout of biocma beside this repository, `PYTHONPATH=$PWD/../biocma uv run pytest tests/test_cli.py` runs them.
 The path must be absolute, because each command runs in a scratch directory.
-The cases whose current output differs, explained below under "Consensus ties" and "Ambiguous residues in `seq-purge -c`", are listed in `EXPECTED` and `TIED` in `tests/test_cli.py`.
+The cases whose current output differs, explained below under "Consensus ties" and "Ambiguous residues in `seq-purge -c`", are listed in `EXPECTED` in `tests/test_cli.py`.
 
 ## Interpreting a mismatch
 
 - **Consensus ties.**
   Where several residues tie, the original code takes whichever comes first in Python 2's dictionary iteration order, which follows string hashes rather than any documented rule.
   The current code breaks such ties by an explicit rule instead, so consensus strings may differ where ties occur; the cases that changed are listed under "Differences in library output" below, and `tie-batch.json` exists to measure that difference.
-  The same order dependence affects `seq-pick -c`, which sorts records by clustering coefficient, and `seq-pick -k`, which starts from those records.
-  In `cdc2-domain.aln.fasta`, the records `CDC2-1_Sm` and `CDC2-2_Sm` have the same aligned sequence, and their weighted clustering coefficients differ only in the last place, by an amount that depends on the order in which networkx iterates over sets, that is, on the hash seed.
-  `seq-pick.c5` therefore lists those two records in either order, and `tests/test_cli.py` accepts either order of those two records only; with `PYTHONHASHSEED` set to `0` the current code lists them in the order opposite to the fixture.
-  In `seq-pick.k3` the k-medoids cost of the two records ties exactly, and the current code chooses `CDC2-2_Sm` where the fixture has `CDC2-1_Sm`, with each hash seed tried from `0` to `7`.
+  The same order dependence affected `seq-pick -c`, which sorts records by clustering coefficient, and `seq-pick -k`, which starts from those records.
+  In `cdc2-domain.aln.fasta`, the records `CDC2-1_Sm` and `CDC2-2_Sm` have the same aligned sequence, so their weighted clustering coefficients are equal in exact arithmetic.
+  As computed by networkx they differ by up to one unit in the last place, depending on the order in which networkx iterates over sets, that is, on the hash seed.
+  `seq-pick -c` therefore compares coefficients rounded to 12 decimal places and orders equal ones by record identifier.
+  With hash seeds 0 to 7, the coefficient of each record of that alignment varies by at most `3.9e-16`, while the closest two distinct coefficients differ by `8.9e-6`, so the rounding removes the variation and merges no distinct values.
+  `seq-pick.c5` then matches the fixture with each hash seed tried, from 0 to 15.
+  In `seq-pick.k3` the k-medoids cost of the two records ties exactly, and the current code chooses `CDC2-2_Sm`, the first of the two in the file, where the fixture has `CDC2-1_Sm`; this choice does not depend on the hash seed.
 - **Summation order of weighted frequencies.**
   `aa_frequencies` normalizes by `sum(counts.values())`, a floating-point sum taken in dictionary order, which is string-hash order on Python 2 and insertion order on Python 3.
   With non-integer weights (`true` and `"seqweights"`), summing the same counts in another order changes the normalizer in its last place, and every frequency with it.

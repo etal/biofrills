@@ -1,42 +1,21 @@
-"""Pick a subset of k sequences from a larger sequence set (FASTA).
+"""Pick a subset of sequences from a larger sequence set (FASTA)."""
 
-Usage:
-    seq-pick [-r|-f|-l|-s|-c|-k] <nseqs> <seqfname>
-
-Methods for selection:
-
-    - random (-r)
-    - first (-f)
-    - longest (-l)
-    - shortest (-s)
-
-For alignments only:
-
-    - clustering coefficient (-c)
-    - k-means (-k)
-"""
-
+import argparse
+import itertools
 import random
 import sys
 
 from Bio import SeqIO
 
 from biofrills import alnutils, pairutils
-from biofrills.cli import help_requested
 
 
 def get_random(index, N):
-    return random.sample(index, N)
+    return random.sample(list(index), min(N, len(index)))
 
 
-def get_first(infname, N):
-    accs = []
-    with open(infname) as infile:
-        for line in infile:
-            if line.startswith(">"):
-                accs.append(line.split(None, 1)[0][1:])
-                if len(accs) == N:
-                    return accs
+def get_first(index, N):
+    return list(itertools.islice(index, N))
 
 
 def get_by_length(infname, N, sort_reverse):
@@ -50,13 +29,17 @@ def get_by_length(infname, N, sort_reverse):
 def get_cluster(infname, N):
     """Central sequences by clustering coefficient.
 
-    Input sequences must be aligned.
+    Input sequences must be aligned. Coefficients are compared after rounding
+    to 12 decimal places, and equal ones are ordered by sequence ID: two
+    coefficients that are equal in exact arithmetic, as for two identical
+    sequences, can differ in the last place depending on the order in which
+    networkx iterates over sets, and so on the hash seed.
     """
     import networkx
 
     G = alnutils.to_graph(infname, pairutils.identity_abs)
     coeffs = networkx.clustering(G, weight="weight")
-    hubs = [k for k, _ in sorted(coeffs.items(), key=lambda kv: kv[1], reverse=True)]
+    hubs = sorted(coeffs, key=lambda node: (-round(coeffs[node], 12), node))
     return hubs[:N]
 
 
@@ -78,13 +61,9 @@ def get_kmeans(infname, N):
         for otr in nodes:
             if otr in medoids:
                 continue
-            closest_m = None
-            closest_m_ident = 0
-            for med in medoids:
-                this_m_ident = G[otr][med]["weight"]
-                if this_m_ident > closest_m_ident:
-                    closest_m = med
-                    closest_m_ident = this_m_ident
+            # The graph is complete. Of equally close medoids, max takes the
+            # first, also where otr has identity 0 to every medoid.
+            closest_m = max(medoids, key=lambda med: G[otr][med]["weight"])
             assoc[closest_m].add(otr)
         return assoc
 
@@ -100,73 +79,91 @@ def get_kmeans(infname, N):
                 cost -= G[otr][med]["weight"]
         return cost
 
-    def same_clustering(old, new):
-        """True if no node-medoid associations changed. Closes over: G"""
-        return list(sorted(old.keys())) == list(sorted(new.keys()))
-
     # 1. Select k of the n nodes as medoids
     # NB: For efficiency, take "hubs" or random?
-    # curr_meds = get_random()
     curr_meds = get_cluster(infname, N)
 
     for _i in range(MAX_ITERATE):
         # 2. Associate each "other" node to the closest medoid
-        best_assoc = curr_assoc = associate(curr_meds)
-        best_cost = total_cost(curr_assoc)
+        best_cost = total_cost(associate(curr_meds))
         best_meds = curr_meds
 
         # 3,4. For each medoid and each other node, replace the medoid with
         # each node and recalculate the cost of the new association.
         # Choose the lowest-cost association.
-        for i, _med in enumerate(curr_meds):
+        for i in range(len(curr_meds)):
             for otr in nodes:
                 if otr in curr_meds:
                     continue
                 new_meds = curr_meds[:i] + [otr] + curr_meds[i + 1 :]
-                new_assoc = associate(new_meds)
-                new_cost = total_cost(new_assoc)
+                new_cost = total_cost(associate(new_meds))
                 if new_cost < best_cost:
                     best_cost = new_cost
-                    best_assoc = new_assoc
                     best_meds = new_meds
 
         # 5. Repeat steps 2-4 until medoids do not change
-        if same_clustering(curr_assoc, best_assoc):
+        if best_meds == curr_meds:
             break
-        else:
-            curr_assoc = best_assoc
-            curr_assoc = best_assoc
-            curr_meds = best_meds
+        curr_meds = best_meds
 
     return curr_meds
 
 
+def positive_int(text):
+    """Parse a command-line argument as an integer of at least 1."""
+    value = int(text)
+    if value < 1:
+        raise argparse.ArgumentTypeError(f"must be at least 1: {text}")
+    return value
+
+
 def main(argv=None):
-    args = sys.argv[1:] if argv is None else list(argv)
-    if help_requested(args, __doc__):
-        return 0
+    AP = argparse.ArgumentParser(description=__doc__)
+    method = AP.add_mutually_exclusive_group(required=True)
+    for short, long, help_text in [
+        ("-r", "--random", "Pick sequences at random."),
+        ("-f", "--first", "Pick the first sequences in the file."),
+        ("-l", "--longest", "Pick the longest sequences."),
+        ("-s", "--shortest", "Pick the shortest sequences."),
+        (
+            "-c",
+            "--cluster",
+            "Pick the sequences with the highest clustering coefficient "
+            "(aligned sequences only).",
+        ),
+        (
+            "-k",
+            "--k-means",
+            "Pick the medoids of k-medoids clustering (aligned sequences only).",
+        ),
+    ]:
+        method.add_argument(
+            short,
+            long,
+            dest="method",
+            action="store_const",
+            const=long.removeprefix("--"),
+            help=help_text,
+        )
+    AP.add_argument("nseqs", type=positive_int, help="Number of sequences to pick.")
+    AP.add_argument("seqfname", help="Input sequences (FASTA format).")
+    args = AP.parse_args(argv)
+    N = args.nseqs
 
-    try:
-        option, N, infname = args[0], int(args[1]), args[2]
-    except (IndexError, ValueError):
-        sys.exit(__doc__)
+    index = SeqIO.index(args.seqfname, "fasta")
 
-    index = SeqIO.index(infname, "fasta")
-
-    if option in ("-r", "--random"):
+    if args.method == "random":
         accs = get_random(index, N)
-    elif option in ("-f", "--first"):
-        accs = get_first(infname, N)
-    elif option in ("-l", "--longest"):
-        accs = get_by_length(infname, N, True)
-    elif option in ("-s", "--shortest"):
-        accs = get_by_length(infname, N, False)
-    elif option in ("-c", "--cluster"):
-        accs = get_cluster(infname, N)
-    elif option in ("-k", "--k-means"):
-        accs = get_kmeans(infname, N)
-    else:
-        sys.exit(__doc__)
+    elif args.method == "first":
+        accs = get_first(index, N)
+    elif args.method == "longest":
+        accs = get_by_length(args.seqfname, N, True)
+    elif args.method == "shortest":
+        accs = get_by_length(args.seqfname, N, False)
+    elif args.method == "cluster":
+        accs = get_cluster(args.seqfname, N)
+    else:  # k-means
+        accs = get_kmeans(args.seqfname, N)
 
     # SeqIO.index returns each record's text from the file as bytes
     for acc in accs:

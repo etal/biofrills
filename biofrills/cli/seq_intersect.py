@@ -1,62 +1,49 @@
 """Extract the sequences found in both given FASTA files.
 
-Shared sequences are written to standard output, taking sequences from the
-second file.
-
-Usage:
-    seq-intersect query.fa reference.fa > output.fa
-    cat query.fa | seq-intersect reference.fa > output.fa
-
+The reference records whose identifiers occur in the query are written to
+standard output.
 """
 
+import argparse
 import sys
 
 from Bio import SeqIO
 
 from biofrills import cmdutils, sequtils
-from biofrills.cli import help_requested
+from biofrills.cli import add_input_argument, regular_file
 
 
 def main(argv=None):
-    args = sys.argv[1:] if argv is None else list(argv)
-    if help_requested(args, __doc__):
-        return 0
+    AP = argparse.ArgumentParser(description=__doc__)
+    add_input_argument(
+        AP, "Sequences whose identifiers are selected (FASTA format)", name="query"
+    )
+    # regular_file rejects a missing file or a pipe before anything is indexed;
+    # with -c, indexing either would leave a cache file behind
+    AP.add_argument(
+        "reference", type=regular_file, help="Sequences to select from (FASTA format)."
+    )
+    AP.add_argument(
+        "-c",
+        "--cache",
+        action="store_true",
+        help="Save the index of the reference sequences as REFERENCE.sqlite and "
+        "reuse it on later runs; delete that file after changing REFERENCE or "
+        "the setting of -r.",
+    )
+    AP.add_argument(
+        "-r",
+        dest="clean_accs",
+        action="store_true",
+        help="Ignore everything after the last '/' of an identifier, such as "
+        "HMMer's '/START-END' domain suffix, when matching.",
+    )
+    # Options may also come between the two positional arguments
+    args = AP.parse_intermixed_args(argv)
     cmdutils.log_config()
-    # TODO - argparse
 
-    if "--cache" in args:
-        do_cache = True
-        args.remove("--cache")
-    elif "-c" in args:
-        do_cache = True
-        args.remove("-c")
-    else:
-        do_cache = False
-
-    if "-r" in args:
-        do_clean_acc = True
-        args.remove("-r")
-    else:
-        do_clean_acc = False
-
-    if len(args) == 1:
-        qfile = sys.stdin
-        reffile = args[0]
-        do_close_qfile = False
-    elif len(args) == 2:
-        qfile = open(args[0])
-        reffile = args[1]
-        do_close_qfile = True
-    else:
-        sys.exit(__doc__)
-
-    try:
-        accs = (record.id for record in SeqIO.parse(qfile, "fasta"))
-        with open(reffile):
-            matches = sequtils.intersect_keys(
-                accs, reffile, cache=do_cache, clean_accs=do_clean_acc
-            )
-            SeqIO.write(matches, sys.stdout, "fasta")
-    finally:
-        if do_close_qfile:
-            qfile.close()
+    accs = (record.id for record in SeqIO.parse(args.query, "fasta"))
+    matches = sequtils.intersect_keys(
+        accs, args.reference, cache=args.cache, clean_accs=args.clean_accs
+    )
+    SeqIO.write(matches, sys.stdout, "fasta")

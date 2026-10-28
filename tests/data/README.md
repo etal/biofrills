@@ -133,11 +133,11 @@ Each run takes place in a scratch directory holding copies of `inputs/`, so outp
 Standard error has the scratch directory, the repository root, the biocma extraction directory and the Python installation prefix replaced by `<workdir>`, `<repo>`, `<biocma>` and `<python-prefix>`.
 
 `tests/test_cli.py` replays every script case against the installed console scripts in the same way: as a separate process in a scratch copy of `inputs/`, with `PYTHONHASHSEED` set to `0`.
-It compares the exit status, standard output and written files exactly, and standard error after the normalizations described below under "Log line numbers", "Recorded defects" and "Biopython output".
+It compares the exit status, standard output and written files exactly, and standard error after the normalizations described below under "Log line numbers" and "Recorded defects".
 After those normalizations no recorded line contains one of the placeholders above, so the replay substitutes no paths.
 The cases that read CMA files run only where biocma can be imported; with a Python 3 checkout of biocma beside this repository, `PYTHONPATH=$PWD/../biocma uv run pytest tests/test_cli.py` runs them.
 The path must be absolute, because each command runs in a scratch directory.
-The cases whose current output differs, explained below under "Consensus ties" and "Ambiguous residues in `seq-purge -c`", are listed in `EXPECTED` in `tests/test_cli.py`.
+The cases whose current output differs, explained below under "Consensus ties", "Ambiguous residues in `seq-purge -c`" and "Command-line differences", are listed in `EXPECTED` in `tests/test_cli.py`.
 
 ## Interpreting a mismatch
 
@@ -182,7 +182,7 @@ The cases whose current output differs, explained below under "Consensus ties" a
   `tests/test_cli.py` replaces that number with `N` on both sides.
 - **Recorded defects.**
   The fixtures record the original behavior, defects included.
-  For example, `seq-sort -l` is accepted but ignored, so `seq-sort.l` and `seq-sort.default` are identical, and `seq-diff -s` stops with a `ValueError` traceback because `cdc2-domain.fasta` contains one sequence twice.
+  For example, `seq-sort -s` was documented to sort by similarity but sorted by increasing length, and `seq-diff -s` stops with a `ValueError` traceback because `cdc2-domain.fasta` contains one sequence twice.
   The frames of that traceback name files and lines of the interpreter, of Biopython and of the script, so `tests/test_cli.py` compares only its first and last lines.
   A port that fixes such a defect differs from the fixture by design, and the test should state the expected difference.
   For the library cases, the expected differences are recorded in `differences.json`, described under "Differences in library output" below.
@@ -193,9 +193,16 @@ The cases whose current output differs, explained below under "Consensus ties" a
   Standard error reads `Purged 5 sequences` instead of `Purged 6 sequences`, and standard output gains that record between `psu|PFF0750w` and `x_novel`.
   The other `seq-purge` cases are unchanged, including `seq-purge.fikk-cma.c`, where both rules keep the one record that contains `X`.
   `replay.py` covers only the library cases, so this difference is recorded here and in `tests/test_cli.py` rather than in `differences.json`.
+- **Command-line differences.**
+  Five script cases differ from their fixtures because the port corrects the command-line programs.
+  In `seq-orfs.default` and `seq-orfs.m20`, standard error no longer holds Biopython's warning about a partial codon, because `seq-orfs` cuts each reading frame to a whole number of codons before translating it.
+  Biopython already ignored the trailing partial codon, so standard output is unchanged.
+  In `seq-identity.cdc2` and `seq-identity.edge`, the rows of the grid no longer end in a tab; the values are unchanged.
+  `seq-sort.s` now exits with status 2 and a usage error, because `seq-sort -s` has been removed rather than implemented.
+  It sorted by increasing length, not by similarity, and every similarity measure in biofrills requires aligned input, while `seq-sort` sorts unaligned sequences; `seq-pick -c` selects the most central sequences of an alignment.
+  `seq-sort -l` now selects the default order explicitly, so `seq-sort.l` still matches its fixture.
 - **Biopython output.**
   `seq-convert`, `seq-extract`, `seq-purge`, `seq-sort`, `seq-intersect` and `seq-diff` write records through Biopython's writers, and `seq-dupes` through `SeqRecord.format`, so their output also depends on the Biopython version.
-  The BiopythonWarning about partial codons in the `seq-orfs` cases is another example: its message is unchanged, but the file and line that issue it and the source line that Python echoes after it are those of the installed Biopython, so `tests/test_cli.py` compares the warning's category and message only.
   The CMA output of `seq-purge` and `seq-diff` is written by biocma.
 - **Not captured.**
   `seq-pick -r` and `stats.uniqueof20` sample at random.

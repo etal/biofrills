@@ -1,24 +1,16 @@
 """Split a FASTA file into multiple parts.
 
-According to:
-    -b: # bytes per chunk (approx.)
-    -s: # records per chunk
-    -nb: produce # similar-sized chunks, in terms of bytes
-    -ns: produce # similar-sized chunks, in terms of records
-
-Usage:
-    seq-split [-b|-s|-nb|-ns] <size> <fname> [<fname2> ...]
-
+Each part of an input file fname is written to fname.K, where K increases with
+each part; with -b and -nb the numbers K need not start at 0 or be consecutive.
 """
 
+import argparse
 import itertools
 import os
-import subprocess
-import sys
 
 from Bio import SeqIO
 
-from biofrills.cli import help_requested
+from biofrills.cli import regular_file
 
 
 def sizeof(record):
@@ -58,12 +50,12 @@ def split_count(fname, count_limit):
 
 def split_n_bytes(fname, num_chunks):
     tot_bytes = os.stat(fname).st_size
-    return split_bytes(fname, tot_bytes // num_chunks)
+    return split_bytes(fname, max(1, tot_bytes // num_chunks))
 
 
 def split_n_count(fname, num_chunks):
-    cnt = subprocess.Popen(["grep", "-c", r"^>", fname], stdout=subprocess.PIPE)
-    tot_recs = int(cnt.stdout.readline())
+    with open(fname, "rb") as handle:
+        tot_recs = sum(1 for line in handle if line.startswith(b">"))
     chunk_size, remainder = divmod(tot_recs, num_chunks)
     if remainder:
         chunk_size += 1
@@ -77,26 +69,50 @@ def write_chunk(fname, suffix, records):
     print("Wrote", out_fname)
 
 
-def main(argv=None):
-    args = sys.argv[1:] if argv is None else list(argv)
-    if help_requested(args, __doc__):
-        return 0
-
-    chunk_func = {
-        "-b": split_bytes,
-        "-s": split_count,
-        "-nb": split_n_bytes,
-        "-ns": split_n_count,
-    }
-
+def size_arg(text):
+    """Parse a chunk size or count of at least 1, such as '100' or '1e3'."""
     try:
-        opt, value, fnames = args[0], args[1], args[2:]
-        assert opt[0] == "-"
-        assert opt in chunk_func
-        value = int(float(value)) if "e" in value else int(value)
-    except Exception:
-        sys.exit(__doc__)
+        number = float(text) if "e" in text.lower() else int(text)
+        value = int(number)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"not an integer: {text}") from None
+    except OverflowError:
+        raise argparse.ArgumentTypeError(f"out of range: {text}") from None
+    if value != number:
+        raise argparse.ArgumentTypeError(f"not an integer: {text}")
+    if value < 1:
+        raise argparse.ArgumentTypeError(f"must be at least 1: {text}")
+    return value
 
-    for fname in fnames:
-        for key, chunk in chunk_func[opt](fname, value):
+
+SPLITTERS = {
+    "b": (split_bytes, "Split into chunks of about N bytes each."),
+    "s": (split_count, "Split into chunks of at most N records each."),
+    "nb": (split_n_bytes, "Split into about N chunks of similar size in bytes."),
+    "ns": (split_n_count, "Split into at most N chunks of similar record counts."),
+}
+
+
+def main(argv=None):
+    AP = argparse.ArgumentParser(
+        description=__doc__, epilog="N may be written in exponent notation, as in 1e6."
+    )
+    mode = AP.add_mutually_exclusive_group(required=True)
+    for name, (_func, help_text) in SPLITTERS.items():
+        mode.add_argument(f"-{name}", metavar="N", type=size_arg, help=help_text)
+    AP.add_argument(
+        "fnames",
+        metavar="fname",
+        nargs="+",
+        type=regular_file,
+        help="FASTA file to split.",
+    )
+    args = AP.parse_args(argv)
+
+    # The mode group is required and mutually exclusive, so exactly one is set
+    (name,) = [name for name in SPLITTERS if getattr(args, name) is not None]
+    split = SPLITTERS[name][0]
+    size = getattr(args, name)
+    for fname in args.fnames:
+        for key, chunk in split(fname, size):
             write_chunk(fname, key, chunk)

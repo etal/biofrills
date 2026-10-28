@@ -1,61 +1,45 @@
-"""Sort a set of sequences."""
-# [ENH] sort by distance from center (sort-from-center)
-#  see center_of.py ; reuse/refactor code
-#      -> sort sequences by decreasing total score
+"""Sort a set of sequences, by decreasing length or by identifier."""
 
 import argparse
 import sys
 
 from Bio import SeqIO
 
+from biofrills.cli import add_input_argument
+
 
 def main(argv=None):
     AP = argparse.ArgumentParser(description=__doc__)
-
-    AP.add_argument(
-        "infile",
-        default=sys.stdin,
-        type=argparse.FileType("r"),
-        # XXX make the stdin default work
-        help="FASTA file name.",
-    )
-    AP.add_argument(
+    add_input_argument(AP, "Input sequences (FASTA format)")
+    order = AP.add_mutually_exclusive_group()
+    order.add_argument(
         "-a",
         "--alphabet",
-        action="store_true",
+        dest="order",
+        action="store_const",
+        const="alphabet",
         help="Sort alphabetically by sequence ID.",
     )
-    AP.add_argument(
-        "-l", "--length", action="store_true", help="Sort by sequence length."
+    order.add_argument(
+        "-l",
+        "--length",
+        dest="order",
+        action="store_const",
+        const="length",
+        help="Sort by decreasing sequence length (the default).",
     )
-    AP.add_argument(
-        "-s",
-        "--similar",
-        action="store_true",
-        help="Sort by average similarity to other sequences.",
-    )
-    AP.add_argument(
-        "-q",
-        "--quiet",
-        action="store_false",
-        dest="verbose",
-        default=True,
-        help="Don't print status messages on stdout.",
-    )
-
+    AP.set_defaults(order="length")
     args = AP.parse_args(argv)
 
     records = SeqIO.parse(args.infile, "fasta")
-    if args.alphabet:
+    if args.order == "alphabet":
 
         def sortkey(rec):
             return str(rec.id)
-    elif args.similar:
-        sortkey = len  # TODO -- centroid calculation
     else:
 
         def sortkey(rec):
-            return -len(rec.seq)  # Decreasing
+            return -len(rec.seq)
 
     sortrecs = sorted(records, key=sortkey)
     SeqIO.write(sortrecs, sys.stdout, "fasta")

@@ -9,6 +9,7 @@ import sys
 from Bio import SeqIO
 
 from biofrills import alnutils, pairutils
+from biofrills.cli import regular_file
 
 
 def get_random(index, N):
@@ -147,7 +148,9 @@ def main(argv=None):
             help=help_text,
         )
     AP.add_argument("nseqs", type=positive_int, help="Number of sequences to pick.")
-    AP.add_argument("seqfname", help="Input sequences (FASTA format).")
+    AP.add_argument(
+        "seqfname", type=regular_file, help="Input sequences (FASTA format)."
+    )
     args = AP.parse_args(argv)
     N = args.nseqs
     if args.method in ("cluster", "k-means"):

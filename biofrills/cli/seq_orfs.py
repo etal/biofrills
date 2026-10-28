@@ -4,17 +4,21 @@ Output: All of the translated ORFs, in FASTA format.
 """
 
 import argparse
-import sys
 
 from Bio import SeqIO
 
+from biofrills.cli import add_input_argument
+
 
 def translate_six_frames(seq, genetic_code=1):
-    """Dictionary of 6-frame translations."""
+    """Generate the translations of a nucleotide sequence in all 6 frames.
+
+    Each frame is cut to a whole number of codons before translation.
+    """
     anti = seq.reverse_complement()
     for i in range(3):
-        yield seq[i:].translate(genetic_code)
-        yield anti[i:].translate(genetic_code)
+        for frame in (seq[i:], anti[i:]):
+            yield frame[: len(frame) - len(frame) % 3].translate(genetic_code)
 
 
 def translate_orfs(record, long_enough):
@@ -25,18 +29,13 @@ def translate_orfs(record, long_enough):
 
 def main(argv=None):
     AP = argparse.ArgumentParser(description=__doc__)
-    AP.add_argument(
-        "infile",
-        type=argparse.FileType("r"),
-        default=sys.stdin,
-        help="Input sequence alignment (FASTA format).",
-    )
+    add_input_argument(AP, "Input nucleotide sequences (FASTA format)")
     AP.add_argument(
         "-m",
         "--minlen",
         type=int,
         default=60,
-        help="Weight sequences by similarity.",
+        help="Minimum ORF length, in residues other than X (default: %(default)s).",
     )
     args = AP.parse_args(argv)
 

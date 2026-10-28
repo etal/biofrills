@@ -1,30 +1,42 @@
-"""Print the frequencies of each letter in a sequence set."""
-# TODO - move the calculation to module (take input stream, return freqs)
+"""Print the frequencies of each character in a sequence set.
 
+Every character of the sequences is counted, including gaps; upper and lower
+case are counted separately.
+"""
+
+import argparse
 import fileinput
+import itertools
 import sys
-from collections import Counter
 
-from biofrills.cli import help_requested
+from biofrills.cli import input_name
+from biofrills.sequtils import aa_frequencies
+
+
+def sequence_chars(lines):
+    """The characters of the sequence lines of FASTA text."""
+    for line in lines:
+        if not line.startswith(">"):
+            yield from line.strip()
 
 
 def main(argv=None):
-    args = sys.argv[1:] if argv is None else list(argv)
-    if help_requested(args, __doc__):
-        return 0
+    AP = argparse.ArgumentParser(description=__doc__)
+    AP.add_argument(
+        "fnames",
+        metavar="fname",
+        nargs="*",
+        type=input_name,
+        help="Input sequences (FASTA format); standard input if none or '-'.",
+    )
+    args = AP.parse_args(argv)
 
-    # Count character types
-    counts = Counter()
-    with fileinput.FileInput(args) as lines:
-        for line in lines:
-            if line.startswith(">") or not line.strip():
-                continue
-            counts.update(Counter(line.strip()))
+    with fileinput.FileInput(args.fnames) as lines:
+        chars = sequence_chars(lines)
+        first = next(chars, None)
+        if first is None:
+            sys.exit("No sequence characters in the input.")
+        freqs = aa_frequencies(itertools.chain([first], chars), gap_chars="")
 
-    # Convert counts to frequencies
-    scale = 1.0 / sum(counts.values())
-    freqs = {char: cnt * scale for char, cnt in counts.items()}
-
-    # Print a nice table
     for char, frq in sorted(freqs.items()):
         print(f"{char}: {frq:f}")

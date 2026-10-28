@@ -6,16 +6,12 @@ import sys
 from Bio import AlignIO
 
 from biofrills import alnutils
+from biofrills.cli import add_input_argument
 
 
 def main(argv=None):
     AP = argparse.ArgumentParser(description=__doc__)
-    AP.add_argument(
-        "infile",
-        type=argparse.FileType("r"),
-        default=sys.stdin,
-        help="Input sequence alignment (FASTA format).",
-    )
+    add_input_argument(AP, "Input sequence alignment (FASTA format)")
     AP.add_argument(
         "-w", "--weight", action="store_true", help="Weight sequences by similarity."
     )
@@ -24,8 +20,8 @@ def main(argv=None):
         "--threshold",
         type=float,
         default=0.5,
-        help="""Minimum proportion of non-gap characters to accept a
-                    column.""",
+        help="Minimum proportion of non-gap characters to accept a column "
+        "(default: %(default)s).",
     )
 
     args = AP.parse_args(argv)

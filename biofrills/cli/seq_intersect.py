@@ -28,8 +28,8 @@ def main(argv=None):
         "--cache",
         action="store_true",
         help="Save the index of the reference sequences as REFERENCE.sqlite and "
-        "reuse it on later runs; delete that file after changing REFERENCE or "
-        "the setting of -r.",
+        "reuse it on later runs; it is rebuilt when the size or modification "
+        "time of REFERENCE or the setting of -r has changed.",
     )
     AP.add_argument(
         "-r",

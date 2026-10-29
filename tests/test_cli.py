@@ -458,6 +458,39 @@ def test_pick_by_clustering_from_a_single_record(option, tmp_path):
     assert (proc.returncode, proc.stderr, proc.stdout) == (0, "", fasta(THREE[:1]))
 
 
+# No two records share an aligned residue, so every pairwise identity is 0;
+# the file order differs from the identifier order.
+DISJOINT = [("b", "-C-"), ("a", "A--"), ("c", "--D")]
+
+
+@pytest.mark.parametrize("option", ["-c", "-k"])
+@pytest.mark.parametrize("nrecords", [2, 3], ids=["one-edge", "triangle"])
+def test_pick_by_clustering_without_a_shared_residue(option, nrecords, tmp_path):
+    """Sequences that share no aligned residue are picked in identifier order."""
+    records = DISJOINT[:nrecords]
+    (tmp_path / "disjoint.fa").write_text(fasta(records))
+    proc = run("seq-pick", [option, "2", "disjoint.fa"], tmp_path)
+    assert (proc.returncode, proc.stderr) == (0, "")
+    assert proc.stdout == fasta(sorted(records)[:2])
+
+
+# x, y and z are mutually similar; a is peripheral and b is aligned nowhere,
+# so some pairwise identities are 0 and others are not.  x, y and z tie as the
+# most central, and the identifier tie-break takes x and y.  b and a come
+# first in the file, and x, y and z follow in reverse identifier order, so
+# neither file order nor a tie broken by file order (z and y) gives that pair.
+SIMILAR = [("x", "ACDEFGHIKL"), ("y", "ACDEFGHIKM"), ("z", "ACDEFGHIKN")]
+PARTLY_DISJOINT = [("b", "----------"), ("a", "ACWWWWWWWW"), *reversed(SIMILAR)]
+
+
+def test_pick_cluster_with_some_pairwise_identities_zero(tmp_path):
+    """Zero identities between some pairs do not discard the other weights."""
+    (tmp_path / "partly.fa").write_text(fasta(PARTLY_DISJOINT))
+    proc = run("seq-pick", ["-c", "2", "partly.fa"], tmp_path)
+    assert (proc.returncode, proc.stderr) == (0, "")
+    assert proc.stdout == fasta(SIMILAR[:2])
+
+
 @pytest.mark.parametrize("hashseed", ["1", "2", "3"])
 def test_pick_cluster_order_does_not_depend_on_the_hash_seed(hashseed, tmp_path):
     # CDC2-1_Sm and CDC2-2_Sm have the same aligned sequence; with hash seeds

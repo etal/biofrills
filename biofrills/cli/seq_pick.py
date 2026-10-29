@@ -36,11 +36,21 @@ def get_cluster(infname, N):
     coefficients that are equal in exact arithmetic, as for two identical
     sequences, can differ in the last place depending on the order in which
     networkx iterates over sets, and so on the hash seed.
+
+    Where no two sequences share an aligned residue, every pairwise identity
+    is 0 and no sequence is more central than another, so every coefficient
+    is taken to be 0 and the sequences are picked in ID order. networkx
+    divides each edge weight by the largest, which is then 0, so it cannot
+    compute that case. A single sequence has no edge and takes the same
+    branch; networkx handles that graph itself, with the same result.
     """
     import networkx
 
     G = alnutils.to_graph(infname, pairutils.identity_abs)
-    coeffs = networkx.clustering(G, weight="weight")
+    if any(weight for _u, _v, weight in G.edges(data="weight")):
+        coeffs = networkx.clustering(G, weight="weight")
+    else:
+        coeffs = dict.fromkeys(G, 0.0)
     hubs = sorted(coeffs, key=lambda node: (-round(coeffs[node], 12), node))
     return hubs[:N]
 
@@ -50,7 +60,9 @@ def get_kmeans(infname, N):
 
     See: https://en.wikipedia.org/wiki/K-medoids
 
-    Input sequences must be aligned.
+    Input sequences must be aligned. Where no two sequences share an aligned
+    residue, every cost is 0, no swap lowers the total, and the medoids stay
+    as get_cluster seeded them.
     """
     MAX_ITERATE = 10
     G = alnutils.to_graph(infname, pairutils.identity_abs)
@@ -72,8 +84,8 @@ def get_kmeans(infname, N):
     def total_cost(assoc):
         """Sum of all distances to nearest medoid. Closes over: G.
 
-        NB: identity is a measure of similarity, not distance, so costs will be
-        negative numbers (pairwise cost = -identity)
+        NB: identity is a measure of similarity, not distance, so costs are
+        never positive (pairwise cost = -identity).
         """
         cost = 0.0
         for med, cluster in assoc.items():

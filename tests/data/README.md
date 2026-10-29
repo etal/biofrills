@@ -169,6 +169,13 @@ The cases whose current output differs, explained below under "Consensus ties", 
   The measurements behind that margin cover the fixture inputs and 2,100 random alignments: 600 of 4 to 40 rows and 5 to 60 columns, and 1,500 of 3 to 8 rows and 10 to 60 columns, with gap probabilities from 0.1 to 0.6.
   There, the largest rounding error of the fraction was `5e-16`, as it was in synthetic alignments of up to 1,000 rows or 20,000 columns, and the smallest distance from the threshold of a fraction not exactly equal to it was `9.5e-6`.
   The margin is thus about 2,000 times the first and about seven orders of magnitude below the second.
+  `blocks` applies the same rule in the opposite sense: it keeps a column whose weighted non-gap fraction, the `math.fsum` of the non-gap weights divided by the `math.fsum` of all weights, reaches `threshold`, and counts a fraction at most `1e-12` below `threshold` as reaching it.
+  It previously added the gap weights in row order and divided by the number of rows, which equals the total weight only under the `avg1` scaling; with `sum1` weights given by the caller, every column was kept, including columns of gaps alone.
+  No recorded case and no recorded `seq-blocks` run changes.
+  With `avg1` weights, the 8 columns of `tie-batch.json` whose exact fraction is one half were already kept at `threshold` 0.5, but only because each computed to within `1.1e-16` of one half, at or above it; at other thresholds the previous rule dropped exact ties, such as column 5 of alignment `t163`, exactly 13/20, which computed as `0.6499999999999999` at `threshold` 0.65.
+  Over the fixture inputs and the test alignments of fammer and cladecompare, at every threshold k/m with m up to 20, the previous rule misdecided 4 exact ties and the current rule none; the largest rounding error of the fraction was `6.7e-16`, and the smallest distance from the threshold of a fraction not exactly equal to it was `1.27e-6`.
+  Without weights, `blocks` computes the non-gap fraction as the quotient of integer counts `(n - g) / n`, rounded once, rather than as `1 - g / n`, rounded twice; with one residue in five rows, the latter gave `0.19999999999999996` and dropped the column at `threshold` 0.2.
+  The two forms never disagree at the recorded thresholds 0.4, 0.5 and 0.9.
 - **Platform math library.**
   `chisqprob` calls `math.lgamma`, whose result depends on the platform's C math library.
   The fixtures were captured on x86_64 macOS under Rosetta 2, where Python 3.12 reproduces every `chisqprob` value exactly.

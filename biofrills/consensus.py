@@ -8,13 +8,6 @@ from biofrills import alnutils, sequtils
 
 logger = logging.getLogger(__name__)
 
-# A weighted gap proportion at most this far below gap_threshold counts as
-# reaching it.  Sequence weights are rounded floats, so a column whose exact
-# weighted gap proportion equals the threshold can compute a few units in the
-# last place below it.  In measured alignments that error was at most 5e-16,
-# and no proportion not equal to the threshold came closer to it than 9.5e-6.
-_GAP_TOLERANCE = 1e-12
-
 
 def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True):
     """Get the consensus of an alignment, as a string.
@@ -89,7 +82,7 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
         aa_frequencies = alnutils.aa_frequencies(upper_rows, weights=seq_weights)
         col_consensus = make_entropy_col_consensus(aa_frequencies)
         total_weight = math.fsum(seq_weights)
-        min_gap_fraction = gap_threshold - _GAP_TOLERANCE
+        min_gap_fraction = gap_threshold - alnutils._GAP_TOLERANCE
 
         def is_majority_gap(col):
             gap_weight = math.fsum(

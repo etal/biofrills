@@ -48,8 +48,8 @@ The command-line programs are tested as installed, so after a change to `[projec
 
 ## Numerical behavior
 
-- `consensus` decides weighted gap columns with `math.fsum` and a `1e-12` margin below `gap_threshold`, which makes the decision independent of row order and of the rounding of the sequence weights.
-  `alnutils.blocks` and the `aa_frequencies` normalizer still sum in row or dictionary order; changing either moves recorded output and needs its own decision.
+- `consensus` decides weighted gap columns, and `alnutils.blocks` weighted non-gap columns, with `math.fsum` and a `1e-12` margin below the threshold (`alnutils._GAP_TOLERANCE`), which makes the decision independent of row order and of the rounding of the sequence weights.
+  The weighted counts of `aa_counts` still accumulate in row order, the `sum1`, `avg1` and `andy` scalings of `sequence_weights` still divide by a built-in `sum`, and the `aa_frequencies` normalizer still sums in dictionary order; changing any of these moves recorded output and needs its own decision.
 - Ties between residue types in `consensus` are broken by an explicit rule ending in alphabetical order; never let dictionary or set iteration order decide an output.
 - `stats.chisq.chisqprob` is adapted from Cephes and deliberately differs from `scipy.stats.chi2.sf`; its module docstring gives the difference.
   Do not substitute one for the other.

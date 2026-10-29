@@ -1,5 +1,6 @@
 """Utilities for manipulating multiple sequence alignments."""
 
+import math
 from collections import Counter, defaultdict
 from copy import deepcopy
 
@@ -7,6 +8,14 @@ from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
+
+# A weighted proportion at most this far below its threshold counts as
+# reaching it; blocks and consensus.consensus both apply it.  Sequence weights
+# are rounded floats, so a column whose exact weighted proportion equals the
+# threshold can compute a few units in the last place below it.  In measured
+# alignments that error was at most 7e-16, and no proportion not equal to the
+# threshold came closer to it than 1.2e-6.
+_GAP_TOLERANCE = 1e-12
 
 
 def aa_counts(aln, weights=None, gap_chars="-."):
@@ -64,27 +73,58 @@ def _frequencies(counts):
 def blocks(aln, threshold=0.5, weights=None):
     """Remove gappy columns from an alignment.
 
-    Every record is kept; its sequence is empty if no column remains. Rows of
-    different lengths raise ValueError.
+    Keep each column whose proportion of non-gap characters is at least
+    threshold; only '-' counts as a gap. Every record is kept; its sequence is
+    empty if no column remains. Rows of different lengths, and weights of a
+    length other than the number of rows, raise ValueError.
+
+    For given sequence weights, which columns are kept does not depend on the
+    order of the alignment's rows: the unweighted proportion is a quotient of
+    integer counts, and the weighted proportion a quotient of correctly
+    rounded sums (math.fsum), both of which a permutation of the rows leaves
+    unchanged.
+
+    Parameters
+    ----------
+
+    threshold : float
+        Keep a column whose proportion of non-gap characters is greater than
+        or equal to this value (after sequence weighting, if applicable). A
+        weighted proportion at most 1e-12 below the threshold counts as equal
+        to it, so that rounding error in the sequence weights does not decide
+        a column whose exact weighted proportion equals the threshold.
+    weights : sequence of float, None, True or False
+        One weight per row of the alignment, in row order, as
+        sequence_weights returns. None or True calculates "avg1" weights
+        within this function; False weights the rows equally. A weighted
+        proportion is a share of the total weight, so weights that differ by
+        a constant factor, as most scalings of sequence_weights do, keep the
+        same columns.
+
     """
     assert len(aln)
     if weights is False:
 
-        def pct_nongaps(col):
-            return 1 - (col.count("-") / len(col))
+        def has_enough_residues(col):
+            return (len(col) - col.count("-")) / len(col) >= threshold
     else:
         if weights is None or weights is True:
             weights = sequence_weights(aln, "avg1")
+        elif len(weights) != len(aln):
+            raise ValueError(
+                f"Length mismatch: weights = {len(weights)}, alignment = {len(aln)}"
+            )
+        total_weight = math.fsum(weights)
+        min_nongap_fraction = threshold - _GAP_TOLERANCE
 
-        def pct_nongaps(col):
-            assert len(col) == len(weights)
-            ngaps = sum(wt * (c == "-") for wt, c in zip(weights, col, strict=True))
-            return 1 - (ngaps / len(col))
+        def has_enough_residues(col):
+            nongap_weight = math.fsum(
+                wt for wt, char in zip(weights, col, strict=True) if char != "-"
+            )
+            return nongap_weight / total_weight >= min_nongap_fraction
 
     seqstrs = [str(rec.seq) for rec in aln]
-    clean_cols = [
-        col for col in zip(*seqstrs, strict=True) if pct_nongaps(col) >= threshold
-    ]
+    clean_cols = [col for col in zip(*seqstrs, strict=True) if has_enough_residues(col)]
     clean_recs = []
     for rec, seq in zip(aln, _rows(clean_cols, len(seqstrs)), strict=True):
         newrec = deepcopy(rec)

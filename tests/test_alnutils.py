@@ -111,6 +111,73 @@ def test_blocks_keeps_columns_at_the_threshold():
     assert columns(alnutils.blocks(aln, 0.5, weights=False)) == ["ACDE", "ACD-", "AC--"]
 
 
+@pytest.mark.parametrize(("nrows", "threshold"), [(5, 0.2), (10, 0.1)])
+def test_unweighted_blocks_keeps_a_column_of_one_residue_at_its_proportion(
+    nrows, threshold
+):
+    # The non-gap proportion of column 2 is exactly 1/nrows, which equals the
+    # threshold, although 1 - (nrows - 1) / nrows computes just below it.
+    aln = make_alignment(["AA"] + ["A-"] * (nrows - 1))
+    assert len(columns(alnutils.blocks(aln, threshold, weights=False))) == 2
+
+
+def test_blocks_keeps_a_column_whose_weighted_proportion_equals_the_threshold():
+    # The avg1 weights of these four rows are 11/12, 13/12, 13/12 and 11/12
+    # in exact arithmetic, so the non-gap proportion of columns 2 and 4 is
+    # exactly one half.  As stored, the two weights of 11/12 differ by one
+    # unit in the last place, so column 4 computes just below one half.
+    weights = [
+        float.fromhex("0x1.d555555555556p-1"),
+        float.fromhex("0x1.1555555555556p+0"),
+        float.fromhex("0x1.1555555555556p+0"),
+        float.fromhex("0x1.d555555555557p-1"),
+    ]
+    aln = make_alignment(["E-CC", "CDA-", "--FD", "EAE-"])
+    expected = ["EC-E", "-D-A", "CAFE", "C-D-"]
+    assert columns(alnutils.blocks(aln, 0.5, weights)) == expected
+
+
+@pytest.mark.parametrize("scaling", ["none", "sum1", "max1", "avg1", "andy"])
+def test_blocks_keeps_the_same_columns_under_every_weight_scaling(scaling):
+    # A weighted proportion is a share of the total weight, whatever the
+    # weights sum to.  The unweighted non-gap proportions of these columns are
+    # 1, 3/4, 1/2, 1/4 and 0, and no row weighs more than 1.25 times another.
+    aln = make_alignment(["AAAA-", "CCC--", "DD---", "E----"])
+    weights = alnutils.sequence_weights(aln, scaling)
+    assert columns(alnutils.blocks(aln, 0.5, weights)) == ["ACDE", "ACD-", "AC--"]
+
+
+@pytest.mark.parametrize("heavy_row_first", [True, False])
+def test_weighted_blocks_is_independent_of_row_order(heavy_row_first):
+    # Column 2 holds one residue of weight 32769 and 2**16 residues of weight
+    # 2**-39, under half a unit in the last place of 32769, so its non-gap
+    # weight is 32769 + 2**-23, as is the weight of its one gap, and its exact
+    # non-gap proportion is 1/2.  Added to 32769 one at a time, each small
+    # weight rounds away, which puts the proportion 1.8e-12 below 1/2; added
+    # to each other first, they sum exactly.  The weights are a NumPy array
+    # because the built-in sum() compensates for rounding error only when
+    # every term is exactly of type float, and numpy.float64 is a subclass.
+    n_small = 2**16
+    heavy = 32769.0
+    small_rows = ["MA"] * n_small
+    small_weights = [2.0**-39] * n_small
+    if heavy_row_first:
+        rows = ["MA", *small_rows, "M-"]
+        weights = [heavy, *small_weights, heavy + n_small * 2.0**-39]
+    else:
+        rows = [*small_rows, "MA", "M-"]
+        weights = [*small_weights, heavy, heavy + n_small * 2.0**-39]
+    aln = make_alignment(rows)
+    assert len(columns(alnutils.blocks(aln, 0.5, np.array(weights)))) == 2
+
+
+# With no column, no per-column comparison of lengths takes place.
+@pytest.mark.parametrize("seqs", [["AC-", "A-C"], ["", ""]])
+def test_blocks_rejects_weights_of_another_length(seqs):
+    with pytest.raises(ValueError, match="Length mismatch"):
+        alnutils.blocks(make_alignment(seqs), 0.5, [1.0, 1.0, 1.0])
+
+
 # No column holds two non-gap residues, so nothing tells the rows apart.
 @pytest.mark.parametrize("seqs", [["MKV-LAYRGH"], ["AC--", "--DE"], ["A-", "--"]])
 @pytest.mark.parametrize("scaling", ["none", "sum1", "max1", "avg1", "andy"])

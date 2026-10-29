@@ -13,7 +13,7 @@ from biofrills import sequtils
 
 def intersect(tmp_path, keys, **kwargs):
     """Return the identifiers that intersect_keys selects from ref.fa."""
-    ref = str(tmp_path / "ref.fa")
+    ref = tmp_path / "ref.fa"
     return [rec.id for rec in sequtils.intersect_keys(keys, ref, **kwargs)]
 
 
@@ -26,6 +26,16 @@ def test_intersect_keys_reuses_a_matching_cache(tmp_path, caplog):
     assert not caplog.records
     assert os.stat(tmp_path / "ref.fa.sqlite").st_ino == inode
     assert sorted(os.listdir(tmp_path)) == ["ref.fa", "ref.fa.sqlite"]
+
+
+def test_intersect_keys_caches_a_reference_given_as_a_string(tmp_path):
+    """seq-intersect passes the reference path as a string."""
+    (tmp_path / "ref.fa").write_text(">a\nACDE\n")
+    ref = str(tmp_path / "ref.fa")
+    assert [rec.id for rec in sequtils.intersect_keys(["a"], ref, cache=True)] == ["a"]
+    inode = os.stat(tmp_path / "ref.fa.sqlite").st_ino
+    assert [rec.id for rec in sequtils.intersect_keys(["a"], ref, cache=True)] == ["a"]
+    assert os.stat(tmp_path / "ref.fa.sqlite").st_ino == inode
 
 
 def test_intersect_keys_rebuilds_a_corrupt_cache(tmp_path):

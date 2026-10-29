@@ -26,13 +26,14 @@ def intersect_keys(keys, reffile, cache=False, clean_accs=False):
     """Extract SeqRecords from the index by matching keys.
 
     keys - an iterable of sequence identifiers/accessions to select
-    reffile - name of a FASTA file to extract the specified sequences from
+    reffile - path of a FASTA file to extract the specified sequences from
     cache - save an index of the reference FASTA sequence offsets to disk?
     clean_accs - strip HMMer extensions from sequence accessions?
 
-    The cache is the file reffile + '.sqlite'. It is reused only if it was
-    built from a reference file of the same size and modification time and
-    with the same setting of clean_accs; otherwise it is rebuilt.
+    reffile may be a str or an os.PathLike object. The cache is the reference
+    file's path with '.sqlite' appended. It is reused only if it was built
+    from a reference file of the same size and modification time and with the
+    same setting of clean_accs; otherwise it is rebuilt.
     """
     key_function = clean_accession if clean_accs else None
     if cache:
@@ -76,7 +77,7 @@ def _cached_index(reffile, clean_accs, key_function):
     Biopython loads any existing file at the path given to index_db, so a
     rebuild is written to a new file that then replaces the cache.
     """
-    refcache = reffile + ".sqlite"
+    refcache = os.fspath(reffile) + ".sqlite"
     # Taken before the reference is read, so that a change made while the
     # index is built makes the cache outdated
     stat = os.stat(reffile)

@@ -1,5 +1,6 @@
 import logging
 
+import numpy as np
 import pytest
 from alignments import make_alignment, make_records
 
@@ -109,7 +110,9 @@ def test_weighted_gap_decision_is_independent_of_row_order(weight_one_first):
     # fraction is 1/2.  Added to 1 one at a time, each small weight rounds
     # away, which puts the fraction at least 1.8e-12 below 0.5 however the
     # total weight is summed; added to each other first, the small weights
-    # sum exactly.
+    # sum exactly.  The weights are a NumPy array because the built-in sum()
+    # compensates for rounding error only when every term is exactly of type
+    # float, and numpy.float64 is a subclass.
     n_small = 2**16
     small_rows = ["M-"] * n_small
     small_weights = [2.0**-53] * n_small
@@ -121,4 +124,4 @@ def test_weighted_gap_decision_is_independent_of_row_order(weight_one_first):
         rows = [*small_rows, "M-", "MA"]
         weights = [*small_weights, 1.0, residue_weight]
     aln = make_alignment(rows)
-    assert consensus(aln, weights=weights, gap_threshold=0.5) == "M-"
+    assert consensus(aln, weights=np.array(weights), gap_threshold=0.5) == "M-"

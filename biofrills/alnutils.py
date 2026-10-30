@@ -191,15 +191,17 @@ def remove_empty_cols(records):
 def sequence_weights(aln, scaling="none", gap_chars="-."):
     """Weight aligned sequences to emphasize more divergent members.
 
-    Returns a list of floating-point numbers between 0 and 1, corresponding to
-    the proportional weight of each sequence in the alignment. The first list
-    is the weight of the first sequence in the alignment, and so on.
+    Returns a list of non-negative floating-point numbers, one per sequence
+    of the alignment, in the same order.
 
     Scaling schemes:
         - 'sum1': Weights sum to 1.0.
         - 'max1': Weights are all scaled so the max is 1.0.
         - 'avg1': Average (mean) weight is 1.0.
-        - 'andy': Average (mean) weight is 0.5, ceiling is 1.0.
+        - 'andy': Weights are scaled as under 'avg1' and then capped at 1.0,
+                  so the mean weight is at most 1.0.  The robust weights of
+                  CHAIN (Neuwald 2003) instead have a mean of one-half
+                  before the cap.
         - 'none': Weights are scaled to sum to the effective number of
                   independent sequences.
 

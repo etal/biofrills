@@ -160,7 +160,8 @@ The cases whose current output differs, explained below under "Consensus ties", 
   Compare these values with a relative tolerance on the order of `1e-15`, not with equality; with integer weights the sums are exact and equality holds.
 - **Compensated summation.**
   Since Python 3.12, the built-in `sum` of floating-point numbers compensates for rounding error (Neumaier's algorithm), where Python 2 added the terms one at a time.
-  `sequence_weights` divides by `sum(seq_weights)` under the scalings `sum1`, `avg1` and `andy`, so these weights differ from the fixtures by at most 3 units in the last place: 35 values in `scttlre-domain.aln.json`, 8 in `synth-x.aln.json`, and 185 in 39 of the 200 alignments of `tie-batch.json`.
+  `sequence_weights` divides by `sum(seq_weights)` under the scalings `sum1`, `avg1` and `andy`, so the `sum1` and `avg1` weights differ from the fixtures by at most 3 units in the last place: 26 values in `scttlre-domain.aln.json`, 6 in `synth-x.aln.json`, and 185 in 39 of the 200 alignments of `tie-batch.json`.
+  The current `andy` weights are scaled to another mean than the recorded ones (see "Robust weights of CHAIN" below), so those cases are listed in `differences.json`.
   The largest relative difference is `4.2e-16`, so the tolerance given above for weighted frequencies covers these values too.
   The scaling `max1` takes no such sum and matches the fixtures exactly.
   `consensus` divides by a sum of these weights to compute the weighted gap fraction of a column, and there a difference in the last place can decide a column whose exact fraction equals the threshold.
@@ -227,7 +228,7 @@ The cases whose current output differs, explained below under "Consensus ties", 
 It compares outcomes as `tests/test_reference.py` does, through the shared module `tests/reference_cases.py`, so the floating-point differences described above under "Summation order of weighted frequencies", "Compensated summation" and "Platform math library" are compared with a tolerance and produce no entries; the exception is the `log1p` dependence of the `none` weights, which is compared exactly because no measured platform shows it at the recorded inputs.
 An entry identifies the case as the fixture does: the fixture file relative to `py27/`, the section, the alignment for a `tie-batch.json` case, and the index of the case within its section, which is `null` for a section that records a single outcome.
 It then repeats the fields that describe the call (`weights` and `kwargs` where the fixture records them, `rows` for a pairwise case, `x` and `df` for a `chisqprob` case), and gives the recorded outcome, the current outcome, and, where both are strings of equal length, the 1-based columns at which they differ.
-Every entry is explained below, and all five kinds are deliberate changes of behavior.
+Every entry is explained below, and all six kinds are deliberate changes of behavior.
 In the third and fourth kinds the recorded outcome is an exception, so they change no outcome that the original code completed.
 A test of the current code expects the fixture value except where `differences.json` records another.
 After a change that moves a recorded output, regenerate the file from the repository root and explain the new entries here:
@@ -258,10 +259,10 @@ Before the port, the unmodified sources at commit `36684bb` produced an empty li
     With `trim_ends=True` the majority-gap column 3 does not reach the algorithm, so the first heuristic conditions on a different preceding column and settles the tie as before.
 - **Sequence weights of an alignment without informative columns** (28 cases, all in `synth-single.aln.json`).
   `sequence_weights` takes its weights from the columns in which at least two residues, and at least a fifth of the rows, are not gaps, and a single sequence has no such column, so every raw weight was zero and every scaling divided by zero, as did every call that computes weights from it.
-  Where nothing in the alignment tells the sequences apart, the current code weights them equally: `1.0` each under every scaling except `sum1`, which gives `1/N`.
+  Where nothing in the alignment tells the sequences apart, the current code weights them equally: `1.0` each under every scaling except `sum1`, which gives `1/N`, and `andy`, which gives `0.5`.
   Under every scaling except `none`, these are, up to rounding, the weights that the scaling gives an alignment of identical sequences without gaps.
   Under `none` they sum to the number of sequences: where no column can measure redundancy, each sequence counts as independent, whereas identical sequences with contributing columns count as one (see "Effective number of sequences" below).
-  The 5 `sequence_weights` cases now give `[1.0]`.
+  The 5 `sequence_weights` cases now give `[1.0]`, except the `andy` case, which gives `[0.5]` (see "Robust weights of CHAIN" below).
   The other 23 cases now give the outcomes recorded for the same call with unit weights or without weights: the 8 weighted `aa_counts` and `aa_frequencies` cases match the `"unit"` cases, the 12 entropy `consensus` cases with weights `null` and `"seqweights"` give `MKV-LAYRGH`, the input sequence, and the 3 `blocks` cases with weights `null` give `MKVLAYRGH`, as with `false`.
 - **Case-insensitive background frequencies** (18 cases, all in `synth-mixedcase.aln.json`).
   `consensus` uppercases a column that mixes lowercase and uppercase residues, but counted the background frequencies of the alignment as written, so an uppercased residue type that occurs elsewhere only in lowercase had no background frequency, and the entropy algorithm raised `KeyError`.
@@ -283,3 +284,14 @@ Before the port, the unmodified sources at commit `36684bb` produced an empty li
   - The 28 `aa_counts` cases with weights `true` or `"seqweights"`, which change by the same factor as the weights.
   - The 12 `aa_frequencies` cases of `cdc2-domain.aln.json`, `fikk.aln.json` and `scttlre-domain.aln.json` with weights `true` or `"seqweights"`.
     In exact arithmetic these frequencies are unchanged, but the weights, and the counts accumulated from them, are rounded at another scale, which moves the frequencies by up to `8.3e-15` relative, more than the tolerance of `1e-15`.
+- **Robust weights of CHAIN** (7 cases).
+  The `andy` scaling of `sequence_weights` was named and commented as the robust weights of CHAIN (Neuwald et al. 2003, Genome Research 13:673), whose Methods "normalize weights such that the expected weight is one-half, with occasional normalized weights greater than one being truncated to one".
+  The docstring of the pre-port sources likewise gave it a mean weight of 0.5 and a ceiling of 1.0.
+  The recorded code instead scaled the weights to a mean of 1, as under `avg1`, and then truncated them at 1.0, so every weight above the mean was truncated.
+  The current code scales the weights to a mean of one-half and then truncates any weight above 1.0, without rescaling afterwards, so the mean is at most one-half.
+  Correctly rounded arithmetic commutes with scaling by a power of two, so the result equals `min(w / 2, 1.0)` for the `avg1` weights `w` bit for bit.
+  No function of biofrills uses the `andy` scaling itself, so only the `sequence_weights` cases change.
+  These are the `andy` cases of the seven inputs other than `synth-single.aln.fasta`.
+  In `cdc2-domain.aln.json` (37 sequences), the mean weight changes from 0.8167 to 0.4929 and the number of weights truncated to 1.0 from 15 to 4; in `fikk.aln.json` (24 sequences), from 0.7961 to 0.4597 and from 3 to 2; in `scttlre-domain.aln.json` (14 sequences), from 0.8600 to 0.5000 and from 4 to 0.
+  In the four synthetic inputs of 4 or 5 sequences, where 2 to 4 weights were truncated, none now reaches 1.0, and the mean is 0.5000.
+  The `andy` case of `synth-single.aln.json`, already listed under "Sequence weights of an alignment without informative columns", now gives `[0.5]` instead of `[1.0]`.

@@ -24,10 +24,12 @@ def test_sequence_weights_avg1_has_mean_one(aligned_input):
     assert math.fsum(weights) / len(weights) == pytest.approx(1.0, rel=1e-12)
 
 
-def test_sequence_weights_andy_caps_avg1_at_one(aligned_input):
+def test_sequence_weights_andy_halves_avg1_and_truncates_at_one(aligned_input):
+    # Correctly rounded arithmetic commutes with scaling by a power of two,
+    # so halving the avg1 scale gives the same result bit for bit.
     avg1 = alnutils.sequence_weights(aligned_input, "avg1")
     andy = alnutils.sequence_weights(aligned_input, "andy")
-    assert andy == [min(weight, 1.0) for weight in avg1]
+    assert andy == [min(weight / 2, 1.0) for weight in avg1]
 
 
 AMINO_ACIDS = "ACDEFGHIKLMNPQRSTVWY"
@@ -224,7 +226,7 @@ def test_blocks_rejects_weights_of_another_length(seqs):
 @pytest.mark.parametrize("scaling", ["none", "sum1", "max1", "avg1", "andy"])
 def test_uninformative_alignment_gets_uniform_weights(seqs, scaling):
     weights = alnutils.sequence_weights(make_alignment(seqs), scaling)
-    uniform = 1 / len(seqs) if scaling == "sum1" else 1.0
+    uniform = {"sum1": 1 / len(seqs), "andy": 0.5}.get(scaling, 1.0)
     assert weights == [uniform] * len(seqs)
 
 

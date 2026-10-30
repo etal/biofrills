@@ -211,17 +211,17 @@ def sequence_weights(aln, scaling="none", gap_chars="-."):
         - 'sum1': Weights sum to 1.0.
         - 'max1': Weights are all scaled so the max is 1.0.
         - 'avg1': Average (mean) weight is 1.0.
-        - 'andy': Weights are scaled as under 'avg1' and then capped at 1.0,
-                  so the mean weight is at most 1.0.  The robust weights of
-                  CHAIN (Neuwald 2003) instead have a mean of one-half
-                  before the cap.
+        - 'andy': The robust weights of CHAIN (Neuwald et al. 2003): the
+                  weights are scaled to a mean of one-half, and the
+                  occasional weight above 1.0 is then truncated to 1.0, so
+                  the mean of the result is at most one-half.
         - 'none': Weights sum to the effective number of independent
                   sequences, estimated as described below.
 
     If no column holds enough residues to tell the sequences apart, as in a
     single sequence, every sequence receives the same weight: 1.0, or 1/N
-    under 'sum1'. An alignment of no sequences, or of rows of different
-    lengths, raises ValueError.
+    under 'sum1', or 0.5 under 'andy'. An alignment of no sequences, or of
+    rows of different lengths, raises ValueError.
 
     Method: At each column position, award each different residue an equal
     share of the weight, and then divide that weight equally among the
@@ -311,8 +311,9 @@ def sequence_weights(aln, scaling="none", gap_chars="-."):
     elif scaling == "avg1":
         scale = len(aln) / sum(seq_weights)
     elif scaling == "andy":
-        # "Robust" strategy used in CHAIN (Neuwald 2003)
-        scale = len(aln) / sum(seq_weights)
+        # The robust weights of CHAIN (Neuwald et al. 2003): normalized to a
+        # mean of one-half, with weights above one truncated to one.
+        scale = 0.5 * len(aln) / sum(seq_weights)
         return [min(scale * wt, 1.0) for wt in seq_weights]
     else:
         raise ValueError(f"Unknown scaling scheme '{scaling}'")

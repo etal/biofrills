@@ -183,11 +183,20 @@ def test_blocks_keeps_a_column_whose_weighted_proportion_equals_the_threshold():
 @pytest.mark.parametrize("scaling", ["none", "sum1", "max1", "avg1", "andy"])
 def test_blocks_keeps_the_same_columns_under_every_weight_scaling(scaling):
     # A weighted proportion is a share of the total weight, whatever the
-    # weights sum to.  The unweighted non-gap proportions of these columns are
-    # 1, 3/4, 1/2, 1/4 and 0, and no row weighs more than 1.25 times another.
-    aln = make_alignment(["AAAA-", "CCC--", "DD---", "E----"])
+    # weights sum to.  The first row differs from the others in columns 1 to
+    # 6, so its avg1 weight is about 2.1 and andy truncates it to 1.0; the
+    # andy weights are therefore not proportional to the others.  The
+    # unweighted non-gap proportions of columns 7 to 10 are 4/5, 3/5, 2/5 and
+    # 1/5; their weighted proportions are about 0.87, 0.74, 0.59 and 0.42, or
+    # 0.87, 0.73, 0.58 and 0.41 under andy, so column 9 is kept under every
+    # scaling, although it would be dropped without weights.
+    aln = make_alignment(
+        ["WWWWWWAAAA", "MMMMMMCCC-", "MMMMMMDD--", "MMMMMME---", "MMMMMM----"]
+    )
     weights = alnutils.sequence_weights(aln, scaling)
-    assert columns(alnutils.blocks(aln, 0.5, weights)) == ["ACDE", "ACD-", "AC--"]
+    assert scaling != "andy" or max(weights) == 1.0
+    expected = ["WMMMM"] * 6 + ["ACDE-", "ACD--", "AC---"]
+    assert columns(alnutils.blocks(aln, 0.5, weights)) == expected
 
 
 @pytest.mark.parametrize("heavy_row_first", [True, False])

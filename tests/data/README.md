@@ -156,12 +156,13 @@ The cases whose current output differs, explained below under "Consensus ties", 
   With non-integer weights (`true` and `"seqweights"`), summing the same counts in another order changes the normalizer in its last place, and every frequency with it.
   For example, the `"seqweights"` normalizer for `cdc2-domain.aln.fasta` is `1451.1196865831323` in hash order and `1451.1196865831325` in insertion order, which is also the correctly rounded sum.
   Under Python 3 this moves 80 weighted frequencies of `cdc2-domain.aln.json` and 32 of `synth-x.aln.json`, by at most 2 units in the last place; the weighted frequencies of the other inputs, and all counts, are unchanged.
+  These figures refer to the recorded `none` weights; since the change described under "Effective number of sequences" below, the weighted `aa_frequencies` cases of `cdc2-domain.aln.json`, `fikk.aln.json` and `scttlre-domain.aln.json` are listed in `differences.json`.
   Compare these values with a relative tolerance on the order of `1e-15`, not with equality; with integer weights the sums are exact and equality holds.
 - **Compensated summation.**
   Since Python 3.12, the built-in `sum` of floating-point numbers compensates for rounding error (Neumaier's algorithm), where Python 2 added the terms one at a time.
   `sequence_weights` divides by `sum(seq_weights)` under the scalings `sum1`, `avg1` and `andy`, so these weights differ from the fixtures by at most 3 units in the last place: 35 values in `scttlre-domain.aln.json`, 8 in `synth-x.aln.json`, and 185 in 39 of the 200 alignments of `tie-batch.json`.
   The largest relative difference is `4.2e-16`, so the tolerance given above for weighted frequencies covers these values too.
-  The scalings `none` and `max1` take no such sum and match the fixtures exactly.
+  The scaling `max1` takes no such sum and matches the fixtures exactly.
   `consensus` divides by a sum of these weights to compute the weighted gap fraction of a column, and there a difference in the last place can decide a column whose exact fraction equals the threshold.
   Column 5 of `tie-batch.json` alignment `t101` holds two gaps, a `C` and an `A`, and in exact arithmetic the `avg1` weights of its four rows are 20/21, 22/21, 20/21 and 22/21, so the weighted gap fraction of the column is exactly one half.
   As stored, the two weights of 20/21 differ by one unit in the last place: Python 2's term-by-term total, `3.999999999999999`, gives a fraction of exactly `0.5`, and the correctly rounded total, `3.9999999999999996`, gives `0.49999999999999994`.
@@ -181,6 +182,10 @@ The cases whose current output differs, explained below under "Consensus ties", 
   The fixtures were captured on x86_64 macOS under Rosetta 2, where Python 3.12 reproduces every `chisqprob` value exactly.
   On arm64 macOS, `math.lgamma(5.0)` is `3.1780538303479444` rather than `3.178053830347945`, and 10 of the 273 recorded values, all with `df` 2.5, 10 or 100, differ from the fixture by up to 246 units in the last place, a relative difference of at most `2.9e-14`.
   These values need a relative tolerance of about `1e-13`, larger than the one given above for summation.
+  `sequence_weights` under the `none` scaling calls `math.log1p` (see "Effective number of sequences" below), so its weights, and the weighted `aa_counts` and `aa_frequencies` computed from them, depend on the C math library as well.
+  At the seven arguments that the recorded inputs give, and at the constant `log1p(-1/20)`, Python 3.12 returns identical results on arm64 macOS and on arm64 and x86_64 Linux with glibc 2.41, so the weights and counts are compared exactly, and the frequencies with the tolerance given above for summation.
+  Over 200,000 random arguments between -1 and -0.05, however, 7.6% of the results differ by one unit in the last place between macOS and glibc, and such a difference at any of the seven recorded arguments would change the weights in their last place.
+  On a platform where that happens, these cases need a relative tolerance of their own, as `chisqprob` does, rather than new entries in `differences.json`.
 - **Exception messages.**
   The exception type is the reference; the message text is the interpreter's.
   For example, Python 2 reports integer division by zero as `integer division or modulo by zero` and Python 3 as `division by zero`.
@@ -219,10 +224,10 @@ The cases whose current output differs, explained below under "Consensus ties", 
 ## Differences in library output
 
 `replay.py` calls every recorded library case again with the current sources of this repository and writes each case whose outcome differs from the recorded one to `differences.json`.
-It compares outcomes as `tests/test_reference.py` does, through the shared module `tests/reference_cases.py`, so the floating-point differences described above under "Summation order of weighted frequencies", "Compensated summation" and "Platform math library" are compared with a tolerance and produce no entries.
+It compares outcomes as `tests/test_reference.py` does, through the shared module `tests/reference_cases.py`, so the floating-point differences described above under "Summation order of weighted frequencies", "Compensated summation" and "Platform math library" are compared with a tolerance and produce no entries; the exception is the `log1p` dependence of the `none` weights, which is compared exactly because no measured platform shows it at the recorded inputs.
 An entry identifies the case as the fixture does: the fixture file relative to `py27/`, the section, the alignment for a `tie-batch.json` case, and the index of the case within its section, which is `null` for a section that records a single outcome.
 It then repeats the fields that describe the call (`weights` and `kwargs` where the fixture records them, `rows` for a pairwise case, `x` and `df` for a `chisqprob` case), and gives the recorded outcome, the current outcome, and, where both are strings of equal length, the 1-based columns at which they differ.
-Every entry is explained below, and all four kinds are deliberate changes of behavior.
+Every entry is explained below, and all five kinds are deliberate changes of behavior.
 In the third and fourth kinds the recorded outcome is an exception, so they change no outcome that the original code completed.
 A test of the current code expects the fixture value except where `differences.json` records another.
 After a change that moves a recorded output, regenerate the file from the repository root and explain the new entries here:
@@ -254,7 +259,8 @@ Before the port, the unmodified sources at commit `36684bb` produced an empty li
 - **Sequence weights of an alignment without informative columns** (28 cases, all in `synth-single.aln.json`).
   `sequence_weights` takes its weights from the columns in which at least two residues, and at least a fifth of the rows, are not gaps, and a single sequence has no such column, so every raw weight was zero and every scaling divided by zero, as did every call that computes weights from it.
   Where nothing in the alignment tells the sequences apart, the current code weights them equally: `1.0` each under every scaling except `sum1`, which gives `1/N`.
-  Up to rounding, these are the weights that every scaling already gives an alignment of identical sequences without gaps, and under the `none` scaling they sum to the number of sequences, the effective number of independent sequences when no redundancy can be measured.
+  Under every scaling except `none`, these are, up to rounding, the weights that the scaling gives an alignment of identical sequences without gaps.
+  Under `none` they sum to the number of sequences: where no column can measure redundancy, each sequence counts as independent, whereas identical sequences with contributing columns count as one (see "Effective number of sequences" below).
   The 5 `sequence_weights` cases now give `[1.0]`.
   The other 23 cases now give the outcomes recorded for the same call with unit weights or without weights: the 8 weighted `aa_counts` and `aa_frequencies` cases match the `"unit"` cases, the 12 entropy `consensus` cases with weights `null` and `"seqweights"` give `MKV-LAYRGH`, the input sequence, and the 3 `blocks` cases with weights `null` give `MKVLAYRGH`, as with `false`.
 - **Case-insensitive background frequencies** (18 cases, all in `synth-mixedcase.aln.json`).
@@ -262,3 +268,18 @@ Before the port, the unmodified sources at commit `36684bb` produced an empty li
   The background frequencies of both algorithms now fold case as well; `alnutils.aa_frequencies` itself still counts residues as written.
   All 18 entropy cases of that file now complete: they give `MK--LWGH` with `gap_threshold` 0.5 and `MK-VLWGH` with 0.6 and 0.8, as the simple algorithm already did.
   No other input contains a lowercase residue, so no other recorded case changes; on an alignment that does, background frequencies, and with them a consensus residue, can differ from those of the original code.
+- **Effective number of sequences** (47 cases).
+  The `none` scaling of `sequence_weights` was documented to make the weights sum to the effective number of independent sequences, but the sum it computed fell as the sequences became more diverse.
+  Each column that contributes to the weights distributes one unit of weight among the rows, so the recorded weights summed to `N * L / S`, where `N` is the number of rows, `L` the number of contributing columns, and `S` the sum over those columns of `E(r)`.
+  Here `r` is the number of distinct characters in the column, gaps included, and `E(r)` a tabulated Monte Carlo estimate of the mean number of distinct types among `r` residues drawn uniformly from the 20 amino acids.
+  Ten identical random sequences of 200 residues thus summed to 10, and ten independent ones to about 1.5.
+  The current code counts the distinct residue types of each contributing column without gaps, takes their mean `m` over the columns, and scales the weights to sum to the `k` that solves `20 * (1 - (19/20)**k) = m`, capped at `N`.
+  Identical sequences then sum to 1, and an alignment of `k` independent random sequences, each repeated equally often, sums to about `k`.
+  Real residue frequencies are not uniform, so independent sequences show fewer distinct types than that expectation, and the estimate tends to be low.
+  The weights of an alignment change by a single factor, so their ratios, and with them every `consensus` outcome, are unchanged; cladecompare, however, uses the sum of these weights as the sample size of its tests, so its weighted p-values change.
+  The changed cases are these:
+  - The 7 `none` cases of `sequence_weights`, one for each input except `synth-single.aln.fasta`, whose single sequence keeps the weight `1.0`.
+    The sum of the weights changes from 6.32 to 7.73 in `cdc2-domain.aln.json` (37 sequences), from 6.37 to 2.12 in `scttlre-domain.aln.json` (14 sequences), and from 4.75 to 5.46 in `fikk.aln.json` (24 sequences).
+  - The 28 `aa_counts` cases with weights `true` or `"seqweights"`, which change by the same factor as the weights.
+  - The 12 `aa_frequencies` cases of `cdc2-domain.aln.json`, `fikk.aln.json` and `scttlre-domain.aln.json` with weights `true` or `"seqweights"`.
+    In exact arithmetic these frequencies are unchanged, but the weights, and the counts accumulated from them, are rounded at another scale, which moves the frequencies by up to `8.3e-15` relative, more than the tolerance of `1e-15`.

@@ -1,4 +1,5 @@
 import math
+import random
 
 import numpy as np
 import pytest
@@ -27,6 +28,46 @@ def test_sequence_weights_andy_caps_avg1_at_one(aligned_input):
     avg1 = alnutils.sequence_weights(aligned_input, "avg1")
     andy = alnutils.sequence_weights(aligned_input, "andy")
     assert andy == [min(weight, 1.0) for weight in avg1]
+
+
+AMINO_ACIDS = "ACDEFGHIKLMNPQRSTVWY"
+
+
+def random_rows(n, length, seed):
+    rng = random.Random(seed)
+    return ["".join(rng.choices(AMINO_ACIDS, k=length)) for _ in range(n)]
+
+
+@pytest.mark.parametrize("n", [2, 5, 20])
+def test_none_weights_of_identical_residues_sum_to_one(n):
+    # Gaps are not residue types, so where they fall does not matter.
+    row = random_rows(1, 60, seed=n)[0]
+    gapped = [row[:i] + "-" + row[i + 1 :] for i in range(n)]
+    for seqs in ([row] * n, gapped):
+        weights = alnutils.sequence_weights(make_alignment(seqs), "none")
+        assert math.fsum(weights) == pytest.approx(1.0, rel=1e-12)
+
+
+def test_none_weights_sum_to_the_number_of_independent_groups():
+    # 60 rows in k groups, each holding copies of one of k random sequences.
+    # The estimate assumes uniform residues, as here; over 40 seeds, its
+    # relative error with 200 columns was at most 3.1%.
+    sums = []
+    for k in (1, 2, 5, 20, 60):
+        founders = random_rows(k, 200, seed=k)
+        aln = make_alignment([founders[i % k] for i in range(60)])
+        sums.append(math.fsum(alnutils.sequence_weights(aln, "none")))
+    assert sums == sorted(set(sums))
+    assert sums == pytest.approx([1, 2, 5, 20, 60], rel=0.05)
+
+
+@pytest.mark.parametrize("n", [3, 20])
+def test_none_weights_are_capped_at_the_number_of_sequences(n):
+    # Every column holds n distinct residues, more than n independent
+    # sequences show on average; with n = 20 the mean reaches 20.
+    seqs = [(AMINO_ACIDS[i:] + AMINO_ACIDS[:i]) * 3 for i in range(n)]
+    weights = alnutils.sequence_weights(make_alignment(seqs), "none")
+    assert math.fsum(weights) == pytest.approx(n, rel=1e-12)
 
 
 @pytest.mark.parametrize("scaling", ["none", "sum1", "max1", "avg1", "andy"])

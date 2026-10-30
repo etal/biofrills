@@ -188,6 +188,19 @@ def remove_empty_cols(records):
         )
 
 
+def _effective_count(mean_types, n_seqs):
+    """Number of independent sequences that show mean_types distinct types.
+
+    Solves 20 * (1 - (19/20)**k) = mean_types for k, where the left side is
+    the expected number of distinct types among k residues drawn uniformly
+    from the 20 amino acids, and caps the result at n_seqs.  A mean of 20 or
+    more has no solution and gives n_seqs.
+    """
+    if mean_types >= 20:
+        return float(n_seqs)
+    return min(math.log1p(-mean_types / 20) / math.log1p(-1 / 20), float(n_seqs))
+
+
 def sequence_weights(aln, scaling="none", gap_chars="-."):
     """Weight aligned sequences to emphasize more divergent members.
 
@@ -202,8 +215,8 @@ def sequence_weights(aln, scaling="none", gap_chars="-."):
                   so the mean weight is at most 1.0.  The robust weights of
                   CHAIN (Neuwald 2003) instead have a mean of one-half
                   before the cap.
-        - 'none': Weights are scaled to sum to the effective number of
-                  independent sequences.
+        - 'none': Weights sum to the effective number of independent
+                  sequences, estimated as described below.
 
     If no column holds enough residues to tell the sequences apart, as in a
     single sequence, every sequence receives the same weight: 1.0, or 1/N
@@ -213,116 +226,26 @@ def sequence_weights(aln, scaling="none", gap_chars="-."):
     Method: At each column position, award each different residue an equal
     share of the weight, and then divide that weight equally among the
     sequences sharing the same residue.  For each sequence, sum the
-    contributions from each position to give a sequence weight.
+    contributions from each position to give a sequence weight.  Each gap
+    character counts as a residue type of its own.  Columns in which fewer
+    than two residues, or fewer than a fifth of the rows, are not gaps
+    contribute nothing.
 
     See Henikoff & Henikoff (1994): Position-based sequence weights.
+
+    Effective number of sequences: k independent sequences whose residues
+    are drawn uniformly from the 20 amino acids show on average
+    20 * (1 - (19/20)**k) distinct residue types in a column.  The 'none'
+    scaling counts the distinct residue types of each contributing column,
+    not counting gaps, and solves that expression for k at the mean count,
+    capped at the number of sequences.  Identical sequences thus count as
+    one sequence, and a mean of 20 or more types counts as all of them.
+    Real residue frequencies are not uniform, so independent sequences show
+    fewer distinct types than this expectation, and the estimate tends to
+    be low.  PSI-BLAST (Altschul et al. 1997) likewise measures the
+    diversity of an alignment by its mean number of distinct residue types
+    per column.
     """
-    # Probability is hard, let's estimate by sampling!
-    # Sample k from a population of 20 with replacement; how many unique k were
-    # chosen? Average of 10000 runs for k = 0..100
-    expectk = [
-        0.0,
-        1.0,
-        1.953,
-        2.861,
-        3.705,
-        4.524,
-        5.304,
-        6.026,
-        6.724,
-        7.397,
-        8.04,
-        8.622,
-        9.191,
-        9.739,
-        10.264,
-        10.758,
-        11.194,
-        11.635,
-        12.049,
-        12.468,
-        12.806,
-        13.185,
-        13.539,
-        13.863,
-        14.177,
-        14.466,
-        14.737,
-        15.005,
-        15.245,
-        15.491,
-        15.681,
-        15.916,
-        16.12,
-        16.301,
-        16.485,
-        16.671,
-        16.831,
-        16.979,
-        17.151,
-        17.315,
-        17.427,
-        17.559,
-        17.68,
-        17.791,
-        17.914,
-        18.009,
-        18.113,
-        18.203,
-        18.298,
-        18.391,
-        18.46,
-        18.547,
-        18.617,
-        18.669,
-        18.77,
-        18.806,
-        18.858,
-        18.934,
-        18.978,
-        19.027,
-        19.085,
-        19.119,
-        19.169,
-        19.202,
-        19.256,
-        19.291,
-        19.311,
-        19.357,
-        19.399,
-        19.416,
-        19.456,
-        19.469,
-        19.5,
-        19.53,
-        19.553,
-        19.562,
-        19.602,
-        19.608,
-        19.629,
-        19.655,
-        19.67,
-        19.681,
-        19.7,
-        19.716,
-        19.724,
-        19.748,
-        19.758,
-        19.765,
-        19.782,
-        19.791,
-        19.799,
-        19.812,
-        19.82,
-        19.828,
-        19.844,
-        19.846,
-        19.858,
-        19.863,
-        19.862,
-        19.871,
-        19.882,
-    ]
 
     def col_weight(column):
         """Represent the diversity at a position.
@@ -335,44 +258,53 @@ def sequence_weights(aln, scaling="none", gap_chars="-."):
         are represented, a residue represented in only one sequence contributes
         a score of 1/r to that sequence, whereas a residue represented in s
         sequences contributes a score of 1/rs to each of the s sequences.
+
+        Also returns the number of distinct residue types other than gaps,
+        which is 0 for a skipped column and at least 1 otherwise.
         """
         # Skip columns of all or mostly gaps (i.e. rare inserts)
         min_nongap = max(2, 0.2 * len(column))
         if len([c for c in column if c not in gap_chars]) < min_nongap:
             return ([0] * len(column), 0)
         # Count the number of occurrences of each residue type
-        # (Treat gaps as a separate, 21st character)
+        # (Each gap character is a residue type of its own here, but not in
+        # the count of residue types returned for the effective number)
         counts = Counter(column)
         # Get residue weights: 1/rs, where
         # r = nb. residue types, s = count of a particular residue type
         n_residues = len(counts)  # r
         freqs = dict((aa, 1.0 / (n_residues * count)) for aa, count in counts.items())
         weights = [freqs[aa] for aa in column]
-        return (weights, n_residues)
+        return (weights, sum(1 for aa in counts if aa not in gap_chars))
 
     if not len(aln):
         raise ValueError("No sequences to weight")
     seq_weights = [0] * len(aln)
-    tot_nres = 0.0  # Expected no. different types in independent seqs
+    n_cols = 0
+    n_types = 0  # Distinct non-gap types, summed over contributing columns
     # Sum the contributions from each position along each sequence
     # -> total weight
     for col in zip(*aln, strict=True):
-        wts, nres = col_weight(col)
-        assert sum(wts) <= 20
-        tot_nres += expectk[nres] if nres < len(expectk) else 20
+        wts, col_types = col_weight(col)
+        if col_types:
+            n_cols += 1
+            n_types += col_types
         for idx, wt in enumerate(wts):
             seq_weights[idx] += wt
-    if not tot_nres:
+    if not n_cols:
         # Nothing distinguishes the sequences, so weight them equally: one
         # unit of raw weight each, as N independent sequences, which every
         # scaling below turns into its uniform vector.
         seq_weights = [1.0] * len(aln)
-        tot_nres = float(len(aln))
     # Normalize w/ the given scaling criterion
     if scaling == "none":
-        avg_seq_len = tot_nres / len(aln)
-        return [wt / avg_seq_len for wt in seq_weights]
-    if scaling == "max1":
+        if n_cols:
+            # Each contributing column distributes one unit of weight in
+            # total, so the raw weights sum to n_cols.
+            scale = _effective_count(n_types / n_cols, len(aln)) / n_cols
+        else:
+            scale = 1.0
+    elif scaling == "max1":
         scale = 1.0 / max(seq_weights)
     elif scaling == "sum1":
         scale = 1.0 / sum(seq_weights)

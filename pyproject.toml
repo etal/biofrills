@@ -57,7 +57,6 @@ dev = [
     "biofrills[graph,logo]",
     "pytest>=9.0.2",
     "ruff>=0.17.2",
-    "scipy>=1.16.3",
 ]
 
 [tool.setuptools.packages.find]
@@ -93,13 +92,21 @@ biofrills = {path = ".", editable = true}
 # Conda-forge builds of the dependencies declared above, here and in the graph
 # and dev features, carry no versions: the floors in [project] and
 # [dependency-groups] still apply. The py312 and py27-oracle features pin
-# versions of their own. weblogo has no conda entry on purpose: conda-forge's
-# newest build, 3.7.12, is below its floor, so it comes from PyPI.
+# versions of their own.
 [tool.pixi.dependencies]
 biopython = "*"
 
 [tool.pixi.feature.graph.dependencies]
 networkx = "*"
+
+# weblogo has no conda entry on purpose: conda-forge's newest build, 3.7.12,
+# is below its floor, so it comes from PyPI. It requires SciPy, which nothing
+# else here does, so no floor of this project applies; SciPy comes from
+# conda-forge because a PyPI SciPy makes pixi lock a second, PyPI ruff beside
+# the conda one on linux-64, and CI's format check would then depend on which
+# of the two runs.
+[tool.pixi.feature.logo.dependencies]
+scipy = "*"
 
 [tool.pixi.feature.dev]
 # Keeps osx-64, which only py27-oracle needs, out of the Python 3 environments.
@@ -108,7 +115,6 @@ platforms = ["osx-arm64", "linux-64"]
 [tool.pixi.feature.dev.dependencies]
 pytest = "*"
 ruff = "*"
-scipy = "*"
 
 [tool.pixi.feature.dev.tasks]
 test = "pytest"

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Replay recorded reference cases against the current biofrills code.
 
-Every library case recorded under py27/library is called again with the
-current sources in this repository, and each case whose outcome differs from
-the recorded one is written to differences.json beside this script.
-README.md beside it explains each difference.
+Every library case recorded under py27/library whose function the library
+still has is called again with the current sources in this repository, and
+each case whose outcome differs from the recorded one is written to
+differences.json beside this script.  README.md beside it explains each
+difference.
 
 The cases and the comparison are those of tests/reference_cases.py, which
 tests/test_reference.py uses as well: a value is compared exactly, except

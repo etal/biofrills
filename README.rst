@@ -27,6 +27,7 @@ Reading CMA files with ``seq-diff`` and ``seq-purge`` requires biocma 0.3 or lat
 
 This version is not yet released.
 The latest release on PyPI, 0.3.1, requires Python 2.7 and does not install the command-line programs.
+This version no longer has the ``stats`` package of 0.3.1: ``scipy.stats.chi2.sf`` computes the upper tail of the chi-squared distribution that ``stats.chisq.chisqprob`` approximated.
 
 Command-line programs
 ---------------------
@@ -66,8 +67,6 @@ Library
     Extraction of records by identifier from an indexed FASTA file; residue frequencies of a sequence.
 ``logoutils``
     Per-column residue counts and entropy from weblogo (``logo`` extra).
-``stats.chisq``
-    The upper-tail probability of the chi-squared distribution, without SciPy.
 ``cmdutils``
     The logging configuration of the command-line programs.
 

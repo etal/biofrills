@@ -125,6 +125,8 @@ Where computing the `"seqweights"` weights itself fails, as on the single-sequen
 
 `library/chisqprob.json` names the function in `function` and records `chisqprob(x, df)` in `rows` as `[x, df, outcome]`, over a grid of `x` from -1 to 1000 and `df` from 0 to 100, including two non-integer values of `df`.
 The test for `x <= 0` precedes the test for `df <= 0`, so `x = 0` returns `1.0` for every `df`, including `df = 0`.
+The function was removed with the `stats` package in 0.4.0, and `scipy.stats.chi2.sf` computes the tail it approximated.
+`tests/reference_cases.py` therefore does not replay this file, which stays as captured.
 
 `scripts/<case>.json` records one command-line run: the script, its arguments, the input file given on standard input (if any), the exit status, standard output, standard error, and the contents of any files the script wrote.
 A case is named `<script>.<input>[.<options>]`, with options abbreviated as on the command line; for example, `seq-blocks.cdc2.w.t09` runs `seq-blocks -w -t 0.9 cdc2-domain.aln.fasta`.
@@ -179,14 +181,10 @@ The cases whose current output differs, explained below under "Consensus ties", 
   Without weights, `blocks` computes the non-gap fraction as the quotient of integer counts `(n - g) / n`, rounded once, rather than as `1 - g / n`, rounded twice; with one residue in five rows, the latter gave `0.19999999999999996` and dropped the column at `threshold` 0.2.
   The two forms never disagree at the recorded thresholds 0.4, 0.5 and 0.9.
 - **Platform math library.**
-  `chisqprob` calls `math.lgamma`, whose result depends on the platform's C math library.
-  The fixtures were captured on x86_64 macOS under Rosetta 2, where Python 3.12 reproduces every `chisqprob` value exactly.
-  On arm64 macOS, `math.lgamma(5.0)` is `3.1780538303479444` rather than `3.178053830347945`, and 10 of the 273 recorded values, all with `df` 2.5, 10 or 100, differ from the fixture by up to 246 units in the last place, a relative difference of at most `2.9e-14`.
-  These values need a relative tolerance of about `1e-13`, larger than the one given above for summation.
-  `sequence_weights` under the `none` scaling calls `math.log1p` (see "Effective number of sequences" below), so its weights, and the weighted `aa_counts` and `aa_frequencies` computed from them, depend on the C math library as well.
+  `sequence_weights` under the `none` scaling calls `math.log1p` (see "Effective number of sequences" below), so its weights, and the weighted `aa_counts` and `aa_frequencies` computed from them, depend on the platform's C math library.
   At the seven arguments that the recorded inputs give, and at the constant `log1p(-1/20)`, Python 3.12 returns identical results on arm64 macOS and on arm64 and x86_64 Linux with glibc 2.41, so the weights and counts are compared exactly, and the frequencies with the tolerance given above for summation.
   Over 200,000 random arguments between -1 and -0.05, however, 7.6% of the results differ by one unit in the last place between macOS and glibc, and such a difference at any of the seven recorded arguments would change the weights in their last place.
-  On a platform where that happens, these cases need a relative tolerance of their own, as `chisqprob` does, rather than new entries in `differences.json`.
+  On a platform where that happens, these cases need a relative tolerance of their own, justified here, rather than new entries in `differences.json`.
 - **Exception messages.**
   The exception type is the reference; the message text is the interpreter's.
   For example, Python 2 reports integer division by zero as `integer division or modulo by zero` and Python 3 as `division by zero`.
@@ -218,16 +216,16 @@ The cases whose current output differs, explained below under "Consensus ties", 
   `seq-convert`, `seq-extract`, `seq-purge`, `seq-sort`, `seq-intersect` and `seq-diff` write records through Biopython's writers, and `seq-dupes` through `SeqRecord.format`, so their output also depends on the Biopython version.
   The CMA output of `seq-purge` and `seq-diff` is written by biocma.
 - **Not captured.**
-  `seq-pick -r` and `stats.uniqueof20` sample at random.
+  `seq-pick -r` samples at random.
   `logoutils` requires WebLogo, whose computations are its own rather than biofrills'.
   The on-disk index cache of `seq-intersect -c` is a side effect rather than an output.
 
 ## Differences in library output
 
-`replay.py` calls every recorded library case again with the current sources of this repository and writes each case whose outcome differs from the recorded one to `differences.json`.
-It compares outcomes as `tests/test_reference.py` does, through the shared module `tests/reference_cases.py`, so the floating-point differences described above under "Summation order of weighted frequencies", "Compensated summation" and "Platform math library" are compared with a tolerance and produce no entries; the exception is the `log1p` dependence of the `none` weights, which is compared exactly because no measured platform shows it at the recorded inputs.
+`replay.py` calls every recorded library case of a function that still exists again with the current sources of this repository and writes each case whose outcome differs from the recorded one to `differences.json`.
+It compares outcomes as `tests/test_reference.py` does, through the shared module `tests/reference_cases.py`, so the floating-point differences described above under "Summation order of weighted frequencies" and "Compensated summation" are compared with a tolerance and produce no entries; the `log1p` dependence of the `none` weights, described under "Platform math library", is compared exactly because no measured platform shows it at the recorded inputs.
 An entry identifies the case as the fixture does: the fixture file relative to `py27/`, the section, the alignment for a `tie-batch.json` case, and the index of the case within its section, which is `null` for a section that records a single outcome.
-It then repeats the fields that describe the call (`weights` and `kwargs` where the fixture records them, `rows` for a pairwise case, `x` and `df` for a `chisqprob` case), and gives the recorded outcome, the current outcome, and, where both are strings of equal length, the 1-based columns at which they differ.
+It then repeats the fields that describe the call (`weights` and `kwargs` where the fixture records them, `rows` for a pairwise case), and gives the recorded outcome, the current outcome, and, where both are strings of equal length, the 1-based columns at which they differ.
 Every entry is explained below, and all six kinds are deliberate changes of behavior.
 In the third and fourth kinds the recorded outcome is an exception, so they change no outcome that the original code completed.
 A test of the current code expects the fixture value except where `differences.json` records another.

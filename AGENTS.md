@@ -9,7 +9,7 @@ The 2013 Python 2 code base has been ported to Python 3.12+ and current Biopytho
 ## Consumers
 
 BioFrills exists mainly to support [CladeCompare](https://github.com/etal/cladecompare) and [Fammer](https://github.com/etal/fammer), which pin it to a git commit.
-The names they call are the compatibility contract: `alnutils.sequence_weights`, `alnutils.aa_frequencies`, `alnutils.blocks`, `alnutils.remove_empty_cols`, `consensus.consensus` (with `weights`, `gap_threshold` and `trim_ends`), `logoutils.aln2logodata` and `stats.chisq.chisqprob`.
+The names they call are the compatibility contract: `alnutils.sequence_weights`, `alnutils.aa_frequencies`, `alnutils.blocks`, `alnutils.remove_empty_cols`, `consensus.consensus` (with `weights`, `gap_threshold` and `trim_ends`) and `logoutils.aln2logodata`.
 A difference in the last place can decide a gap column whose weighted gap fraction lies exactly at `gap_threshold`.
 A gap decision in `consensus` becomes a match column of a Fammer MAPGAPS profile, or a column that CladeCompare assigns p = 1 instead of testing, and a change in `aa_frequencies` moves CladeCompare's pseudocounts and with them its p-values.
 Treat any change to these functions as a change of output, and check it against the reference data below.
@@ -37,7 +37,7 @@ The command-line programs are tested as installed, so after a change to `[projec
 - `tests/data/py27/` is captured output of the pre-port sources; never edit it by hand.
   The capture runs from a git worktree of the pre-port commit `615d27c` beside this repository, never from the working tree, in a Python 2.7 environment such as the osx-64 `py27-oracle` pixi environment; `tests/data/README.md` gives the steps.
 - `tests/data/capture_py27.py` is frozen Python 2 code; ruff excludes it, and it must not be modernized.
-- `tests/reference_cases.py` enumerates every recorded library case, and both `tests/test_reference.py` and `tests/data/replay.py` use it.
+- `tests/reference_cases.py` enumerates every recorded library case of a function that still exists, and both `tests/test_reference.py` and `tests/data/replay.py` use it.
   Floating-point values are compared with the relative tolerances defined there, each of which `tests/data/README.md` justifies; do not widen one to make a test pass.
 - A change that deliberately moves a recorded library outcome is recorded by regenerating `tests/data/differences.json` with `pixi run python tests/data/replay.py`, and each new entry is explained under "Differences in library output" in `tests/data/README.md`.
   `git diff tests/data/differences.json` then shows exactly which outcomes moved.
@@ -51,8 +51,6 @@ The command-line programs are tested as installed, so after a change to `[projec
 - `consensus` decides weighted gap columns, and `alnutils.blocks` weighted non-gap columns, with `math.fsum` and a `1e-12` margin below the threshold (`alnutils._GAP_TOLERANCE`), which makes the decision independent of row order and of the rounding of the sequence weights.
   The weighted counts of `aa_counts` still accumulate in row order, the `sum1`, `avg1` and `andy` scalings of `sequence_weights` still divide by a built-in `sum`, and the `aa_frequencies` normalizer still sums in dictionary order; changing any of these moves recorded output and needs its own decision.
 - Ties between residue types in `consensus` are broken by an explicit rule ending in alphabetical order; never let dictionary or set iteration order decide an output.
-- `stats.chisq.chisqprob` is adapted from Cephes and deliberately differs from `scipy.stats.chi2.sf`; its module docstring gives the difference.
-  Do not substitute one for the other.
 
 ## Pitfalls
 

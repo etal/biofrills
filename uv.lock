@@ -22,7 +22,6 @@ dev = [
     { name = "biofrills", extra = ["graph", "logo"] },
     { name = "pytest" },
     { name = "ruff" },
-    { name = "scipy" },
 ]
 
 [package.metadata]
@@ -38,7 +37,6 @@ dev = [
     { name = "biofrills", extras = ["graph", "logo"] },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "ruff", specifier = ">=0.17.2" },
-    { name = "scipy", specifier = ">=1.16.3" },
 ]
 
 [[package]]

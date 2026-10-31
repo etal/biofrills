@@ -14,8 +14,8 @@ from alignments import DATA
 from reference_cases import (
     ALIGNMENT_FIXTURES,
     ALIGNMENT_SECTIONS,
+    LIBRARY,
     all_cases,
-    chisqprob_cases,
     comparable,
     entry_key,
     library_cases,
@@ -69,13 +69,16 @@ def test_every_recorded_section_is_compared():
     assert recorded - {"input", "ids"} == enumerated == set(ALIGNMENT_SECTIONS)
 
 
+def test_every_recorded_file_is_replayed():
+    """Every library fixture is replayed except chisqprob.json."""
+    recorded = {f"library/{path.name}" for path in LIBRARY.glob("*.json")}
+    replayed = {case.file for case in all_cases()}
+    assert recorded - replayed == {"library/chisqprob.json"}
+
+
 @pytest.mark.parametrize("section", ["sequence_weights", "consensus"])
 def test_tie_batch(section):
     check(mismatches(c for c in tie_batch_cases() if c.section == section))
-
-
-def test_chisqprob():
-    check(mismatches(chisqprob_cases()))
 
 
 def test_differences_name_changed_cases():

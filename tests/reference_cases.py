@@ -20,7 +20,6 @@ from Bio import AlignIO, SeqIO
 from Bio.Align import MultipleSeqAlignment
 
 from biofrills import alnutils, consensus, pairutils
-from biofrills.stats import chisq
 
 LIBRARY = DATA / "py27" / "library"
 ALIGNMENT_FIXTURES = sorted(path.name for path in LIBRARY.glob("*.aln.json"))
@@ -41,9 +40,6 @@ ALIGNMENT_SECTIONS = [
 # built-in sum() of Python 3.12 in sequence_weights move values by at most
 # 3 units in the last place, a relative 4.2e-16.
 SUM_REL_TOL = 1e-15
-# math.lgamma depends on the platform's C math library; on arm64 macOS,
-# chisqprob differs from the x86_64 capture by a relative 2.9e-14 at most.
-LGAMMA_REL_TOL = 1e-13
 
 # sequence_weights scalings whose normalizer is a sum of the raw weights.
 SUMMED_SCALINGS = {"sum1", "avg1", "andy"}
@@ -202,27 +198,14 @@ def tie_batch_cases():
             )
 
 
-def chisqprob_cases():
-    """The recorded cases of library/chisqprob.json."""
-    for index, (x, df, recorded) in enumerate(load("chisqprob.json")["rows"]):
-        yield Case(
-            "library/chisqprob.json",
-            None,
-            "chisqprob",
-            index,
-            {"x": x, "df": df},
-            LGAMMA_REL_TOL,
-            partial(chisq.chisqprob, x, df),
-            recorded,
-        )
-
-
 def all_cases():
-    """Every recorded library case."""
+    """Every recorded library case of a function the library still has.
+
+    library/chisqprob.json is not replayed: stats.chisq was removed in 0.4.0.
+    """
     for fname in ALIGNMENT_FIXTURES:
         yield from library_cases(fname)
     yield from tie_batch_cases()
-    yield from chisqprob_cases()
 
 
 def outcome(func, *args, **kwargs):

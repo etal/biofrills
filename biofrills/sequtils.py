@@ -72,10 +72,12 @@ _SIGNATURE_KEY = "biofrills_signature"
 
 
 def _cached_index(reffile, clean_accs, key_function):
-    """Load the index cached beside reffile, or rebuild it if it is unusable.
+    """Return an index of reffile, reusing the cache beside it where possible.
 
     Biopython loads any existing file at the path given to index_db, so a
-    rebuild is written to a new file that then replaces the cache.
+    rebuild is written to a new file that then replaces the cache. A matching
+    cache of zero records is valid but cannot be loaded, so it is kept and the
+    reference is indexed in memory instead.
     """
     refcache = os.fspath(reffile) + ".sqlite"
     # Taken before the reference is read, so that a change made while the
@@ -86,14 +88,26 @@ def _cached_index(reffile, clean_accs, key_function):
     )
     if os.path.exists(refcache):
         try:
-            if _read_signature(refcache) == signature:
+            cached_signature, count = _read_metadata(refcache)
+            matches = cached_signature == signature
+            if matches and int(count) != 0:
                 return SeqIO.index_db(refcache, key_function=key_function)
+        except Exception:
+            logger.warning("Skipping corrupted cache; rebuilding index")
+        else:
+            if matches:
+                # Biopython's _load_index raises TypeError on MAX(_ROWID_) of
+                # an empty offset table and leaves its database connection
+                # open (Biopython 1.74 through at least 1.88). This return is
+                # in the else clause so that an error from indexing the
+                # reference is not reported as a corrupt cache.
+                return SeqIO.index_db(
+                    ":memory:", [reffile], "fasta", key_function=key_function
+                )
             logger.warning(
                 "Cache does not record that it was built from this reference "
                 "file with this setting of accession cleaning; rebuilding index"
             )
-        except Exception:
-            logger.warning("Skipping corrupted cache; rebuilding index")
 
     # Built in the directory of the cache, since Biopython records the
     # reference path relative to the index file
@@ -116,13 +130,20 @@ def _cached_index(reffile, clean_accs, key_function):
     return index
 
 
-def _read_signature(refcache):
-    """Return the signature recorded in a cached index, or None if it has none."""
+def _read_metadata(refcache):
+    """Return the signature and the record count recorded in a cached index.
+
+    Either is None if the index lacks that row; an index written by an earlier
+    version of biofrills records no signature.
+    """
     with closing(sqlite3.connect(refcache)) as con:
-        row = con.execute(
-            "SELECT value FROM meta_data WHERE key = ?;", (_SIGNATURE_KEY,)
-        ).fetchone()
-    return row[0] if row else None
+        rows = dict(
+            con.execute(
+                "SELECT key, value FROM meta_data WHERE key IN (?, ?);",
+                (_SIGNATURE_KEY, "count"),
+            ).fetchall()
+        )
+    return rows.get(_SIGNATURE_KEY), rows.get("count")
 
 
 def aa_frequencies(seq, gap_chars="-."):

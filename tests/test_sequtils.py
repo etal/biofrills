@@ -28,6 +28,42 @@ def test_intersect_keys_reuses_a_matching_cache(tmp_path, caplog):
     assert sorted(os.listdir(tmp_path)) == ["ref.fa", "ref.fa.sqlite"]
 
 
+def test_intersect_keys_reuses_a_cache_of_an_empty_reference(tmp_path, caplog):
+    """A cache of a reference without records is reused without a warning."""
+    (tmp_path / "ref.fa").write_text("")
+    with caplog.at_level(logging.WARNING):
+        assert intersect(tmp_path, ["a"], cache=True) == []
+        inode = os.stat(tmp_path / "ref.fa.sqlite").st_ino
+        assert intersect(tmp_path, ["a"], cache=True) == []
+    # Collected before the assertions, so that a database connection left open
+    # by a failed load is reported as a ResourceWarning in this test (Python
+    # 3.13 and later; earlier versions do not warn on an unclosed connection)
+    gc.collect()
+    assert not caplog.records
+    assert os.stat(tmp_path / "ref.fa.sqlite").st_ino == inode
+
+
+def test_intersect_keys_does_not_report_an_indexing_failure_as_a_corrupt_cache(
+    tmp_path, caplog, monkeypatch
+):
+    """An error from indexing the reference is not reported as a corrupt cache."""
+    (tmp_path / "ref.fa").write_text("")
+    intersect(tmp_path, ["a"], cache=True)
+    inode = os.stat(tmp_path / "ref.fa.sqlite").st_ino
+    index_db = sequtils.SeqIO.index_db
+
+    def fail(target, *args, **kwargs):
+        if target == ":memory:":
+            raise OSError("read failed")
+        return index_db(target, *args, **kwargs)
+
+    monkeypatch.setattr(sequtils.SeqIO, "index_db", fail)
+    with caplog.at_level(logging.WARNING), pytest.raises(OSError, match="read failed"):
+        intersect(tmp_path, ["a"], cache=True)
+    assert not caplog.records
+    assert os.stat(tmp_path / "ref.fa.sqlite").st_ino == inode
+
+
 def test_intersect_keys_caches_a_reference_given_as_a_string(tmp_path):
     """seq-intersect passes the reference path as a string."""
     (tmp_path / "ref.fa").write_text(">a\nACDE\n")

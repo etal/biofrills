@@ -491,6 +491,33 @@ def test_pick_cluster_with_some_pairwise_identities_zero(tmp_path):
     assert proc.stdout == fasta(SIMILAR[:2])
 
 
+# f is the first half of p, with gaps for the rest
+WITH_FRAGMENT = [
+    ("p", "MKVLAYRGHQ"),
+    ("f", "MKVLA-----"),
+    ("q", "MKVLAYRGHE"),
+    ("r", "MKVLAYRGWE"),
+    ("s", "MKVLAYRGWQ"),
+]
+
+
+@pytest.mark.parametrize(
+    "records, gappy",
+    [(PARTLY_DISJOINT, "b"), (WITH_FRAGMENT, "f")],
+    ids=["row-of-gaps", "fragment"],
+)
+def test_pick_k_means_does_not_take_a_gappy_record_as_a_medoid(
+    records, gappy, tmp_path
+):
+    """A medoid counts its own residues, so a gappy record gains little as one."""
+    (tmp_path / "gappy.fa").write_text(fasta(records))
+    proc = run("seq-pick", ["-k", "2", "gappy.fa"], tmp_path)
+    assert (proc.returncode, proc.stderr) == (0, "")
+    picked = [record.split("\n")[0][1:] for record in split_records(proc.stdout)[1:]]
+    assert len(picked) == 2
+    assert gappy not in picked
+
+
 @pytest.mark.parametrize("hashseed", ["1", "2", "3"])
 def test_pick_cluster_order_does_not_depend_on_the_hash_seed(hashseed, tmp_path):
     # CDC2-1_Sm and CDC2-2_Sm have the same aligned sequence; with hash seeds

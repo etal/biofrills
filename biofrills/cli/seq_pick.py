@@ -60,13 +60,29 @@ def get_kmeans(infname, N):
 
     See: https://en.wikipedia.org/wiki/K-medoids
 
-    Input sequences must be aligned. Where no two sequences share an aligned
-    residue, every cost is 0, no swap lowers the total, and the medoids stay
-    as get_cluster seeded them.
+    Input sequences must be aligned. The cost of a set of medoids is the
+    negated sum of each sequence's identity to its closest medoid, where a
+    medoid's identity to itself is its number of residues. Minimizing it is
+    equivalent to minimizing the number of residues of each sequence that its
+    medoid does not match. A sequence with few residues, such as a fragment or
+    a row of gaps, therefore gains little as a medoid, while an unrelated
+    sequence with many residues still forms a cluster of its own.
+
+    Where no two sequences share an aligned residue, a set of medoids costs
+    only the residues of its own sequences, so a swap replaces a medoid only
+    by a sequence with more residues; among sequences with equal numbers of
+    residues, the medoids stay as get_cluster seeded them.
     """
     MAX_ITERATE = 10
     G = alnutils.to_graph(infname, pairutils.identity_abs)
     nodes = G.nodes()
+    # identity_abs of a sequence with itself is its number of residues; the
+    # graph has no self-loops to hold it. No sequence matches another at more
+    # positions than it has residues, so a medoid is its own closest medoid.
+    nres = {
+        rec.id: pairutils.identity_abs(str(rec.seq), str(rec.seq))
+        for rec in SeqIO.parse(infname, "fasta")
+    }
 
     def associate(medoids):
         """Closes over: nodes, G"""
@@ -82,19 +98,18 @@ def get_kmeans(infname, N):
         return assoc
 
     def total_cost(assoc):
-        """Sum of all distances to nearest medoid. Closes over: G.
+        """Negated sum of each sequence's identity to its medoid.
 
-        NB: identity is a measure of similarity, not distance, so costs are
-        never positive (pairwise cost = -identity).
+        A medoid counts its own residues. Closes over: G, nres.
         """
         cost = 0.0
         for med, cluster in assoc.items():
+            cost -= nres[med]
             for otr in cluster:
                 cost -= G[otr][med]["weight"]
         return cost
 
     # 1. Select k of the n nodes as medoids
-    # NB: For efficiency, take "hubs" or random?
     curr_meds = get_cluster(infname, N)
 
     for _i in range(MAX_ITERATE):

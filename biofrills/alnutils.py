@@ -381,8 +381,9 @@ def sequence_weights(aln, scaling="none", gap_chars="-."):
 def to_graph(alnfname, weight_func):
     """Create a NetworkX graph from a sequence alignment.
 
-    Nodes are string sequence IDs; edge weights are the output of weight_func
-    between each pair, by default the absolute identity (# identical chars).
+    Nodes are string sequence IDs; the weight of the edge between each pair is
+    the output of weight_func on their sequence strings, for example
+    pairutils.identity_abs, their number of matching sites.
     """
     import networkx
 

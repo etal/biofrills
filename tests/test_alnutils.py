@@ -6,6 +6,17 @@ import numpy as np
 import pytest
 from alignments import columns, make_alignment, make_records, rows
 from Bio.Align import MultipleSeqAlignment
+from Bio.SeqFeature import (
+    AfterPosition,
+    BetweenPosition,
+    CompoundLocation,
+    ExactPosition,
+    OneOfPosition,
+    SeqFeature,
+    SimpleLocation,
+    UnknownPosition,
+    WithinPosition,
+)
 
 from biofrills import alnutils
 
@@ -194,6 +205,92 @@ def test_dropping_no_column_keeps_letter_annotations_of_any_type(drop_columns, v
     records[0].letter_annotations["q"] = value
     cleaned = drop_columns(records)
     assert cleaned[0].letter_annotations["q"] == value
+
+
+# Locations on the row "AC--DE-FGH", whose columns 2, 3 and 6 hold only gaps
+# in the alignment below, and where each lies once those columns go.  A
+# location that keeps none of the columns it spanned maps to None.
+FEATURE_LOCATIONS = {
+    "interior gap": (SimpleLocation(1, 5, strand=-1), SimpleLocation(1, 3, strand=-1)),
+    "all dropped": (SimpleLocation(2, 4), None),
+    "site": (SimpleLocation(6, 6), SimpleLocation(4, 4)),
+    "join": (
+        CompoundLocation(
+            [SimpleLocation(0, 1), SimpleLocation(2, 4), SimpleLocation(7, 9)]
+        ),
+        CompoundLocation([SimpleLocation(0, 1), SimpleLocation(4, 6)]),
+    ),
+    "join of one": (
+        CompoundLocation([SimpleLocation(2, 4), SimpleLocation(7, 9)]),
+        SimpleLocation(4, 6),
+    ),
+    "join of none": (
+        CompoundLocation([SimpleLocation(2, 3), SimpleLocation(6, 7)]),
+        None,
+    ),
+    "within": (
+        SimpleLocation(WithinPosition(1, left=1, right=5), AfterPosition(10)),
+        SimpleLocation(WithinPosition(1, left=1, right=3), AfterPosition(7)),
+    ),
+    # A between position whose bounds map to the same position is exact.
+    "between": (
+        SimpleLocation(BetweenPosition(2, left=2, right=3), 9),
+        SimpleLocation(ExactPosition(2), 6),
+    ),
+    "one of": (
+        SimpleLocation(OneOfPosition(5, [ExactPosition(5), ExactPosition(8)]), 10),
+        SimpleLocation(OneOfPosition(3, [ExactPosition(3), ExactPosition(5)]), 7),
+    ),
+    "unknown": (
+        SimpleLocation(UnknownPosition(), 8),
+        SimpleLocation(UnknownPosition(), 5),
+    ),
+    "other sequence": (
+        SimpleLocation(5, 8, ref="X1"),
+        SimpleLocation(5, 8, ref="X1"),
+    ),
+}
+
+
+@DROP_COLUMNS
+def test_dropping_columns_maps_feature_locations_to_kept_columns(drop_columns):
+    records = make_records(["AC--DE-FGH", "KL--MN-PQR"])
+    records[0].features = [
+        SeqFeature(old, type=key, id=key, qualifiers={"note": [key]})
+        for key, (old, _new) in FEATURE_LOCATIONS.items()
+    ] + [SeqFeature(None, type="no location", id="no location")]
+    before = [repr(feature.location) for feature in records[0].features]
+    cleaned = drop_columns(records)
+    assert rows(cleaned) == ["ACDEFGH", "KLMNPQR"]
+    mapped = {feature.id: feature for feature in cleaned[0].features}
+    # repr shows the type of each position, which == ignores.
+    expected = {
+        key: repr(new)
+        for key, (_old, new) in FEATURE_LOCATIONS.items()
+        if new is not None
+    }
+    expected["no location"] = "None"
+    assert {key: repr(feature.location) for key, feature in mapped.items()} == expected
+    assert {key: feature.type for key, feature in mapped.items()} == {
+        key: key for key in mapped
+    }
+    assert mapped["interior gap"].extract(cleaned[0].seq).reverse_complement() == "CD"
+    assert mapped["join"].qualifiers == {"note": ["join"]}
+    # The input records keep their features, and share no feature object with
+    # the result.
+    assert [repr(feature.location) for feature in records[0].features] == before
+    input_ids = {id(feature) for feature in records[0].features}
+    assert input_ids.isdisjoint(id(feature) for feature in cleaned[0].features)
+
+
+@DROP_COLUMNS
+def test_dropping_no_column_keeps_feature_locations(drop_columns):
+    records = make_records(["ACD"])
+    records[0].features = [SeqFeature(SimpleLocation(1, 3, strand=-1), type="misc")]
+    cleaned = drop_columns(records)
+    assert [repr(feature.location) for feature in cleaned[0].features] == [
+        repr(SimpleLocation(1, 3, strand=-1))
+    ]
 
 
 # Rows as hmmalign writes them: match columns in uppercase and '-', and the

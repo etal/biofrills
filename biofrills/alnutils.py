@@ -1,12 +1,22 @@
 """Utilities for manipulating multiple sequence alignments."""
 
 import math
+from bisect import bisect_left
 from collections import Counter, defaultdict
 from copy import deepcopy
 
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
 from Bio.Seq import Seq
+from Bio.SeqFeature import (
+    BetweenPosition,
+    CompoundLocation,
+    ExactPosition,
+    OneOfPosition,
+    SeqFeature,
+    SimpleLocation,
+    WithinPosition,
+)
 from Bio.SeqRecord import SeqRecord
 
 # A weighted proportion at most this far below its threshold counts as
@@ -113,10 +123,9 @@ def blocks(aln, threshold=0.5, weights=None):
     A column that is kept keeps its characters as they are, lowercase
     residues included. Every record is kept; its sequence is empty if no
     column remains. Per-letter annotations, such as FASTQ quality scores,
-    keep their values at the kept columns; features are copied unchanged, so
-    their locations still refer to the columns of the input. Rows of
-    different lengths, and weights of a length other than the number of
-    rows, raise ValueError.
+    keep their values at the kept columns, and feature locations are mapped
+    to them as described for remove_empty_cols. Rows of different lengths,
+    and weights of a length other than the number of rows, raise ValueError.
 
     For given sequence weights, which columns are kept does not depend on the
     order of the alignment's rows: the unweighted proportion is a quotient of
@@ -185,10 +194,11 @@ def blocks(aln, threshold=0.5, weights=None):
     clean_recs = []
     for rec, seqstr in zip(aln, seqstrs, strict=True):
         newrec = deepcopy(rec)
-        # Selecting from the copy rather than from rec keeps every annotation
-        # value of the result unshared with the input, also when no column is
-        # dropped.
+        # Selecting from the copy rather than from rec leaves no annotation
+        # value or feature of the result shared with the input, also when no
+        # column is dropped.
         letter_annotations = _select_letter_annotations(newrec, keep)
+        newrec.features = _select_features(newrec, keep)
         # The seq setter refuses a new length while annotations are present.
         newrec.letter_annotations = {}
         newrec.seq = Seq(_select(seqstr, keep))
@@ -219,6 +229,82 @@ def _select_letter_annotations(rec, keep):
     if len(keep) == len(rec):
         return dict(rec.letter_annotations)
     return {key: _select(value, keep) for key, value in rec.letter_annotations.items()}
+
+
+def _select_features(rec, keep):
+    """The features of rec, with locations mapped to the column indices in keep.
+
+    A feature whose location loses every column it spanned is left out. When
+    every column is kept, the features are returned unchanged.
+    """
+    if len(keep) == len(rec):
+        return list(rec.features)
+    features = []
+    for feature in rec.features:
+        location = feature.location
+        if location is not None:
+            location = _map_location(location, keep)
+            if location is None:
+                continue
+        features.append(
+            SeqFeature(
+                location,
+                type=feature.type,
+                id=feature.id,
+                qualifiers=feature.qualifiers.copy(),
+            )
+        )
+    return features
+
+
+def _map_location(location, keep):
+    """A feature location mapped to the column indices in keep.
+
+    Returns None if the location spanned columns and keeps none of them. A
+    join keeps the parts that remain, and becomes a simple location if one
+    part remains. A location on another sequence (ref or ref_db) is returned
+    as it is.
+    """
+    if isinstance(location, CompoundLocation):
+        parts = [_map_location(part, keep) for part in location.parts]
+        parts = [part for part in parts if part is not None]
+        if len(parts) > 1:
+            return CompoundLocation(parts, location.operator)
+        return parts[0] if parts else None
+    if location.ref or location.ref_db:
+        return location
+    start = _map_position(location.start, keep)
+    end = _map_position(location.end, keep)
+    # An UnknownPosition is not an int and has no extent to lose.
+    if all(isinstance(pos, int) for pos in (location.start, location.end)):
+        if location.start < location.end and start == end:
+            return None
+    return SimpleLocation(start, end, strand=location.strand)
+
+
+def _map_position(position, keep):
+    """A position mapped to the number of kept columns before it.
+
+    A position keeps its type, and the bounds of a fuzzy position are mapped
+    the same way, except that a within or between position whose bounds come
+    to coincide becomes exact: GenBank cannot read back a between position
+    with equal bounds, and a within position with them is exact in effect.
+    """
+    if isinstance(position, (WithinPosition, BetweenPosition)):
+        mapped = bisect_left(keep, position)
+        left = bisect_left(keep, position._left)
+        right = bisect_left(keep, position._right)
+        if left == right:
+            return ExactPosition(mapped)
+        return type(position)(mapped, left=left, right=right)
+    if isinstance(position, OneOfPosition):
+        return OneOfPosition(
+            bisect_left(keep, position),
+            [_map_position(choice, keep) for choice in position.position_choices],
+        )
+    if isinstance(position, int):
+        return type(position)(bisect_left(keep, position))
+    return position
 
 
 def col_counts(col, weights=None, gap_chars="-."):
@@ -254,9 +340,12 @@ def remove_empty_cols(records):
 
     Every record is kept; its sequence is empty if no column remains.
     Per-letter annotations, such as FASTQ quality scores, keep their values
-    at the kept columns; features are passed on unchanged, so their locations
-    still refer to the columns of the input. Rows of different lengths raise
-    ValueError.
+    at the kept columns. Feature locations, read as columns of the
+    alignment, are mapped to the kept columns: each position becomes the
+    number of kept columns before it, so a feature spans the kept columns
+    of its old span. A feature that spanned columns of which none is kept
+    is left out, as is such a part of a join, and a location on another
+    sequence is left as it is. Rows of different lengths raise ValueError.
     """
     # In case it's a generator, turn it into a list
     records = list(records)
@@ -273,7 +362,7 @@ def remove_empty_cols(records):
             name=rec.name,
             description=rec.description,
             dbxrefs=rec.dbxrefs,
-            features=rec.features,
+            features=_select_features(rec, keep),
             annotations=rec.annotations,
             letter_annotations=_select_letter_annotations(rec, keep),
         )

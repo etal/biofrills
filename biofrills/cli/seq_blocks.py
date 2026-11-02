@@ -1,4 +1,9 @@
-"""Trim an alignment to conserved "blocks", i.e. remove gappy columns."""
+"""Trim an alignment to conserved "blocks", i.e. remove gappy columns.
+
+Both '-' and '.' are gaps. In an alignment that contains an uppercase residue,
+a lowercase residue is an insertion, as in the output of HMMER, and a column
+whose residues are all lowercase has a proportion of zero.
+"""
 
 import argparse
 import sys
@@ -26,7 +31,7 @@ def main(argv=None):
 
     args = AP.parse_args(argv)
     if not (0 < args.threshold <= 1):
-        sys.exit("Non-gap threshold (-t) must be between 0 and 1.")
+        sys.exit("Non-gap threshold (-t) must be greater than 0 and at most 1.")
 
     aln = AlignIO.read(args.infile, "fasta")
     baln = alnutils.blocks(aln, args.threshold, args.weight)

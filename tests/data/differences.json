@@ -2251,6 +2251,478 @@
    ]
   },
   {
+   "file": "library/synth-edge.aln.json",
+   "section": "blocks",
+   "case": 0,
+   "weights": null,
+   "kwargs": {
+    "threshold": 0.4
+   },
+   "recorded": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "MKV-LA.YRGH"
+     ],
+     [
+      "s2",
+      "s2",
+      "MKVILA.FRGH"
+     ],
+     [
+      "s3",
+      "s3",
+      "-KVIL-.YKGH"
+     ],
+     [
+      "s4",
+      "s4",
+      "MRV-LA.YRGN"
+     ],
+     [
+      "s5",
+      "s5",
+      "-KV-LS.YRG-"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "MKV-LAYRGH"
+     ],
+     [
+      "s2",
+      "s2",
+      "MKVILAFRGH"
+     ],
+     [
+      "s3",
+      "s3",
+      "-KVIL-YKGH"
+     ],
+     [
+      "s4",
+      "s4",
+      "MRV-LAYRGN"
+     ],
+     [
+      "s5",
+      "s5",
+      "-KV-LSYRG-"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "blocks",
+   "case": 1,
+   "weights": false,
+   "kwargs": {
+    "threshold": 0.4
+   },
+   "recorded": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "MKV-LA.YRGH"
+     ],
+     [
+      "s2",
+      "s2",
+      "MKVILA.FRGH"
+     ],
+     [
+      "s3",
+      "s3",
+      "-KVIL-.YKGH"
+     ],
+     [
+      "s4",
+      "s4",
+      "MRV-LA.YRGN"
+     ],
+     [
+      "s5",
+      "s5",
+      "-KV-LS.YRG-"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "MKV-LAYRGH"
+     ],
+     [
+      "s2",
+      "s2",
+      "MKVILAFRGH"
+     ],
+     [
+      "s3",
+      "s3",
+      "-KVIL-YKGH"
+     ],
+     [
+      "s4",
+      "s4",
+      "MRV-LAYRGN"
+     ],
+     [
+      "s5",
+      "s5",
+      "-KV-LSYRG-"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "blocks",
+   "case": 2,
+   "weights": null,
+   "kwargs": {
+    "threshold": 0.5
+   },
+   "recorded": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "MKVLA.YRGH"
+     ],
+     [
+      "s2",
+      "s2",
+      "MKVLA.FRGH"
+     ],
+     [
+      "s3",
+      "s3",
+      "-KVL-.YKGH"
+     ],
+     [
+      "s4",
+      "s4",
+      "MRVLA.YRGN"
+     ],
+     [
+      "s5",
+      "s5",
+      "-KVLS.YRG-"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "MKVLAYRGH"
+     ],
+     [
+      "s2",
+      "s2",
+      "MKVLAFRGH"
+     ],
+     [
+      "s3",
+      "s3",
+      "-KVL-YKGH"
+     ],
+     [
+      "s4",
+      "s4",
+      "MRVLAYRGN"
+     ],
+     [
+      "s5",
+      "s5",
+      "-KVLSYRG-"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "blocks",
+   "case": 3,
+   "weights": false,
+   "kwargs": {
+    "threshold": 0.5
+   },
+   "recorded": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "MKVLA.YRGH"
+     ],
+     [
+      "s2",
+      "s2",
+      "MKVLA.FRGH"
+     ],
+     [
+      "s3",
+      "s3",
+      "-KVL-.YKGH"
+     ],
+     [
+      "s4",
+      "s4",
+      "MRVLA.YRGN"
+     ],
+     [
+      "s5",
+      "s5",
+      "-KVLS.YRG-"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "MKVLAYRGH"
+     ],
+     [
+      "s2",
+      "s2",
+      "MKVLAFRGH"
+     ],
+     [
+      "s3",
+      "s3",
+      "-KVL-YKGH"
+     ],
+     [
+      "s4",
+      "s4",
+      "MRVLAYRGN"
+     ],
+     [
+      "s5",
+      "s5",
+      "-KVLSYRG-"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "blocks",
+   "case": 4,
+   "weights": null,
+   "kwargs": {
+    "threshold": 0.9
+   },
+   "recorded": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "KVL.YRG"
+     ],
+     [
+      "s2",
+      "s2",
+      "KVL.FRG"
+     ],
+     [
+      "s3",
+      "s3",
+      "KVL.YKG"
+     ],
+     [
+      "s4",
+      "s4",
+      "RVL.YRG"
+     ],
+     [
+      "s5",
+      "s5",
+      "KVL.YRG"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "KVLYRG"
+     ],
+     [
+      "s2",
+      "s2",
+      "KVLFRG"
+     ],
+     [
+      "s3",
+      "s3",
+      "KVLYKG"
+     ],
+     [
+      "s4",
+      "s4",
+      "RVLYRG"
+     ],
+     [
+      "s5",
+      "s5",
+      "KVLYRG"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "blocks",
+   "case": 5,
+   "weights": false,
+   "kwargs": {
+    "threshold": 0.9
+   },
+   "recorded": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "KVL.YRG"
+     ],
+     [
+      "s2",
+      "s2",
+      "KVL.FRG"
+     ],
+     [
+      "s3",
+      "s3",
+      "KVL.YKG"
+     ],
+     [
+      "s4",
+      "s4",
+      "RVL.YRG"
+     ],
+     [
+      "s5",
+      "s5",
+      "KVL.YRG"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "KVLYRG"
+     ],
+     [
+      "s2",
+      "s2",
+      "KVLFRG"
+     ],
+     [
+      "s3",
+      "s3",
+      "KVLYKG"
+     ],
+     [
+      "s4",
+      "s4",
+      "RVLYRG"
+     ],
+     [
+      "s5",
+      "s5",
+      "KVLYRG"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-edge.aln.json",
+   "section": "remove_empty_cols",
+   "case": null,
+   "recorded": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "-MKV-LA.YRGH-"
+     ],
+     [
+      "s2",
+      "s2",
+      "-MKVILA.FRGH-"
+     ],
+     [
+      "s3",
+      "s3",
+      "--KVIL-.YKGHQ"
+     ],
+     [
+      "s4",
+      "s4",
+      "AMRV-LA.YRGN-"
+     ],
+     [
+      "s5",
+      "s5",
+      "--KV-LS.YRG--"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "s1",
+      "s1 first sequence",
+      "-MKV-LAYRGH-"
+     ],
+     [
+      "s2",
+      "s2",
+      "-MKVILAFRGH-"
+     ],
+     [
+      "s3",
+      "s3",
+      "--KVIL-YKGHQ"
+     ],
+     [
+      "s4",
+      "s4",
+      "AMRV-LAYRGN-"
+     ],
+     [
+      "s5",
+      "s5",
+      "--KV-LSYRG--"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
    "file": "library/synth-mixedcase.aln.json",
    "section": "sequence_weights",
    "case": 0,
@@ -2825,6 +3297,354 @@
    },
    "current": {
     "value": "MK-VLWGH"
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "blocks",
+   "case": 0,
+   "weights": null,
+   "kwargs": {
+    "threshold": 0.4
+   },
+   "recorded": {
+    "value": [
+     [
+      "m1",
+      "m1",
+      "MKaVLwGH"
+     ],
+     [
+      "m2",
+      "m2",
+      "MKaVlwGH"
+     ],
+     [
+      "m3",
+      "m3",
+      "MRa-LwGN"
+     ],
+     [
+      "m4",
+      "m4",
+      "MKa-LYGH"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "m1",
+      "m1",
+      "MKVLwGH"
+     ],
+     [
+      "m2",
+      "m2",
+      "MKVlwGH"
+     ],
+     [
+      "m3",
+      "m3",
+      "MR-LwGN"
+     ],
+     [
+      "m4",
+      "m4",
+      "MK-LYGH"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "blocks",
+   "case": 1,
+   "weights": false,
+   "kwargs": {
+    "threshold": 0.4
+   },
+   "recorded": {
+    "value": [
+     [
+      "m1",
+      "m1",
+      "MKaVLwGH"
+     ],
+     [
+      "m2",
+      "m2",
+      "MKaVlwGH"
+     ],
+     [
+      "m3",
+      "m3",
+      "MRa-LwGN"
+     ],
+     [
+      "m4",
+      "m4",
+      "MKa-LYGH"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "m1",
+      "m1",
+      "MKVLwGH"
+     ],
+     [
+      "m2",
+      "m2",
+      "MKVlwGH"
+     ],
+     [
+      "m3",
+      "m3",
+      "MR-LwGN"
+     ],
+     [
+      "m4",
+      "m4",
+      "MK-LYGH"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "blocks",
+   "case": 2,
+   "weights": null,
+   "kwargs": {
+    "threshold": 0.5
+   },
+   "recorded": {
+    "value": [
+     [
+      "m1",
+      "m1",
+      "MKaLwGH"
+     ],
+     [
+      "m2",
+      "m2",
+      "MKalwGH"
+     ],
+     [
+      "m3",
+      "m3",
+      "MRaLwGN"
+     ],
+     [
+      "m4",
+      "m4",
+      "MKaLYGH"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "m1",
+      "m1",
+      "MKLwGH"
+     ],
+     [
+      "m2",
+      "m2",
+      "MKlwGH"
+     ],
+     [
+      "m3",
+      "m3",
+      "MRLwGN"
+     ],
+     [
+      "m4",
+      "m4",
+      "MKLYGH"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "blocks",
+   "case": 3,
+   "weights": false,
+   "kwargs": {
+    "threshold": 0.5
+   },
+   "recorded": {
+    "value": [
+     [
+      "m1",
+      "m1",
+      "MKaVLwGH"
+     ],
+     [
+      "m2",
+      "m2",
+      "MKaVlwGH"
+     ],
+     [
+      "m3",
+      "m3",
+      "MRa-LwGN"
+     ],
+     [
+      "m4",
+      "m4",
+      "MKa-LYGH"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "m1",
+      "m1",
+      "MKVLwGH"
+     ],
+     [
+      "m2",
+      "m2",
+      "MKVlwGH"
+     ],
+     [
+      "m3",
+      "m3",
+      "MR-LwGN"
+     ],
+     [
+      "m4",
+      "m4",
+      "MK-LYGH"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "blocks",
+   "case": 4,
+   "weights": null,
+   "kwargs": {
+    "threshold": 0.9
+   },
+   "recorded": {
+    "value": [
+     [
+      "m1",
+      "m1",
+      "MKaLwGH"
+     ],
+     [
+      "m2",
+      "m2",
+      "MKalwGH"
+     ],
+     [
+      "m3",
+      "m3",
+      "MRaLwGN"
+     ],
+     [
+      "m4",
+      "m4",
+      "MKaLYGH"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "m1",
+      "m1",
+      "MKLwGH"
+     ],
+     [
+      "m2",
+      "m2",
+      "MKlwGH"
+     ],
+     [
+      "m3",
+      "m3",
+      "MRLwGN"
+     ],
+     [
+      "m4",
+      "m4",
+      "MKLYGH"
+     ]
+    ]
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "blocks",
+   "case": 5,
+   "weights": false,
+   "kwargs": {
+    "threshold": 0.9
+   },
+   "recorded": {
+    "value": [
+     [
+      "m1",
+      "m1",
+      "MKaLwGH"
+     ],
+     [
+      "m2",
+      "m2",
+      "MKalwGH"
+     ],
+     [
+      "m3",
+      "m3",
+      "MRaLwGN"
+     ],
+     [
+      "m4",
+      "m4",
+      "MKaLYGH"
+     ]
+    ]
+   },
+   "current": {
+    "value": [
+     [
+      "m1",
+      "m1",
+      "MKLwGH"
+     ],
+     [
+      "m2",
+      "m2",
+      "MKlwGH"
+     ],
+     [
+      "m3",
+      "m3",
+      "MRLwGN"
+     ],
+     [
+      "m4",
+      "m4",
+      "MKLYGH"
+     ]
+    ]
    },
    "columns": null
   },

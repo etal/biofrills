@@ -166,10 +166,27 @@ def removed_similar_option(case):
     return case | {"returncode": 2, "stdout": "", "stderr": stderr}
 
 
+def dot_column_dropped(case):
+    """seq-blocks drops the column of '.' alone, which holds no residue.
+
+    tests/data/README.md, "Gap characters and insert columns".
+    """
+    records = [record.split("\n") for record in split_records(case["stdout"])[1:]]
+    assert all(len(lines) == 3 and lines[2] == "" for lines in records)
+    seqs = [lines[1] for lines in records]
+    dots = [i for i, col in enumerate(zip(*seqs, strict=True)) if set(col) == {"."}]
+    assert len(dots) == 1
+    dot = dots[0]
+    dropped = [(header[1:], seq[:dot] + seq[dot + 1 :]) for header, seq, _ in records]
+    return case | {"stdout": fasta(dropped)}
+
+
 # Cases whose current run differs from the recorded one, for the reasons
 # given in tests/data/README.md: the function gives the expected run from the
 # recorded one.
 EXPECTED = {
+    "seq-blocks.edge.json": dot_column_dropped,
+    "seq-blocks.edge.w.t08.json": dot_column_dropped,
     "seq-identity.cdc2.json": no_trailing_tab,
     "seq-identity.edge.json": no_trailing_tab,
     "seq-orfs.default.json": no_partial_codon_warning,

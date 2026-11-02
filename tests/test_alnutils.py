@@ -106,19 +106,20 @@ def test_weights_may_be_a_numpy_array(aligned_input):
     )
 
 
-def test_remove_empty_cols_keeps_every_column_with_a_residue():
-    # Columns 1, 7 and 8 are all '-'; only those go.  A column of '-' and
-    # '.' is kept, because remove_empty_cols treats only '-' as empty.
-    aln = make_alignment(["--A-.C--", "-.-D-E--", "---F-G--"])
+def test_remove_empty_cols_removes_gap_columns_and_keeps_insert_columns():
+    # Columns 1, 2, 6 and 8 hold only '-' and '.'; only those go.  Column 4
+    # holds lowercase insert residues, which are residues of their sequences,
+    # so it stays, although blocks drops it.
+    aln = make_alignment(["--Aq-.C-", "-.-rD-E-", "---.F-G-"])
     cleaned = list(alnutils.remove_empty_cols(aln))
-    assert columns(cleaned) == ["-.-", "A--", "-DF", ".--", "CEG"]
+    assert columns(cleaned) == ["A--", "qr.", "-DF", "CEG"]
     assert [rec.id for rec in cleaned] == ["s0", "s1", "s2"]
 
 
 def test_remove_empty_cols_removes_only_all_gap_columns(aligned_input):
     cleaned = list(alnutils.remove_empty_cols(aligned_input))
     assert columns(cleaned) == [
-        col for col in columns(aligned_input) if set(col) != {"-"}
+        col for col in columns(aligned_input) if not set(col) <= set("-.")
     ]
 
 
@@ -129,6 +130,72 @@ def test_remove_empty_cols_is_idempotent(aligned_input):
     assert [(r.id, r.description) for r in twice] == [
         (r.id, r.description) for r in once
     ]
+
+
+# Rows as hmmalign writes them: match columns in uppercase and '-', and the
+# two insert columns 4 and 5 in lowercase and '.'.  Column 4 holds residues
+# in half its rows, so a threshold of 0.4 would keep it if only '.' counted
+# as a gap; as an insert column it holds no aligned residue at all.
+HMMER_STYLE = ["MKV..LAYRG", "MKVacLAF-G", "MRVk.LSYRG", "M-V..LAYKG"]
+
+
+@pytest.mark.parametrize("weights", [False, None, [1.0, 2.0, 1.0, 1.0]])
+def test_blocks_drops_insert_columns(weights):
+    blocked = alnutils.blocks(make_alignment(HMMER_STYLE), 0.4, weights)
+    assert rows(blocked) == ["MKVLAYRG", "MKVLAF-G", "MRVLSYRG", "M-VLAYKG"]
+
+
+@pytest.mark.parametrize("weights", [False, [1.0, 1.0, 1.0]])
+def test_blocks_reads_case_from_every_row(weights):
+    # Only rows 2 and 3 hold uppercase residues, and they make column 3, whose
+    # one residue is lowercase, an insert column; without them its proportion
+    # would be 1/3.
+    aln = make_alignment(["--a", "AC-", "AD-"])
+    assert columns(alnutils.blocks(aln, 0.3, weights)) == ["-AA", "-CD"]
+
+
+@pytest.mark.parametrize("weights", [False, [1.0, 1.0]])
+def test_blocks_counts_a_residue_without_letter_case_as_aligned(weights):
+    # '*' and '1' have no lowercase form, so they are never inserts.
+    aln = make_alignment(["A*1", "Aa-"])
+    assert columns(alnutils.blocks(aln, 0.5, weights)) == ["AA", "*a", "1-"]
+
+
+@pytest.mark.parametrize("weights", [False, [1.0, 1.0]])
+def test_blocks_keeps_every_column_at_threshold_zero(weights):
+    # Neither a column of gaps alone nor an insert column holds an aligned
+    # residue, so both have a proportion of zero, which reaches a threshold of
+    # zero.
+    aln = make_alignment(["A-a", "A.-"])
+    assert columns(alnutils.blocks(aln, 0.0, weights)) == ["AA", "-.", "a-"]
+
+
+@pytest.mark.parametrize("weights", [False, [1.0, 1.0, 1.0, 1.0]])
+def test_blocks_counts_dots_as_gaps(weights):
+    # Column 2 holds one residue among three '.', a proportion of 1/4.
+    aln = make_alignment(["AA", "A.", "A.", "A."])
+    assert columns(alnutils.blocks(aln, 0.5, weights)) == ["AAAA"]
+
+
+@pytest.mark.parametrize("weights", [False, [1.0, 1.0, 1.0, 1.0]])
+def test_blocks_keeps_a_mixed_case_column_as_written(weights):
+    # Column 2 holds a residue in half its rows, one of them lowercase.
+    aln = make_alignment(["AD", "Ad", "A-", "A-"])
+    assert columns(alnutils.blocks(aln, 0.5, weights)) == ["AAAA", "Dd--"]
+
+
+@pytest.mark.parametrize("weights", [False, None])
+@pytest.mark.parametrize("threshold", [0.4, 0.5, 0.9])
+def test_blocks_reads_an_alignment_without_uppercase_regardless_of_case(
+    aligned_input, weights, threshold
+):
+    # A lowercase alignment, such as MAFFT writes for nucleotides, marks no
+    # insert by case, so it keeps the columns of its uppercase counterpart.
+    def blocked(transform):
+        aln = make_alignment([transform(row) for row in rows(aligned_input)])
+        return rows(alnutils.blocks(aln, threshold, weights))
+
+    assert blocked(str.lower) == [row.lower() for row in blocked(str.upper)]
 
 
 @pytest.mark.parametrize("threshold", [0.4, 0.5, 0.9])

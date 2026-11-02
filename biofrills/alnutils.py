@@ -17,6 +17,35 @@ from Bio.SeqRecord import SeqRecord
 # threshold came closer to it than 1.2e-6.
 _GAP_TOLERANCE = 1e-12
 
+# The gap characters of the alignment convention of HMMER (A2M and Stockholm
+# output) and CHAIN (CMA files): an uppercase residue is aligned to a match
+# column of a profile, a lowercase residue is an insertion relative to it,
+# '-' is a deletion in a match column and '.' a gap in an insert column.
+# blocks, remove_empty_cols and consensus.consensus apply the convention.
+_GAP_CHARS = "-."
+
+
+def _case_marks_inserts(rows):
+    """Whether letter case in these aligned rows distinguishes inserts.
+
+    Only an alignment with at least one uppercase residue follows the
+    convention. One without, such as the lowercase nucleotide alignments that
+    MAFFT writes, marks nothing by case, so its lowercase residues are
+    aligned residues.
+    """
+    return any(row != row.lower() for row in rows)
+
+
+def _has_aligned_residue(col, case_marks_inserts):
+    """Whether any residue of an alignment column is an aligned residue.
+
+    A column of gap characters alone has none, and where case marks inserts,
+    neither does a column whose residues are all lowercase.
+    """
+    if case_marks_inserts:
+        return any(not c.islower() for c in col if c not in _GAP_CHARS)
+    return any(c not in _GAP_CHARS for c in col)
+
 
 def aa_counts(aln, weights=None, gap_chars="-."):
     """Calculate the amino acid frequencies in a set of SeqRecords.
@@ -74,25 +103,34 @@ def blocks(aln, threshold=0.5, weights=None):
     """Remove gappy columns from an alignment.
 
     Keep each column whose proportion of non-gap characters is at least
-    threshold; only '-' counts as a gap. Every record is kept; its sequence is
-    empty if no column remains. Rows of different lengths, and weights of a
-    length other than the number of rows, raise ValueError.
+    threshold, where a column that holds no aligned residue has a proportion
+    of zero. Both '-' and '.' count as gaps. Under the HMMER and CHAIN
+    convention, a column whose residues are all lowercase is an insert column
+    and holds no aligned residue; the convention applies when the alignment
+    contains an uppercase residue, and an alignment without one is read
+    without regard to case. In a column that holds an aligned residue,
+    lowercase residues count toward the proportion.
+    A column that is kept keeps its characters as they are, lowercase
+    residues included. Every record is kept; its sequence is empty if no
+    column remains. Rows of different lengths, and weights of a length other
+    than the number of rows, raise ValueError.
 
     For given sequence weights, which columns are kept does not depend on the
     order of the alignment's rows: the unweighted proportion is a quotient of
     integer counts, and the weighted proportion a quotient of correctly
     rounded sums (math.fsum), both of which a permutation of the rows leaves
-    unchanged.
+    unchanged, and whether a column holds an aligned residue does not depend
+    on the order of its characters.
 
     Parameters
     ----------
 
     threshold : float
-        Keep a column whose proportion of non-gap characters is greater than
-        or equal to this value (after sequence weighting, if applicable). A
-        weighted proportion at most 1e-12 below the threshold counts as equal
-        to it, so that rounding error in the sequence weights does not decide
-        a column whose exact weighted proportion equals the threshold.
+        The least proportion, as defined above, that keeps a column (after
+        sequence weighting, if applicable). A weighted proportion at most
+        1e-12 below the threshold counts as equal to it, so that rounding
+        error in the sequence weights does not decide a column whose exact
+        weighted proportion equals the threshold.
     weights : sequence of float, None, True or False
         One weight per row of the alignment, in row order, as
         sequence_weights returns. None or True calculates "avg1" weights
@@ -103,10 +141,15 @@ def blocks(aln, threshold=0.5, weights=None):
 
     """
     assert len(aln)
+    seqstrs = [str(rec.seq) for rec in aln]
+    case_marks_inserts = _case_marks_inserts(seqstrs)
     if weights is False:
 
-        def has_enough_residues(col):
-            return (len(col) - col.count("-")) / len(col) >= threshold
+        def residue_fraction(col):
+            nresidues = len(col) - sum(col.count(c) for c in _GAP_CHARS)
+            return nresidues / len(col)
+
+        min_fraction = threshold
     else:
         if weights is None or weights is True:
             weights = sequence_weights(aln, "avg1")
@@ -115,15 +158,22 @@ def blocks(aln, threshold=0.5, weights=None):
                 f"Length mismatch: weights = {len(weights)}, alignment = {len(aln)}"
             )
         total_weight = math.fsum(weights)
-        min_nongap_fraction = threshold - _GAP_TOLERANCE
 
-        def has_enough_residues(col):
-            nongap_weight = math.fsum(
-                wt for wt, char in zip(weights, col, strict=True) if char != "-"
+        def residue_fraction(col):
+            residue_weight = math.fsum(
+                wt
+                for wt, char in zip(weights, col, strict=True)
+                if char not in _GAP_CHARS
             )
-            return nongap_weight / total_weight >= min_nongap_fraction
+            return residue_weight / total_weight
 
-    seqstrs = [str(rec.seq) for rec in aln]
+        min_fraction = threshold - _GAP_TOLERANCE
+
+    def has_enough_residues(col):
+        if not _has_aligned_residue(col, case_marks_inserts):
+            return 0.0 >= min_fraction
+        return residue_fraction(col) >= min_fraction
+
     clean_cols = [col for col in zip(*seqstrs, strict=True) if has_enough_residues(col)]
     clean_recs = []
     for rec, seq in zip(aln, _rows(clean_cols, len(seqstrs)), strict=True):
@@ -166,6 +216,12 @@ def col_frequencies(col, weights=None, gap_chars="-."):
 def remove_empty_cols(records):
     """Remove all-gap columns from aligned SeqRecords.
 
+    A column goes when every character is a gap, '-' and '.' alike. A column
+    whose residues are all lowercase is kept: under the HMMER and CHAIN
+    convention those residues are insertions rather than aligned residues,
+    but they are residues of their sequences, and removing the column would
+    delete them; blocks is the function that drops a column holding residues.
+
     Every record is kept; its sequence is empty if no column remains. Rows of
     different lengths raise ValueError.
     """
@@ -173,7 +229,9 @@ def remove_empty_cols(records):
     records = list(records)
     seqstrs = [str(rec.seq) for rec in records]
     clean_cols = [
-        col for col in zip(*seqstrs, strict=True) if not all(c == "-" for c in col)
+        col
+        for col in zip(*seqstrs, strict=True)
+        if not all(c in _GAP_CHARS for c in col)
     ]
     for rec, clean_seq in zip(records, _rows(clean_cols, len(seqstrs)), strict=True):
         yield SeqRecord(

@@ -175,7 +175,7 @@ The cases whose current output differs, explained below under "Consensus ties", 
   The margin is thus about 2,000 times the first and about seven orders of magnitude below the second.
   `blocks` applies the same rule in the opposite sense: it keeps a column whose weighted non-gap fraction, the `math.fsum` of the non-gap weights divided by the `math.fsum` of all weights, reaches `threshold`, and counts a fraction at most `1e-12` below `threshold` as reaching it.
   It previously added the gap weights in row order and divided by the number of rows, which equals the total weight only under the `avg1` scaling; with `sum1` weights given by the caller, every column was kept, including columns of gaps alone.
-  No recorded case and no recorded `seq-blocks` run changes.
+  That change moved no recorded case and no recorded `seq-blocks` run.
   With `avg1` weights, the 8 columns of `tie-batch.json` whose exact fraction is one half were already kept at `threshold` 0.5, but only because each computed to within `1.1e-16` of one half, at or above it; at other thresholds the previous rule dropped exact ties, such as column 5 of alignment `t163`, exactly 13/20, which computed as `0.6499999999999999` at `threshold` 0.65.
   Over the fixture inputs and the test alignments of fammer and cladecompare, at every threshold k/m with m up to 20, the previous rule misdecided 4 exact ties and the current rule none; the largest rounding error of the fraction was `6.7e-16`, and the smallest distance from the threshold of a fraction not exactly equal to it was `1.27e-6`.
   Without weights, `blocks` computes the non-gap fraction as the quotient of integer counts `(n - g) / n`, rounded once, rather than as `1 - g / n`, rounded twice; with one residue in five rows, the latter gave `0.19999999999999996` and dropped the column at `threshold` 0.2.
@@ -205,7 +205,8 @@ The cases whose current output differs, explained below under "Consensus ties", 
   The other `seq-purge` cases are unchanged, including `seq-purge.fikk-cma.c`, where both rules keep the one record that contains `X`.
   `replay.py` covers only the library cases, so this difference is recorded here and in `tests/test_cli.py` rather than in `differences.json`.
 - **Command-line differences.**
-  Five script cases differ from their fixtures because the port corrects the command-line programs.
+  Seven script cases differ from their fixtures: five because the port corrects the command-line programs, and two because of a change in `alnutils.blocks`.
+  In `seq-blocks.edge` and `seq-blocks.edge.w.t08`, column 9 of the alignment, which holds only `.`, is no longer written; see "Gap characters and insert columns" under "Differences in library output".
   In `seq-orfs.default` and `seq-orfs.m20`, standard error no longer holds Biopython's warning about a partial codon, because `seq-orfs` cuts each reading frame to a whole number of codons before translating it.
   Biopython already ignored the trailing partial codon, so standard output is unchanged.
   In `seq-identity.cdc2` and `seq-identity.edge`, the rows of the grid no longer end in a tab; the values are unchanged.
@@ -226,7 +227,7 @@ The cases whose current output differs, explained below under "Consensus ties", 
 It compares outcomes as `tests/test_reference.py` does, through the shared module `tests/reference_cases.py`, so the floating-point differences described above under "Summation order of weighted frequencies" and "Compensated summation" are compared with a tolerance and produce no entries; the `log1p` dependence of the `none` weights, described under "Platform math library", is compared exactly because no measured platform shows it at the recorded inputs.
 An entry identifies the case as the fixture does: the fixture file relative to `py27/`, the section, the alignment for a `tie-batch.json` case, and the index of the case within its section, which is `null` for a section that records a single outcome.
 It then repeats the fields that describe the call (`weights` and `kwargs` where the fixture records them, `rows` for a pairwise case), and gives the recorded outcome, the current outcome, and, where both are strings of equal length, the 1-based columns at which they differ.
-Every entry is explained below, and all six kinds are deliberate changes of behavior.
+Every entry is explained below, and all seven kinds are deliberate changes of behavior.
 In the third and fourth kinds the recorded outcome is an exception, so they change no outcome that the original code completed.
 A test of the current code expects the fixture value except where `differences.json` records another.
 After a change that moves a recorded output, regenerate the file from the repository root and explain the new entries here:
@@ -293,3 +294,13 @@ Before the port, the unmodified sources at commit `36684bb` produced an empty li
   In `cdc2-domain.aln.json` (37 sequences), the mean weight changes from 0.8167 to 0.4929 and the number of weights truncated to 1.0 from 15 to 4; in `fikk.aln.json` (24 sequences), from 0.7961 to 0.4597 and from 3 to 2; in `scttlre-domain.aln.json` (14 sequences), from 0.8600 to 0.5000 and from 4 to 0.
   In the four synthetic inputs of 4 or 5 sequences, where 2 to 4 weights were truncated, none now reaches 1.0, and the mean is 0.5000.
   The `andy` case of `synth-single.aln.json`, already listed under "Sequence weights of an alignment without informative columns", now gives `[0.5]` instead of `[1.0]`.
+- **Gap characters and insert columns** (13 cases, in `synth-edge.aln.json` and `synth-mixedcase.aln.json`).
+  `blocks` and `remove_empty_cols` counted only `-` as a gap, whereas `aa_counts`, `sequence_weights` and the residue counts of `consensus` also treat `.` as one.
+  In the alignment convention of HMMER and CHAIN, an uppercase residue is aligned to a match column of a profile, a lowercase residue is an insertion relative to it, `-` is a deletion in a match column and `.` a gap in an insert column.
+  Both functions now count `.` as a gap, and `blocks` gives a column whose residues are all lowercase a proportion of zero, as `consensus` has reported such a column as a gap since 2012.
+  `remove_empty_cols` keeps such a column, because removing it would delete residues from the sequences.
+  An alignment without any uppercase residue, such as the lowercase nucleotide alignments that MAFFT writes, marks nothing by case, so both functions and `consensus` read it without regard to case.
+  In `synth-edge.aln.json`, column 9 holds only `.`, and the 6 `blocks` cases and the `remove_empty_cols` case now drop it.
+  In `synth-mixedcase.aln.json`, column 3 holds only lowercase residues, and the 6 `blocks` cases now drop it; its columns that mix the two cases are kept as written.
+  `consensus` now also counts `.` toward its gap threshold, but no recorded alignment has a column that holds both `.` and an uppercase residue, so no recorded `consensus` case changes.
+  The three MAPGAPS alignments contain neither `.` nor a lowercase residue, and none of their cases changes.

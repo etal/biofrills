@@ -26,6 +26,14 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
     An alignment whose rows differ in length, or that contains no residue at
     all, raises ValueError.
 
+    Letter case follows the convention of HMMER and CHAIN, in which an
+    uppercase residue is aligned and a lowercase residue is an insertion: a
+    column whose residues are all lowercase is an insert column, and a column
+    with residues of both cases is uppercased, with a logged warning. An
+    alignment that contains no uppercase residue, such as a lowercase
+    nucleotide alignment, marks nothing by case; its columns are uppercased
+    without a warning, and the consensus is in uppercase.
+
     Parameters
     ----------
 
@@ -44,23 +52,26 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
         If False, stretch the consensus sequence to include the N- and C-tails
         of the alignment, even if those flanking columns are mostly gap
         characters. This avoids terminal gaps in the consensus (needed for
-        MAPGAPS). A column with no residue to report, either all gaps or all
+        MAPGAPS). A column with no aligned residue, either all gaps or all
         lowercase insert residues, still yields a gap character: the
         consensus has exactly one character per alignment column, in column
         order.
     gap_threshold : float
-        If the proportion of gap characters in a column is greater than or equal
-        to this value (after sequence weighting, if applicable), then the
-        consensus character emitted will be a gap instead of an amino acid type.
+        If the proportion of gap characters in a column, '-' and '.' alike, is
+        greater than or equal to this value (after sequence weighting, if
+        applicable), then the consensus character emitted will be a gap
+        instead of an amino acid type.
         A weighted proportion at most 1e-12 below the threshold counts as
         equal to it, so that rounding error in the sequence weights does not
         decide a column whose exact weighted proportion equals the threshold.
 
     """
+    rows = [str(rec.seq) for rec in aln]
+    case_marks_inserts = alnutils._case_marks_inserts(rows)
     # A mixed-case column is uppercased below, so the background frequencies
     # fold case too; otherwise a residue type that occurs elsewhere only in
     # lowercase would have no background frequency.
-    upper_rows = [str(rec.seq).upper() for rec in aln]
+    upper_rows = [row.upper() for row in rows]
     # Choose your algorithms!
     if simple:
         # Use the simple, unweighted algorithm
@@ -69,7 +80,8 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
         )
 
         def is_majority_gap(col):
-            return col.count("-") / len(col) >= gap_threshold
+            ngaps = sum(col.count(c) for c in alnutils._GAP_CHARS)
+            return ngaps / len(col) >= gap_threshold
 
         # ENH (alternatively/additionally): does any aa occur more than once?
         # ENH: choose gap-decisionmaking separately from col_consensus
@@ -86,7 +98,9 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
 
         def is_majority_gap(col):
             gap_weight = math.fsum(
-                wt for wt, char in zip(seq_weights, col, strict=True) if char == "-"
+                wt
+                for wt, char in zip(seq_weights, col, strict=True)
+                if char in alnutils._GAP_CHARS
             )
             return gap_weight / total_weight >= min_gap_fraction
 
@@ -98,21 +112,22 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
         in_left_end = True
         maybe_right_tail = []
         for col in columns:
-            # Lowercase cols mean explicitly, "don't include in consensus";
-            # a column of only gap characters has no residue to report either.
-            # Its gap goes behind any C-terminal residues already buffered, so
+            # A column with no aligned residue has nothing to report: its
+            # residues are all lowercase inserts, or it holds only gaps. Its
+            # gap goes behind any C-terminal residues already buffered, so
             # that the consensus stays aligned with the columns.
-            if all(c.islower() for c in col if c not in ".-"):
+            if not alnutils._has_aligned_residue(col, case_marks_inserts):
                 if trim_ends or in_left_end:
                     yield "-"
                 else:
                     maybe_right_tail.append("-")
                 continue
             if any(c.islower() for c in col):
-                logger.warning(
-                    "Mixed lowercase and uppercase letters in a column: %s",
-                    "".join(col),
-                )
+                if case_marks_inserts:
+                    logger.warning(
+                        "Mixed lowercase and uppercase letters in a column: %s",
+                        "".join(col),
+                    )
                 col = tuple(map(str.upper, col))
 
             # Gap chars

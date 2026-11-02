@@ -55,6 +55,34 @@ def test_consensus_uppercases_a_mixed_case_column(simple, caplog):
 
 
 @pytest.mark.parametrize("simple", [False, True])
+def test_consensus_counts_dots_as_gaps(simple):
+    # Column 2 is half '.', which reaches a gap threshold of one half.
+    aln = make_alignment(["A.", "A.", "AC", "AC"])
+    assert consensus(aln, weights=[1, 1, 1, 1], simple=simple) == "A-"
+
+
+@pytest.mark.parametrize("simple", [False, True])
+@pytest.mark.parametrize("trim_ends", [True, False])
+def test_consensus_of_an_alignment_without_uppercase_ignores_case(
+    simple, trim_ends, caplog
+):
+    # A lowercase alignment, such as MAFFT writes for nucleotides, marks no
+    # insert by case: its consensus is that of its uppercase counterpart, and
+    # no column is reported as mixing cases.
+    lower = ["mkv-laq", "mkiplaq", "mrv-lse", "m-v-laq"]
+    with caplog.at_level(logging.WARNING):
+        result = consensus(make_alignment(lower), simple=simple, trim_ends=trim_ends)
+    expected = consensus(
+        make_alignment([row.upper() for row in lower]),
+        simple=simple,
+        trim_ends=trim_ends,
+    )
+    assert result == expected
+    assert "-" in expected and len(expected) == 7
+    assert caplog.text == ""
+
+
+@pytest.mark.parametrize("simple", [False, True])
 @pytest.mark.parametrize("trim_ends", [True, False])
 def test_consensus_of_a_single_sequence_is_that_sequence(simple, trim_ends):
     aln = make_alignment(["MKV-LAYRGH"])

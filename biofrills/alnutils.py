@@ -112,8 +112,11 @@ def blocks(aln, threshold=0.5, weights=None):
     lowercase residues count toward the proportion.
     A column that is kept keeps its characters as they are, lowercase
     residues included. Every record is kept; its sequence is empty if no
-    column remains. Rows of different lengths, and weights of a length other
-    than the number of rows, raise ValueError.
+    column remains. Per-letter annotations, such as FASTQ quality scores,
+    keep their values at the kept columns; features are copied unchanged, so
+    their locations still refer to the columns of the input. Rows of
+    different lengths, and weights of a length other than the number of
+    rows, raise ValueError.
 
     For given sequence weights, which columns are kept does not depend on the
     order of the alignment's rows: the unweighted proportion is a quotient of
@@ -174,21 +177,48 @@ def blocks(aln, threshold=0.5, weights=None):
             return 0.0 >= min_fraction
         return residue_fraction(col) >= min_fraction
 
-    clean_cols = [col for col in zip(*seqstrs, strict=True) if has_enough_residues(col)]
+    keep = [
+        idx
+        for idx, col in enumerate(zip(*seqstrs, strict=True))
+        if has_enough_residues(col)
+    ]
     clean_recs = []
-    for rec, seq in zip(aln, _rows(clean_cols, len(seqstrs)), strict=True):
+    for rec, seqstr in zip(aln, seqstrs, strict=True):
         newrec = deepcopy(rec)
-        newrec.seq = Seq(seq)
+        # Selecting from the copy rather than from rec keeps every annotation
+        # value of the result unshared with the input, also when no column is
+        # dropped.
+        letter_annotations = _select_letter_annotations(newrec, keep)
+        # The seq setter refuses a new length while annotations are present.
+        newrec.letter_annotations = {}
+        newrec.seq = Seq(_select(seqstr, keep))
+        newrec.letter_annotations = letter_annotations
         clean_recs.append(newrec)
     return MultipleSeqAlignment(clean_recs)
 
 
-def _rows(columns, nrows):
-    """Join the given columns into nrows sequence strings.
+def _select(items, keep):
+    """The items at the indices in keep, in a sequence of the same type.
 
-    With no columns, the result is nrows empty strings.
+    A string stays a string, and a list or tuple keeps its type; any other
+    sequence, such as a NumPy array, is indexed by the list of indices.
     """
-    return ["".join(col[idx] for col in columns) for idx in range(nrows)]
+    if isinstance(items, str):
+        return "".join([items[idx] for idx in keep])
+    if isinstance(items, (list, tuple)):
+        return type(items)(items[idx] for idx in keep)
+    return items[keep]
+
+
+def _select_letter_annotations(rec, keep):
+    """The per-letter annotations of rec at the column indices in keep.
+
+    When every column is kept, the annotations are returned unchanged,
+    whatever the type of their values.
+    """
+    if len(keep) == len(rec):
+        return dict(rec.letter_annotations)
+    return {key: _select(value, keep) for key, value in rec.letter_annotations.items()}
 
 
 def col_counts(col, weights=None, gap_chars="-."):
@@ -222,27 +252,30 @@ def remove_empty_cols(records):
     but they are residues of their sequences, and removing the column would
     delete them; blocks is the function that drops a column holding residues.
 
-    Every record is kept; its sequence is empty if no column remains. Rows of
-    different lengths raise ValueError.
+    Every record is kept; its sequence is empty if no column remains.
+    Per-letter annotations, such as FASTQ quality scores, keep their values
+    at the kept columns; features are passed on unchanged, so their locations
+    still refer to the columns of the input. Rows of different lengths raise
+    ValueError.
     """
     # In case it's a generator, turn it into a list
     records = list(records)
     seqstrs = [str(rec.seq) for rec in records]
-    clean_cols = [
-        col
-        for col in zip(*seqstrs, strict=True)
+    keep = [
+        idx
+        for idx, col in enumerate(zip(*seqstrs, strict=True))
         if not all(c in _GAP_CHARS for c in col)
     ]
-    for rec, clean_seq in zip(records, _rows(clean_cols, len(seqstrs)), strict=True):
+    for rec, seqstr in zip(records, seqstrs, strict=True):
         yield SeqRecord(
-            Seq(clean_seq),
+            Seq(_select(seqstr, keep)),
             id=rec.id,
             name=rec.name,
             description=rec.description,
             dbxrefs=rec.dbxrefs,
             features=rec.features,
             annotations=rec.annotations,
-            letter_annotations=rec.letter_annotations,
+            letter_annotations=_select_letter_annotations(rec, keep),
         )
 
 

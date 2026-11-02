@@ -1,3 +1,4 @@
+import array
 import math
 import random
 
@@ -130,6 +131,69 @@ def test_remove_empty_cols_is_idempotent(aligned_input):
     assert [(r.id, r.description) for r in twice] == [
         (r.id, r.description) for r in once
     ]
+
+
+# The two functions that drop columns from aligned records, called alike.
+DROP_COLUMNS = pytest.mark.parametrize(
+    "drop_columns",
+    [
+        lambda recs: alnutils.blocks(recs, 0.5, weights=False),
+        lambda recs: list(alnutils.remove_empty_cols(recs)),
+    ],
+    ids=["blocks", "remove_empty_cols"],
+)
+
+
+@DROP_COLUMNS
+@pytest.mark.parametrize(
+    "originals, expected",
+    [
+        ([[0, 1, 2, 3], [4, 5, 6, 7]], [[0, 2, 3], [4, 6, 7]]),
+        ([(0, 1, 2, 3), (4, 5, 6, 7)], [(0, 2, 3), (4, 6, 7)]),
+        (["abcd", "efgh"], ["acd", "egh"]),
+        ([np.arange(4), np.arange(4, 8)], [np.array([0, 2, 3]), np.array([4, 6, 7])]),
+    ],
+    ids=["list", "tuple", "str", "ndarray"],
+)
+def test_dropping_columns_keeps_letter_annotations_of_kept_columns(
+    drop_columns, originals, expected
+):
+    # Column 1 holds only gaps and goes, so the annotations of the kept
+    # columns 0, 2 and 3 are not a prefix of the original ones.
+    records = make_records(["A-CD", "E-FG"])
+    for rec, value in zip(records, originals, strict=True):
+        rec.letter_annotations["q"] = value
+    before = [list(value) for value in originals]
+    cleaned = drop_columns(records)
+    assert rows(cleaned) == ["ACD", "EFG"]
+    for rec, value in zip(cleaned, expected, strict=True):
+        assert type(rec.letter_annotations["q"]) is type(value)
+        assert list(rec.letter_annotations["q"]) == list(value)
+    # The input records keep their annotations.
+    assert [list(rec.letter_annotations["q"]) for rec in records] == before
+
+
+@DROP_COLUMNS
+def test_dropping_every_column_empties_letter_annotations(drop_columns):
+    records = make_records(["--", "-."])
+    for rec in records:
+        rec.letter_annotations["q"] = [1, 2]
+    cleaned = drop_columns(records)
+    assert rows(cleaned) == ["", ""]
+    assert [rec.letter_annotations["q"] for rec in cleaned] == [[], []]
+
+
+@DROP_COLUMNS
+@pytest.mark.parametrize(
+    "value", [b"ACD", array.array("b", [1, 2, 3])], ids=["bytes", "array"]
+)
+def test_dropping_no_column_keeps_letter_annotations_of_any_type(drop_columns, value):
+    # Neither type can be indexed by a list of indices, so a value that is
+    # selected column by column even when every column is kept fails.
+    records = make_records(["ACD"])
+    records[0].letter_annotations["q"] = value
+    cleaned = drop_columns(records)
+    assert cleaned[0].letter_annotations["q"] == value
 
 
 # Rows as hmmalign writes them: match columns in uppercase and '-', and the

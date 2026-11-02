@@ -46,7 +46,7 @@ def get_cluster(infname, N):
     """
     import networkx
 
-    G = alnutils.to_graph(infname, pairutils.identity_abs)
+    G = alnutils.to_graph(infname)
     if any(weight for _u, _v, weight in G.edges(data="weight")):
         coeffs = networkx.clustering(G, weight="weight")
     else:
@@ -74,7 +74,7 @@ def get_kmeans(infname, N):
     residues, the medoids stay as get_cluster seeded them.
     """
     MAX_ITERATE = 10
-    G = alnutils.to_graph(infname, pairutils.identity_abs)
+    G = alnutils.to_graph(infname)
     nodes = G.nodes()
     # identity_abs of a sequence with itself is its number of residues; the
     # graph has no self-loops to hold it. No sequence matches another at more

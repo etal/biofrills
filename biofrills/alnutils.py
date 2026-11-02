@@ -19,6 +19,8 @@ from Bio.SeqFeature import (
 )
 from Bio.SeqRecord import SeqRecord
 
+from biofrills import pairutils
+
 # A weighted proportion at most this far below its threshold counts as
 # reaching it; blocks and consensus.consensus both apply it.  Sequence weights
 # are rounded floats, so a column whose exact weighted proportion equals the
@@ -500,12 +502,12 @@ def sequence_weights(aln, scaling="none", gap_chars="-."):
     return [scale * wt for wt in seq_weights]
 
 
-def to_graph(alnfname, weight_func):
+def to_graph(alnfname):
     """Create a NetworkX graph from a sequence alignment.
 
     Nodes are string sequence IDs; the weight of the edge between each pair is
-    the output of weight_func on their sequence strings, for example
-    pairutils.identity_abs, their number of matching sites.
+    pairutils.identity_abs of their sequence strings, their number of matching
+    sites.
     """
     import networkx
 
@@ -515,6 +517,6 @@ def to_graph(alnfname, weight_func):
         # Every record is a node, including a record that pairs with no other
         G.add_node(arec.id)
         for brec in aln[i + 1 :]:
-            ident = weight_func(str(arec.seq), str(brec.seq))
+            ident = pairutils.identity_abs(str(arec.seq), str(brec.seq))
             G.add_edge(arec.id, brec.id, weight=ident)
     return G

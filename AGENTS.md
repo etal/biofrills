@@ -52,6 +52,18 @@ The command-line programs are tested as installed, so after a change to `[projec
   The weighted counts of `aa_counts` still accumulate in row order, the `sum1`, `avg1` and `andy` scalings of `sequence_weights` still divide by a built-in `sum`, and the `aa_frequencies` normalizer still sums in dictionary order; changing any of these moves recorded output and needs its own decision.
 - Ties between residue types in `consensus` are broken by an explicit rule ending in alphabetical order; never let dictionary or set iteration order decide an output.
 
+## Letter case
+
+- `blocks`, `remove_empty_cols` and `consensus` follow the alignment convention of HMMER and CHAIN: an uppercase residue is aligned, a lowercase residue is an insertion, `-` is a deletion and `.` a gap in an insert column.
+  The rule is defined once, in `alnutils._GAP_CHARS`, `alnutils._case_marks_inserts` and `alnutils._has_aligned_residue`; change it there rather than in one of its callers.
+- An alignment without any uppercase residue marks nothing by case and is read without regard to it; MAFFT writes nucleotide alignments in lowercase, so this is a common input rather than a corner case.
+- `blocks` gives a column whose residues are all lowercase a proportion of zero, and `remove_empty_cols` keeps it, because that column holds residues of its sequences and the callers of `remove_empty_cols` write its result out as an alignment: Fammer its group profile alignments and its structural seed alignments, and CladeCompare a combined alignment that it splits back into its two parts.
+  Fammer passes it only protein alignments, from MAFFT, which writes protein residues in uppercase, and from TM-align, whose recorded output holds no lowercase residue, so in Fammer the rule changes no output.
+  The asymmetry is deliberate.
+- `aa_counts`, `aa_frequencies` and `sequence_weights` count residues as written, so `a` and `A` are distinct types there, whereas the background frequencies of `consensus` fold case.
+  Changing that would move CladeCompare's pseudocounts and p-values and needs its own decision.
+- Lowercase does not always mark an insertion: BLAST and PSI-BLAST use it for masking when `-lcase_masking` is given, which the convention would misread.
+
 ## Pitfalls
 
 - pytest turns warnings into errors.

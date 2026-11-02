@@ -28,31 +28,37 @@ def get_by_length(infname, N, sort_reverse):
     return [acc for _length, acc in seqlens[:N]]
 
 
-def get_cluster(infname, N):
-    """Central sequences by clustering coefficient.
+def _hubs(G):
+    """Order the sequences of an identity graph by clustering coefficient.
 
-    Input sequences must be aligned. Coefficients are compared after rounding
-    to 12 decimal places, and equal ones are ordered by sequence ID: two
-    coefficients that are equal in exact arithmetic, as for two identical
-    sequences, can differ in the last place depending on the order in which
-    networkx iterates over sets, and so on the hash seed.
+    Coefficients are compared after rounding to 12 decimal places, and equal
+    ones are ordered by sequence ID: two coefficients that are equal in exact
+    arithmetic, as for two identical sequences, can differ in the last place
+    depending on the order in which networkx iterates over sets, and so on the
+    hash seed.
 
     Where no two sequences share an aligned residue, every pairwise identity
     is 0 and no sequence is more central than another, so every coefficient
-    is taken to be 0 and the sequences are picked in ID order. networkx
-    divides each edge weight by the largest, which is then 0, so it cannot
-    compute that case. A single sequence has no edge and takes the same
-    branch; networkx handles that graph itself, with the same result.
+    is taken to be 0 and the sequences are ordered by ID. networkx divides
+    each edge weight by the largest, which is then 0, so it cannot compute
+    that case. A single sequence has no edge and takes the same branch;
+    networkx handles that graph itself, with the same result.
     """
     import networkx
 
-    G = alnutils.to_graph(infname)
     if any(weight for _u, _v, weight in G.edges(data="weight")):
         coeffs = networkx.clustering(G, weight="weight")
     else:
         coeffs = dict.fromkeys(G, 0.0)
-    hubs = sorted(coeffs, key=lambda node: (-round(coeffs[node], 12), node))
-    return hubs[:N]
+    return sorted(coeffs, key=lambda node: (-round(coeffs[node], 12), node))
+
+
+def get_cluster(infname, N):
+    """Central sequences by clustering coefficient, ordered as by _hubs.
+
+    Input sequences must be aligned.
+    """
+    return _hubs(alnutils.to_graph(infname))[:N]
 
 
 def get_kmeans(infname, N):
@@ -68,12 +74,18 @@ def get_kmeans(infname, N):
     a row of gaps, therefore gains little as a medoid, while an unrelated
     sequence with many residues still forms a cluster of its own.
 
+    The N most central sequences by clustering coefficient are the initial
+    medoids. Each step then makes the single swap of a medoid for another
+    sequence that lowers the cost most, until no swap lowers it. The cost, an
+    integer, falls with every swap and is bounded below, so the search ends,
+    at a local optimum: no single swap improves the result, though another
+    set of medoids may cost less.
+
     Where no two sequences share an aligned residue, a set of medoids costs
     only the residues of its own sequences, so a swap replaces a medoid only
     by a sequence with more residues; among sequences with equal numbers of
-    residues, the medoids stay as get_cluster seeded them.
+    residues, the medoids stay as they were seeded.
     """
-    MAX_ITERATE = 10
     G = alnutils.to_graph(infname)
     nodes = G.nodes()
     # identity_abs of a sequence with itself is its number of residues; the
@@ -102,7 +114,7 @@ def get_kmeans(infname, N):
 
         A medoid counts its own residues. Closes over: G, nres.
         """
-        cost = 0.0
+        cost = 0
         for med, cluster in assoc.items():
             cost -= nres[med]
             for otr in cluster:
@@ -110,9 +122,9 @@ def get_kmeans(infname, N):
         return cost
 
     # 1. Select k of the n nodes as medoids
-    curr_meds = get_cluster(infname, N)
+    curr_meds = _hubs(G)[:N]
 
-    for _i in range(MAX_ITERATE):
+    while True:
         # 2. Associate each "other" node to the closest medoid
         best_cost = total_cost(associate(curr_meds))
         best_meds = curr_meds

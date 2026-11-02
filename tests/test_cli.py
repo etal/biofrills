@@ -535,6 +535,27 @@ def test_pick_k_means_does_not_take_a_gappy_record_as_a_medoid(
     assert gappy not in picked
 
 
+def test_pick_k_means_swaps_until_no_swap_lowers_the_cost(tmp_path):
+    """The k-medoids search is not limited to a number of swaps.
+
+    No two records share a residue, so the seeds are a00 to a10 in identifier
+    order, and each swap of an a record, with one residue, for a b record,
+    with two, lowers the cost by one.  The best medoids take eleven swaps.
+    """
+    width = 33
+    records = [
+        (f"a{i:02}", "-" * i + "A" + "-" * (width - i - 1)) for i in range(11)
+    ] + [
+        (f"b{i:02}", "-" * (11 + 2 * i) + "CC" + "-" * (width - 13 - 2 * i))
+        for i in range(11)
+    ]
+    (tmp_path / "disjoint.fa").write_text(fasta(records))
+    proc = run("seq-pick", ["-k", "11", "disjoint.fa"], tmp_path)
+    assert (proc.returncode, proc.stderr) == (0, "")
+    picked = [record.split("\n")[0][1:] for record in split_records(proc.stdout)[1:]]
+    assert sorted(picked) == [f"b{i:02}" for i in range(11)]
+
+
 @pytest.mark.parametrize("hashseed", ["1", "2", "3"])
 def test_pick_cluster_order_does_not_depend_on_the_hash_seed(hashseed, tmp_path):
     # CDC2-1_Sm and CDC2-2_Sm have the same aligned sequence; with hash seeds

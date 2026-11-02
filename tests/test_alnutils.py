@@ -293,6 +293,38 @@ def test_dropping_no_column_keeps_feature_locations(drop_columns):
     ]
 
 
+@pytest.mark.parametrize(
+    ("seqs", "expected"),
+    [
+        (["MKV-", "mkv-"], True),
+        (["mkv-", "mk.v"], False),
+        # '*' and '1' have no lowercase form, so they mark nothing by case.
+        (["*1-", "a*."], False),
+    ],
+)
+def test_case_marks_inserts_only_where_a_row_holds_uppercase(seqs, expected):
+    assert alnutils.case_marks_inserts(seqs) is expected
+
+
+@pytest.mark.parametrize(
+    ("col", "marks_inserts", "expected"),
+    [
+        ("-.-", True, False),
+        ("-.-", False, False),
+        ("a.c", True, False),
+        ("a.c", False, True),
+        # X is an uppercase letter, not a gap character, so it is aligned.
+        ("aX-", True, True),
+        # '*' has no lowercase form, so it is aligned beside inserts.
+        ("a*.", True, True),
+    ],
+)
+def test_has_aligned_residue_skips_lowercase_only_where_case_marks_inserts(
+    col, marks_inserts, expected
+):
+    assert alnutils.has_aligned_residue(col, marks_inserts) is expected
+
+
 # Rows as hmmalign writes them: match columns in uppercase and '-', and the
 # two insert columns 4 and 5 in lowercase and '.'.  Column 4 holds residues
 # in half its rows, so a threshold of 0.4 would keep it if only '.' counted

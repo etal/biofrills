@@ -33,11 +33,14 @@ _GAP_TOLERANCE = 1e-12
 # output) and CHAIN (CMA files): an uppercase residue is aligned to a match
 # column of a profile, a lowercase residue is an insertion relative to it,
 # '-' is a deletion in a match column and '.' a gap in an insert column.
-# blocks, remove_empty_cols and consensus.consensus apply the convention.
+# blocks, remove_empty_cols and consensus.consensus apply the convention, and
+# a caller that counts residues itself reads letter case through
+# case_marks_inserts and has_aligned_residue, so that its counts agree with
+# the consensus.
 _GAP_CHARS = "-."
 
 
-def _case_marks_inserts(rows):
+def case_marks_inserts(rows):
     """Whether letter case in these aligned rows distinguishes inserts.
 
     Only an alignment with at least one uppercase residue follows the
@@ -48,13 +51,13 @@ def _case_marks_inserts(rows):
     return any(row != row.lower() for row in rows)
 
 
-def _has_aligned_residue(col, case_marks_inserts):
+def has_aligned_residue(col, marks_inserts):
     """Whether any residue of an alignment column is an aligned residue.
 
     A column of gap characters alone has none, and where case marks inserts,
     neither does a column whose residues are all lowercase.
     """
-    if case_marks_inserts:
+    if marks_inserts:
         return any(not c.islower() for c in col if c not in _GAP_CHARS)
     return any(c not in _GAP_CHARS for c in col)
 
@@ -165,7 +168,7 @@ def blocks(aln, threshold=0.5, weights=None):
     if not len(aln):
         raise ValueError("No sequences in the alignment")
     seqstrs = [str(rec.seq) for rec in aln]
-    case_marks_inserts = _case_marks_inserts(seqstrs)
+    marks_inserts = case_marks_inserts(seqstrs)
     if weights is False:
 
         def residue_fraction(col):
@@ -191,7 +194,7 @@ def blocks(aln, threshold=0.5, weights=None):
         min_fraction = threshold - _GAP_TOLERANCE
 
     def has_enough_residues(col):
-        if not _has_aligned_residue(col, case_marks_inserts):
+        if not has_aligned_residue(col, marks_inserts):
             return 0.0 >= min_fraction
         return residue_fraction(col) >= min_fraction
 

@@ -9,7 +9,7 @@ The 2013 Python 2 code base has been ported to Python 3.12+ and current Biopytho
 ## Consumers
 
 BioFrills exists mainly to support [CladeCompare](https://github.com/etal/cladecompare) and [Fammer](https://github.com/etal/fammer), which pin it to a git commit.
-The names they call are the compatibility contract: `alnutils.sequence_weights`, `alnutils.aa_frequencies`, `alnutils.blocks`, `alnutils.remove_empty_cols`, `consensus.consensus` (with `weights`, `gap_threshold` and `trim_ends`) and `logoutils.aln2logodata`.
+The names they call are the compatibility contract: `alnutils.sequence_weights`, `alnutils.aa_frequencies`, `alnutils.blocks`, `alnutils.remove_empty_cols`, `alnutils.case_marks_inserts`, `alnutils.has_aligned_residue`, `consensus.consensus` (with `weights`, `gap_threshold` and `trim_ends`) and `logoutils.aln2logodata`.
 A difference in the last place can decide a gap column whose weighted gap fraction lies exactly at `gap_threshold`.
 A gap decision in `consensus` becomes a match column of a Fammer MAPGAPS profile, or a column that CladeCompare assigns p = 1 instead of testing, and a change in `aa_frequencies` moves CladeCompare's pseudocounts and with them its p-values.
 Treat any change to these functions as a change of output, and check it against the reference data below.
@@ -55,7 +55,8 @@ The command-line programs are tested as installed, so after a change to `[projec
 ## Letter case
 
 - `blocks`, `remove_empty_cols` and `consensus` follow the alignment convention of HMMER and CHAIN: an uppercase residue is aligned, a lowercase residue is an insertion, `-` is a deletion and `.` a gap in an insert column.
-  The rule is defined once, in `alnutils._GAP_CHARS`, `alnutils._case_marks_inserts` and `alnutils._has_aligned_residue`; change it there rather than in one of its callers.
+  The rule is defined once, in `alnutils._GAP_CHARS`, `alnutils.case_marks_inserts` and `alnutils.has_aligned_residue`; change it there rather than in one of its callers.
+  The two predicates are public so that a caller counting residues itself, as CladeCompare does, reads letter case exactly as `consensus` does rather than keeping a copy of the rule.
 - An alignment without any uppercase residue marks nothing by case and is read without regard to it; MAFFT writes nucleotide alignments in lowercase, so this is a common input rather than a corner case.
 - `blocks` gives a column whose residues are all lowercase a proportion of zero, and `remove_empty_cols` keeps it, because that column holds residues of its sequences and the callers of `remove_empty_cols` write its result out as an alignment: Fammer its group profile alignments and its structural seed alignments, and CladeCompare a combined alignment that it splits back into its two parts.
   Fammer passes it only protein alignments, from MAFFT, which writes protein residues in uppercase, and from TM-align, whose recorded output holds no lowercase residue, so in Fammer the rule changes no output.

@@ -67,7 +67,7 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
 
     """
     rows = [str(rec.seq) for rec in aln]
-    case_marks_inserts = alnutils._case_marks_inserts(rows)
+    marks_inserts = alnutils.case_marks_inserts(rows)
     # A mixed-case column is uppercased below, so the background frequencies
     # fold case too; otherwise a residue type that occurs elsewhere only in
     # lowercase would have no background frequency.
@@ -116,14 +116,14 @@ def consensus(aln, weights=None, gap_threshold=0.5, simple=False, trim_ends=True
             # residues are all lowercase inserts, or it holds only gaps. Its
             # gap goes behind any C-terminal residues already buffered, so
             # that the consensus stays aligned with the columns.
-            if not alnutils._has_aligned_residue(col, case_marks_inserts):
+            if not alnutils.has_aligned_residue(col, marks_inserts):
                 if trim_ends or in_left_end:
                     yield "-"
                 else:
                     maybe_right_tail.append("-")
                 continue
             if any(c.islower() for c in col):
-                if case_marks_inserts:
+                if marks_inserts:
                     logger.warning(
                         "Mixed lowercase and uppercase letters in a column: %s",
                         "".join(col),

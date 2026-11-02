@@ -453,9 +453,23 @@ def test_weighted_blocks_is_independent_of_row_order(heavy_row_first):
 
 # With no column, no per-column comparison of lengths takes place.
 @pytest.mark.parametrize("seqs", [["AC-", "A-C"], ["", ""]])
-def test_blocks_rejects_weights_of_another_length(seqs):
+@pytest.mark.parametrize(
+    "call",
+    [
+        lambda aln, weights: alnutils.aa_counts(aln, weights),
+        lambda aln, weights: alnutils.blocks(aln, 0.5, weights),
+    ],
+    ids=["aa_counts", "blocks"],
+)
+def test_weights_of_another_length_raise(call, seqs):
     with pytest.raises(ValueError, match="Length mismatch"):
-        alnutils.blocks(make_alignment(seqs), 0.5, [1.0, 1.0, 1.0])
+        call(make_alignment(seqs), [1.0, 1.0, 1.0])
+
+
+@pytest.mark.parametrize("weights", [None, True, False, [], [1.0]])
+def test_blocks_rejects_an_empty_alignment(weights):
+    with pytest.raises(ValueError, match="No sequences in the alignment"):
+        alnutils.blocks(make_alignment([]), 0.5, weights)
 
 
 # No column holds two non-gap residues, so nothing tells the rows apart.

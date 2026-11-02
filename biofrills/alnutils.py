@@ -59,6 +59,14 @@ def _has_aligned_residue(col, case_marks_inserts):
     return any(c not in _GAP_CHARS for c in col)
 
 
+def _check_weight_count(weights, aln):
+    """Raise ValueError unless weights holds one weight per row of aln."""
+    if len(weights) != len(aln):
+        raise ValueError(
+            f"Length mismatch: weights = {len(weights)}, alignment = {len(aln)}"
+        )
+
+
 def aa_counts(aln, weights=None, gap_chars="-."):
     """Calculate the amino acid frequencies in a set of SeqRecords.
 
@@ -66,7 +74,8 @@ def aa_counts(aln, weights=None, gap_chars="-."):
     usually calculated with the sequence_weights function. For convenience, you
     can also pass "weights=True" and the weights will be calculated with
     sequence_weights here. With weights, the rows may also be given as
-    sequence strings; rows of different lengths then raise ValueError.
+    sequence strings; rows of different lengths, and weights of a length other
+    than the number of rows, then raise ValueError.
     """
     if weights is None:
         counts = Counter()
@@ -78,9 +87,7 @@ def aa_counts(aln, weights=None, gap_chars="-."):
             # For convenience
             weights = sequence_weights(aln)
         else:
-            assert len(weights) == len(aln), (
-                f"Length mismatch: weights = {len(weights)}, alignment = {len(aln)}"
-            )
+            _check_weight_count(weights, aln)
         counts = defaultdict(float)
         for col in zip(*aln, strict=True):
             for aa, wt in zip(col, weights, strict=True):
@@ -126,8 +133,9 @@ def blocks(aln, threshold=0.5, weights=None):
     residues included. Every record is kept; its sequence is empty if no
     column remains. Per-letter annotations, such as FASTQ quality scores,
     keep their values at the kept columns, and feature locations are mapped
-    to them as described for remove_empty_cols. Rows of different lengths,
-    and weights of a length other than the number of rows, raise ValueError.
+    to them as described for remove_empty_cols. An alignment of no sequences,
+    rows of different lengths, and weights of a length other than the number
+    of rows raise ValueError.
 
     For given sequence weights, which columns are kept does not depend on the
     order of the alignment's rows: the unweighted proportion is a quotient of
@@ -154,7 +162,8 @@ def blocks(aln, threshold=0.5, weights=None):
         same columns.
 
     """
-    assert len(aln)
+    if not len(aln):
+        raise ValueError("No sequences in the alignment")
     seqstrs = [str(rec.seq) for rec in aln]
     case_marks_inserts = _case_marks_inserts(seqstrs)
     if weights is False:
@@ -167,10 +176,8 @@ def blocks(aln, threshold=0.5, weights=None):
     else:
         if weights is None or weights is True:
             weights = sequence_weights(aln, "avg1")
-        elif len(weights) != len(aln):
-            raise ValueError(
-                f"Length mismatch: weights = {len(weights)}, alignment = {len(aln)}"
-            )
+        else:
+            _check_weight_count(weights, aln)
         total_weight = math.fsum(weights)
 
         def residue_fraction(col):

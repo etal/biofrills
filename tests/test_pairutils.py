@@ -31,3 +31,7 @@ def test_score_pairwise_penalizes_only_internal_gaps():
     assert pairutils.score_pairwise("AC--D", "ACEED") == 4 + 9 - 10 - 1 + 6
     assert pairutils.score_pairwise("--ACD", "EEACD") == -1 + 4 + 9 + 6
     assert pairutils.score_pairwise("ACD--", "ACDEE") == 4 + 9 + 6 - 1
+
+
+def test_identity_avg_of_two_rows_without_residues_is_zero():
+    assert pairutils.identity_avg("--.--", "..-..") == 0.0

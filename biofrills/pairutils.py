@@ -127,9 +127,14 @@ def identity_abs(aseq, bseq):
 
 
 def identity_avg(aseq, bseq):
-    """Compute identity as matching sites over the mean ungapped length."""
+    """Compute identity as matching sites over the mean ungapped length.
+
+    A pair in which neither sequence has a residue has identity 0.
+    """
     match = identity_abs(aseq, bseq)
     alen = len(aseq.replace("-", "").replace(".", ""))
     blen = len(bseq.replace("-", "").replace(".", ""))
     avg_len = 0.5 * (alen + blen)
+    if not avg_len:
+        return 0.0
     return match / avg_len

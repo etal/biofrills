@@ -88,11 +88,11 @@ def get_kmeans(infname, N):
     """
     G = alnutils.to_graph(infname)
     nodes = G.nodes()
-    # identity_abs of a sequence with itself is its number of residues; the
-    # graph has no self-loops to hold it. No sequence matches another at more
+    # The graph has no self-loops, so a medoid's identity to itself, its
+    # number of residues, is counted here. No sequence matches another at more
     # positions than it has residues, so a medoid is its own closest medoid.
     nres = {
-        rec.id: pairutils.identity_abs(str(rec.seq), str(rec.seq))
+        rec.id: pairutils.ungap_len(str(rec.seq))
         for rec in SeqIO.parse(infname, "fasta")
     }
 

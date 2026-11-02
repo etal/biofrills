@@ -44,5 +44,18 @@ def test_identity_ignores_letter_case():
 
 
 def test_identity_of_a_sequence_with_itself_is_its_residue_count():
-    """seq-pick -k takes this identity as the cost of a medoid."""
-    assert pairutils.identity_abs("MKa-VLw.GH", "MKa-VLw.GH") == 8
+    """The identity of a row with itself equals its ungap_len.
+
+    seq-pick -k charges a medoid its ungap_len and every other sequence its
+    identity_abs to the medoid; their agreement means that a medoid leaves
+    none of its own residues unmatched, its distance to itself being zero.
+    """
+    seq = "MKa-VLw.GHX"
+    assert pairutils.identity_abs(seq, seq) == pairutils.ungap_len(seq) == 9
+
+
+def test_no_row_matches_another_at_more_sites_than_it_has_residues(aligned_input):
+    """seq-pick -k relies on this bound to keep each medoid its own closest."""
+    seqs = rows(aligned_input)
+    for aseq, bseq in itertools.permutations(seqs, 2):
+        assert pairutils.identity_abs(aseq, bseq) <= pairutils.ungap_len(aseq)

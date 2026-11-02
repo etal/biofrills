@@ -22,11 +22,7 @@ import sys
 from Bio import AlignIO
 
 from biofrills.cli import help_requested
-from biofrills.pairutils import identity_abs
-
-
-def ungap_len(seq):
-    return len(seq) - seq.count("-") - seq.count(".")
+from biofrills.pairutils import identity_abs, ungap_len
 
 
 def pct_identity(aseq, bseq):

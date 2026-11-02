@@ -118,6 +118,14 @@ def score_pairwise(aseq, bseq):
     return score
 
 
+def ungap_len(seq):
+    """Number of residues in an aligned sequence string, lowercase included.
+
+    It equals identity_abs of the string with itself.
+    """
+    return len(seq) - seq.count("-") - seq.count(".")
+
+
 def identity_abs(aseq, bseq):
     """Compute absolute identity (# matching sites) between sequence strings.
 
@@ -137,13 +145,13 @@ def identity_abs(aseq, bseq):
 def identity_avg(aseq, bseq):
     """Compute identity as matching sites over the mean ungapped length.
 
-    Matching sites are counted by identity_abs, and both lengths count every
-    residue, lowercase included.  A pair in which neither sequence has a
+    Matching sites are counted by identity_abs, and both lengths by ungap_len,
+    lowercase residues included.  A pair in which neither sequence has a
     residue has identity 0.
     """
     match = identity_abs(aseq, bseq)
-    alen = len(aseq.replace("-", "").replace(".", ""))
-    blen = len(bseq.replace("-", "").replace(".", ""))
+    alen = ungap_len(aseq)
+    blen = ungap_len(bseq)
     avg_len = 0.5 * (alen + blen)
     if not avg_len:
         return 0.0

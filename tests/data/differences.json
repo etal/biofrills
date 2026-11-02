@@ -3649,6 +3649,102 @@
    "columns": null
   },
   {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "identity_abs",
+   "case": 0,
+   "rows": [
+    0,
+    1
+   ],
+   "recorded": {
+    "value": 7
+   },
+   "current": {
+    "value": 8
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "identity_abs",
+   "case": 3,
+   "rows": [
+    1,
+    2
+   ],
+   "recorded": {
+    "value": 4
+   },
+   "current": {
+    "value": 5
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "identity_abs",
+   "case": 4,
+   "rows": [
+    1,
+    3
+   ],
+   "recorded": {
+    "value": 5
+   },
+   "current": {
+    "value": 6
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "identity_avg",
+   "case": 0,
+   "rows": [
+    0,
+    1
+   ],
+   "recorded": {
+    "value": 0.875
+   },
+   "current": {
+    "value": 1.0
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "identity_avg",
+   "case": 3,
+   "rows": [
+    1,
+    2
+   ],
+   "recorded": {
+    "value": 0.5333333333333333
+   },
+   "current": {
+    "value": 0.6666666666666666
+   },
+   "columns": null
+  },
+  {
+   "file": "library/synth-mixedcase.aln.json",
+   "section": "identity_avg",
+   "case": 4,
+   "rows": [
+    1,
+    3
+   ],
+   "recorded": {
+    "value": 0.6666666666666666
+   },
+   "current": {
+    "value": 0.8
+   },
+   "columns": null
+  },
+  {
    "file": "library/synth-single.aln.json",
    "section": "sequence_weights",
    "case": 0,

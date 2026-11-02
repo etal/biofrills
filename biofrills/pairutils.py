@@ -119,17 +119,27 @@ def score_pairwise(aseq, bseq):
 
 
 def identity_abs(aseq, bseq):
-    """Compute absolute identity (# matching sites) between sequence strings."""
+    """Compute absolute identity (# matching sites) between sequence strings.
+
+    Residues are compared without regard to letter case, as in score_pairwise:
+    in the alignment convention of HMMER and CHAIN, case marks whether a
+    residue is aligned or inserted, not which residue it is.  A site at which
+    both sequences hold a gap character is not counted.
+    """
     assert len(aseq) == len(bseq)
     return sum(
-        a == b for a, b in zip(aseq, bseq, strict=True) if not (a in "-." and b in "-.")
+        a == b
+        for a, b in zip(aseq.upper(), bseq.upper(), strict=True)
+        if not (a in "-." and b in "-.")
     )
 
 
 def identity_avg(aseq, bseq):
     """Compute identity as matching sites over the mean ungapped length.
 
-    A pair in which neither sequence has a residue has identity 0.
+    Matching sites are counted by identity_abs, and both lengths count every
+    residue, lowercase included.  A pair in which neither sequence has a
+    residue has identity 0.
     """
     match = identity_abs(aseq, bseq)
     alen = len(aseq.replace("-", "").replace(".", ""))

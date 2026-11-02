@@ -9,6 +9,8 @@ Per OrthoMCL:
 percent_match = number of matched characters (in the shorter sequence)
                 / length of the shorter sequence
 
+Residues are compared without regard to letter case.
+
 Each row of the printed grid gives the identities of one sequence with each of
 the preceding ones. A line of column labels follows the grid, then, for two or
 more sequences, the minimum, mean and maximum over all pairs. A pair in which

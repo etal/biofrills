@@ -35,3 +35,14 @@ def test_score_pairwise_penalizes_only_internal_gaps():
 
 def test_identity_avg_of_two_rows_without_residues_is_zero():
     assert pairutils.identity_avg("--.--", "..-..") == 0.0
+
+
+def test_identity_ignores_letter_case():
+    assert pairutils.identity_abs("ACDE", "acde") == 4
+    assert pairutils.identity_abs("ACDE", "acdf") == 3
+    assert pairutils.identity_avg("ACDE", "acd-") == 3 / 3.5
+
+
+def test_identity_of_a_sequence_with_itself_is_its_residue_count():
+    """seq-pick -k takes this identity as the cost of a medoid."""
+    assert pairutils.identity_abs("MKa-VLw.GH", "MKa-VLw.GH") == 8

@@ -62,7 +62,7 @@ Library
 ``consensus``
     The consensus sequence of an alignment, by relative entropy or by plurality.
 ``pairutils``
-    The score of two aligned sequences under BLOSUM62 with affine gap penalties, and their identity.
+    The score of two aligned sequences under BLOSUM62 with affine gap penalties, and their identity, both without regard to letter case.
 ``sequtils``
     Extraction of records by identifier from an indexed FASTA file; residue frequencies of a sequence.
 ``logoutils``

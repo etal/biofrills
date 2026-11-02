@@ -227,7 +227,7 @@ The cases whose current output differs, explained below under "Consensus ties", 
 It compares outcomes as `tests/test_reference.py` does, through the shared module `tests/reference_cases.py`, so the floating-point differences described above under "Summation order of weighted frequencies" and "Compensated summation" are compared with a tolerance and produce no entries; the `log1p` dependence of the `none` weights, described under "Platform math library", is compared exactly because no measured platform shows it at the recorded inputs.
 An entry identifies the case as the fixture does: the fixture file relative to `py27/`, the section, the alignment for a `tie-batch.json` case, and the index of the case within its section, which is `null` for a section that records a single outcome.
 It then repeats the fields that describe the call (`weights` and `kwargs` where the fixture records them, `rows` for a pairwise case), and gives the recorded outcome, the current outcome, and, where both are strings of equal length, the 1-based columns at which they differ.
-Every entry is explained below, and all seven kinds are deliberate changes of behavior.
+Every entry is explained below, and all eight kinds are deliberate changes of behavior.
 In the third and fourth kinds the recorded outcome is an exception, so they change no outcome that the original code completed.
 A test of the current code expects the fixture value except where `differences.json` records another.
 After a change that moves a recorded output, regenerate the file from the repository root and explain the new entries here:
@@ -304,3 +304,9 @@ Before the port, the unmodified sources at commit `36684bb` produced an empty li
   In `synth-mixedcase.aln.json`, column 3 holds only lowercase residues, and the 6 `blocks` cases now drop it; its columns that mix the two cases are kept as written.
   `consensus` now also counts `.` toward its gap threshold, but no recorded alignment has a column that holds both `.` and an uppercase residue, so no recorded `consensus` case changes.
   The three MAPGAPS alignments contain neither `.` nor a lowercase residue, and none of their cases changes.
+- **Case-insensitive pairwise identity** (6 cases, all in `synth-mixedcase.aln.json`).
+  `identity_abs` compared residues as written, so `l` and `L` did not match, whereas `score_pairwise` in the same module has always compared them in uppercase.
+  In the alignment convention of HMMER and CHAIN, case marks whether a residue is aligned or inserted, not which residue it is, and `identity_abs` now folds case, as `esl_dst_CPairId` in HMMER's Easel library does.
+  As there, residues in insert columns still count, and the lengths of `identity_avg` still count lowercase residues, so the identity of a sequence with itself remains its number of residues, which `seq-pick -k` takes as the cost of a medoid.
+  Column 5 of `synth-mixedcase.aln.json` holds `l` in row 1 and `L` in the other rows, so each of the three pairs that include row 1 gains one matching site: `identity_abs` changes from 7 to 8 for rows 0 and 1, from 4 to 5 for rows 1 and 2, and from 5 to 6 for rows 1 and 3, and `identity_avg` from 0.875 to 1.0, from 0.533 to 0.667, and from 0.667 to 0.8.
+  No other alignment of the library cases contains a lowercase residue, and no recorded run of `seq-identity` or `seq-pick` reads one, so no other case and no command-line run changes.

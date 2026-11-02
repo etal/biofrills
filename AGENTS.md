@@ -62,6 +62,8 @@ The command-line programs are tested as installed, so after a change to `[projec
   The asymmetry is deliberate.
 - `aa_counts`, `aa_frequencies` and `sequence_weights` count residues as written, so `a` and `A` are distinct types there, whereas the background frequencies of `consensus` fold case.
   Changing that would move CladeCompare's pseudocounts and p-values and needs its own decision.
+- `pairutils.score_pairwise`, `identity_abs` and `identity_avg` compare residues without regard to case, and `seq-identity` and `seq-pick -c` and `-k` inherit that.
+  They do not apply the insert convention: a function of two rows cannot tell whether case marks inserts in the alignment they came from, and `seq-pick -k` takes the identity of a sequence with itself as its number of residues, lowercase included.
 - Lowercase does not always mark an insertion: BLAST and PSI-BLAST use it for masking when `-lcase_masking` is given, which the convention would misread.
 
 ## Pitfalls

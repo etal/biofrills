@@ -6,7 +6,7 @@ Three kinds of input are written:
 * Real protein alignments, derived from the MAPGAPS CMA alignments that
   accompany cladecompare and biocma.  Each CMA file is reduced to its
   consensus (match-state) columns by the same rule as
-  ``cladecomparelib.core.cma_blocks``: lowercase insert residues are dropped,
+  ``cladecompare.core.cma_blocks``: lowercase insert residues are dropped,
   leaving uppercase residues and '-' deletions of equal length.  This is the
   form in which cladecompare passes alignments to biofrills.
 * Real unaligned protein sequences and a CMA alignment, copied unchanged,

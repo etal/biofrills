@@ -81,7 +81,7 @@ Two consecutive captures produce identical files.
 | `intersect-query.fasta` | identifiers from `cdc2-domain.fasta` | `seq-intersect` |
 | `diff-query.fasta` | records from `cdc2-domain.fasta`, some altered, and one new record | `seq-diff` |
 
-The `.aln.fasta` files are the MAPGAPS alignments of the cladecompare and biocma test sets, reduced to their consensus columns by the rule of `cladecomparelib.core.cma_blocks`, which drops lowercase insert residues.
+The `.aln.fasta` files are the MAPGAPS alignments of the cladecompare and biocma test sets, reduced to their consensus columns by the rule of `cladecompare.core.cma_blocks`, which drops lowercase insert residues.
 That is the form in which cladecompare passes alignments to biofrills.
 The files `cdc2-domain.fasta` and `fikk.cma` are copied unchanged.
 The FASTA files `cdc2-domain.fasta`, `scttlre-domain.fasta` and `fikk-full.fasta` in those repositories are unaligned.
